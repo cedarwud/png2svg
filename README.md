@@ -21,6 +21,7 @@ Top-level commands:
 Regression assets:
 - `expected.svg` is the golden source; regress rasterizes it to compare with generated output.
 - `expected.png` is optional and only used when `expected.svg` is missing.
+- When `params.json` specifies `canvas`, `input.png` can be a placeholder but must be a valid PNG.
 
 Template examples (using `samples/`):
 - 3GPP events: `python tools/png2svg.py samples/input.png samples/t_3gpp_events_3panel.json output/3gpp.svg`
