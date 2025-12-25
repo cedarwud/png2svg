@@ -51,6 +51,7 @@ class Edge:
     label: str | None
     dashed: bool
     points: list[tuple[float, float]] | None
+    dasharray: str | None
 
 
 def _require_list(params: dict[str, Any], key: str) -> list[Any]:
@@ -211,6 +212,11 @@ def _parse_edges(params: dict[str, Any]) -> list[Edge]:
         if label is not None:
             label = str(label)
         dashed = bool(raw.get("dashed", False))
+        dasharray = raw.get("dasharray")
+        if isinstance(dasharray, list):
+            dasharray = ",".join(str(item) for item in dasharray)
+        elif dasharray is not None:
+            dasharray = str(dasharray)
         points = None
         if raw.get("points") is not None:
             points_raw = raw.get("points")
@@ -252,6 +258,7 @@ def _parse_edges(params: dict[str, Any]) -> list[Edge]:
                 label=label,
                 dashed=dashed,
                 points=points,
+                dasharray=dasharray,
             )
         )
     return edges
@@ -377,7 +384,8 @@ def _draw_edges(builder: SvgBuilder, edges: list[Edge], nodes: dict[str, Node]) 
         points = _edge_points(edge, nodes)
         stroke_kwargs = {"stroke": "#000000", "stroke_width": 2, "fill": "none"}
         if edge.dashed:
-            stroke_kwargs["stroke_dasharray"] = "6,4"
+            dasharray = edge.dasharray or "6,4"
+            stroke_kwargs["stroke_dasharray"] = dasharray
             stroke_kwargs["class_"] = "dashed"
         if len(points) == 2:
             curves.add(

@@ -15,7 +15,7 @@ SRC_ROOT = REPO_ROOT / "src"
 if str(SRC_ROOT) not in sys.path:
     sys.path.insert(0, str(SRC_ROOT))
 
-from png2svg import Png2SvgError, render_svg  # noqa: E402
+from png2svg import Png2SvgError, convert_png, render_svg  # noqa: E402
 from common.png_utils import has_png_magic  # noqa: E402
 from validators import validate_svg  # noqa: E402
 from validators.visual_diff import RasterizeError, rasterize_svg_to_png  # noqa: E402
@@ -73,6 +73,7 @@ def _run_case(
     contract: Path,
     thresholds: Path,
     output_root: Path,
+    pipeline: str,
 ) -> dict[str, Any]:
     input_png = case_dir / "input.png"
     params = case_dir / "params.json"
@@ -135,7 +136,7 @@ def _run_case(
             "Place input.png in the case directory.",
             context={"path": str(input_png), "tag": "png"},
         )
-    if not params.exists():
+    if pipeline == "render" and not params.exists():
         return _error_report(
             "E1201_PARAMS_MISSING",
             "params.json not found.",
@@ -146,79 +147,109 @@ def _run_case(
     regress_warnings: list[dict[str, Any]] = []
     params_data: dict[str, Any] | None = None
     canvas_present = False
-    try:
-        params_data = json.loads(params.read_text())
-        canvas = params_data.get("canvas")
-        canvas_present = (
-            isinstance(canvas, dict)
-            and canvas.get("width") is not None
-            and canvas.get("height") is not None
-        )
-    except json.JSONDecodeError:
-        params_data = None
+    if pipeline == "render":
+        try:
+            params_data = json.loads(params.read_text())
+            canvas = params_data.get("canvas")
+            canvas_present = (
+                isinstance(canvas, dict)
+                and canvas.get("width") is not None
+                and canvas.get("height") is not None
+            )
+        except json.JSONDecodeError:
+            params_data = None
 
-    if not has_png_magic(input_png) and params_data is not None:
-        if canvas_present:
-            regress_warnings.append(
-                _issue_payload(
-                    "W1201_INPUT_PNG_INVALID_CANVAS_USED",
-                    "input.png is not a valid PNG; using canvas from params.json.",
-                    "Fix or replace input.png to avoid relying on fallback canvas.",
+        if not has_png_magic(input_png) and params_data is not None:
+            if canvas_present:
+                regress_warnings.append(
+                    _issue_payload(
+                        "W1201_INPUT_PNG_INVALID_CANVAS_USED",
+                        "input.png is not a valid PNG; using canvas from params.json.",
+                        "Fix or replace input.png to avoid relying on fallback canvas.",
+                        context={"path": str(input_png), "tag": "png"},
+                    )
+                )
+            else:
+                return _error_report(
+                    "E1205_INPUT_PNG_INVALID",
+                    "input.png is not a valid PNG and no canvas override was provided.",
+                    "Provide a valid input.png or set canvas.width/height in params.json.",
                     context={"path": str(input_png), "tag": "png"},
                 )
+
+        try:
+            render_svg(input_png, params, output_svg)
+        except Png2SvgError as exc:
+            return _error_report(exc.code, exc.message, exc.hint, context={"tag": "svg"})
+        except Exception as exc:  # noqa: BLE001
+            return _error_report(
+                "E1299_RENDER_FAILED",
+                f"{exc}",
+                "Check input.png and params.json.",
+                context={"tag": "svg"},
             )
-        else:
+    else:
+        if not has_png_magic(input_png):
             return _error_report(
                 "E1205_INPUT_PNG_INVALID",
-                "input.png is not a valid PNG and no canvas override was provided.",
-                "Provide a valid input.png or set canvas.width/height in params.json.",
+                "input.png is not a valid PNG.",
+                "Provide a valid input.png for convert pipeline.",
                 context={"path": str(input_png), "tag": "png"},
             )
-
-    try:
-        render_svg(input_png, params, output_svg)
-    except Png2SvgError as exc:
-        return _error_report(exc.code, exc.message, exc.hint, context={"tag": "svg"})
-    except Exception as exc:  # noqa: BLE001
-        return _error_report(
-            "E1299_RENDER_FAILED",
-            f"{exc}",
-            "Check input.png and params.json.",
-            context={"tag": "svg"},
-        )
+        try:
+            convert_png(
+                input_png,
+                output_svg,
+                debug_dir=output_dir / "convert",
+                topk=2,
+                contract_path=contract,
+                thresholds_path=thresholds,
+                enable_visual_diff=False,
+            )
+            regress_warnings.append(
+                _issue_payload(
+                    "W1300_EXPECTED_SKIPPED",
+                    "Convert pipeline skips expected.svg/expected.png comparison.",
+                    "Use render pipeline for strict regression diffs.",
+                    context={"tag": "regress"},
+                )
+            )
+        except Png2SvgError as exc:
+            return _error_report(exc.code, exc.message, exc.hint, context={"tag": "svg"})
 
     expected_png_path: Path | None = None
     expected_error: dict[str, Any] | None = None
-    if expected_svg.exists():
-        try:
-            output_expected_png.parent.mkdir(parents=True, exist_ok=True)
-            rasterize_svg_to_png(expected_svg, output_expected_png)
-            expected_png_path = output_expected_png
-        except RasterizeError as exc:
-            expected_error = _issue_payload(
-                "E1206_EXPECTED_SVG_RASTERIZE_FAILED",
-                f"Failed to rasterize expected.svg: {exc}",
-                "Ensure expected.svg is valid and rasterizer dependencies are available.",
-                context={"path": str(expected_svg), "tag": "svg"},
-            )
-    elif expected_png.exists():
-        if has_png_magic(expected_png):
-            output_expected_png.write_bytes(expected_png.read_bytes())
-            expected_png_path = output_expected_png
+    if pipeline == "render":
+        if expected_svg.exists():
+            try:
+                output_expected_png.parent.mkdir(parents=True, exist_ok=True)
+                rasterize_svg_to_png(expected_svg, output_expected_png)
+                expected_png_path = output_expected_png
+            except RasterizeError as exc:
+                expected_error = _issue_payload(
+                    "E1206_EXPECTED_SVG_RASTERIZE_FAILED",
+                    f"Failed to rasterize expected.svg: {exc}",
+                    "Ensure expected.svg is valid and rasterizer dependencies are available.",
+                    context={"path": str(expected_svg), "tag": "svg"},
+                )
+        elif expected_png.exists():
+            if has_png_magic(expected_png):
+                output_expected_png.write_bytes(expected_png.read_bytes())
+                expected_png_path = output_expected_png
+            else:
+                expected_error = _issue_payload(
+                    "E1204_EXPECTED_PNG_INVALID",
+                    "expected.png is not a valid PNG and no expected.svg is available.",
+                    "Provide a valid expected.svg (preferred) or a valid expected.png.",
+                    context={"path": str(expected_png), "tag": "png"},
+                )
         else:
             expected_error = _issue_payload(
-                "E1204_EXPECTED_PNG_INVALID",
-                "expected.png is not a valid PNG and no expected.svg is available.",
-                "Provide a valid expected.svg (preferred) or a valid expected.png.",
-                context={"path": str(expected_png), "tag": "png"},
+                "E1203_EXPECTED_MISSING",
+                "No expected.svg or expected.png found for this case.",
+                "Add expected.svg (preferred) or expected.png to the case directory.",
+                context={"path": str(case_dir), "tag": "case"},
             )
-    else:
-        expected_error = _issue_payload(
-            "E1203_EXPECTED_MISSING",
-            "No expected.svg or expected.png found for this case.",
-            "Add expected.svg (preferred) or expected.png to the case directory.",
-            context={"path": str(case_dir), "tag": "case"},
-        )
 
     result = validate_svg(
         output_svg,
@@ -293,6 +324,11 @@ def main(
         readable=True,
         help="Path to the validator thresholds YAML.",
     ),
+    pipeline: str = typer.Option(
+        "render",
+        "--pipeline",
+        help="Pipeline to run: render or convert.",
+    ),
 ) -> None:
     """Run regression cases listed in manifest.yaml."""
     dataset = dataset.resolve()
@@ -313,6 +349,11 @@ def main(
             typer.echo("HINT: Ensure manifest.yaml has a cases list.", err=True)
             raise typer.Exit(code=1)
         entries = manifest["cases"]
+
+    if pipeline not in {"render", "convert"}:
+        typer.echo("ERROR E1302_PIPELINE_INVALID: pipeline must be 'render' or 'convert'.", err=True)
+        typer.echo("HINT: Use --pipeline render (default) or --pipeline convert.", err=True)
+        raise typer.Exit(code=1)
 
     results: list[dict[str, Any]] = []
     passed = 0
@@ -336,7 +377,14 @@ def main(
             if isinstance(tags, list):
                 for tag in tags:
                     tag_counts[str(tag)] = tag_counts.get(str(tag), 0) + 1
-        case_result = _run_case(case_dir, case_id, contract, thresholds, REPO_ROOT / "output" / "regress")
+        case_result = _run_case(
+            case_dir,
+            case_id,
+            contract,
+            thresholds,
+            REPO_ROOT / "output" / "regress",
+            pipeline,
+        )
         case_result["id"] = case_id
         case_result["dir"] = str(case_dir)
         if case_result["status"] == "pass":

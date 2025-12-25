@@ -15,13 +15,23 @@ Minimal path: render → validate → regress.
 ## CLI
 Top-level commands:
 - Render: `python tools/png2svg.py path/to/input.png path/to/params.json path/to/output.svg`
+- Classify: `python tools/png2svg.py classify path/to/input.png --out output/classification.json --debug-dir output/debug`
+- Extract: `python tools/png2svg.py extract path/to/input.png --template auto --out output/params.json --debug-dir output/extract_debug`
+- Convert: `python tools/png2svg.py convert path/to/input.png -o output/output.svg --debug-dir output/convert_debug --topk 2`
 - Validate: `python tools/validate_svg.py path/to/output.svg --expected path/to/expected.png --report report.json`
 - Regress: `python tools/regress.py datasets/regression_v0/manifest.yaml --report report.json`
+
+Debug artifacts:
+- `--debug-dir` stores classification/extraction/validation outputs for troubleshooting.
+- `convert` debug dirs include `snap_preview.svg/png` for quick inspection of snapped geometry.
 
 Regression assets:
 - `expected.svg` is the golden source; regress rasterizes it to compare with generated output.
 - `expected.png` is optional and only used when `expected.svg` is missing.
 - When `params.json` specifies `canvas`, `input.png` can be a placeholder but must be a valid PNG.
+
+Classifier schema: see `docs/CLASSIFIER.md`.
+Extractor schema: see `docs/EXTRACTOR.md`.
 
 Template examples (using `samples/`):
 - 3GPP events: `python tools/png2svg.py samples/input.png samples/t_3gpp_events_3panel.json output/3gpp.svg`

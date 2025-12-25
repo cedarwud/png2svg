@@ -1,0 +1,62 @@
+{
+  "template": "t_performance_lineplot",
+  "title": "Throughput vs Time under Load (Adaptive Scheduling)",
+  "canvas": {"width": 1024, "height": 420},
+  "axes": {
+    "plot": {"x": 110, "y": 70, "width": 720, "height": 240},
+    "x": {
+      "label": "Time (s)",
+      "min": 0,
+      "max": 10,
+      "ticks": [0, 2, 4, 6, 8, 10]
+    },
+    "y": {
+      "label": "Throughput (Mbps)",
+      "min": 0,
+      "max": 200,
+      "ticks": [0, 50, 100, 150, 200]
+    }
+  },
+  "series": [
+    {
+      "id": "sched_a",
+      "label": "Scheduler A",
+      "color": "#1f77b4",
+      "points": [
+        {"x": 0, "y": 40},
+        {"x": 2, "y": 85},
+        {"x": 4, "y": 120},
+        {"x": 6, "y": 150},
+        {"x": 8, "y": 170},
+        {"x": 10, "y": 185}
+      ]
+    },
+    {
+      "id": "sched_b",
+      "label": "Scheduler B",
+      "color": "#ff7f0e",
+      "points": [
+        {"x": 0, "y": 30},
+        {"x": 2, "y": 70},
+        {"x": 4, "y": 95},
+        {"x": 6, "y": 130},
+        {"x": 8, "y": 155},
+        {"x": 10, "y": 170}
+      ]
+    },
+    {
+      "id": "sched_c",
+      "label": "Scheduler C",
+      "color": "#2ca02c",
+      "dashed": true,
+      "points": [
+        {"x": 0, "y": 20},
+        {"x": 2, "y": 55},
+        {"x": 4, "y": 90},
+        {"x": 6, "y": 115},
+        {"x": 8, "y": 145},
+        {"x": 10, "y": 160}
+      ]
+    }
+  ]
+}

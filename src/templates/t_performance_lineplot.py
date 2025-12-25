@@ -48,6 +48,7 @@ class Series:
     dashed: bool
     stroke_width: float
     points: list[tuple[float, float]]
+    dasharray: str | None
 
 
 def _require_dict(params: dict[str, Any], key: str) -> dict[str, Any]:
@@ -220,6 +221,11 @@ def _parse_series(params: dict[str, Any]) -> list[Series]:
         color = str(raw.get("color", "#1f77b4"))
         dashed = bool(raw.get("dashed", False))
         stroke_width = float(raw.get("stroke_width", 2))
+        dasharray = raw.get("dasharray")
+        if isinstance(dasharray, list):
+            dasharray = ",".join(str(item) for item in dasharray)
+        elif dasharray is not None:
+            dasharray = str(dasharray)
         points_raw = raw.get("points")
         if not isinstance(points_raw, list) or len(points_raw) < 2:
             raise Png2SvgError(
@@ -259,6 +265,7 @@ def _parse_series(params: dict[str, Any]) -> list[Series]:
                 dashed=dashed,
                 stroke_width=stroke_width,
                 points=points,
+                dasharray=dasharray,
             )
         )
     return series_list
@@ -390,12 +397,14 @@ def _draw_series(builder: SvgBuilder, plot: PlotArea, series_list: list[Series])
             id=f"series_{series.series_id}",
         )
         if series.dashed:
-            poly.update({"stroke-dasharray": "6,4", "class": "dashed"})
+            dasharray = series.dasharray or "6,4"
+            poly.update({"stroke-dasharray": dasharray, "class": "dashed"})
         curves.add(poly)
 
 
 def _draw_legend(builder: SvgBuilder, plot: PlotArea, series_list: list[Series]) -> None:
     annotations = builder.groups["g_annotations"]
+    text_group = builder.groups["g_text"]
     legend = builder.drawing.g(id="legend")
     legend_x = plot.origin_x + plot.width - 140
     legend_y = plot.origin_y + 10
@@ -412,8 +421,9 @@ def _draw_legend(builder: SvgBuilder, plot: PlotArea, series_list: list[Series])
             )
         )
         if series.dashed:
-            legend.elements[-1].update({"stroke-dasharray": "6,4", "class": "dashed"})
-        legend.add(
+            dasharray = series.dasharray or "6,4"
+            legend.elements[-1].update({"stroke-dasharray": dasharray, "class": "dashed"})
+        text_group.add(
             builder.drawing.text(
                 series.label,
                 insert=(legend_x + 30, y + 4),

@@ -33,6 +33,7 @@ class GeometryThresholds:
     snap_tolerance: float
     dash_segment_length_max: float
     dash_segment_min_count: int
+    polyline_max_points: int
 
 
 def _load_yaml(path: Path) -> dict[str, Any]:
@@ -110,8 +111,10 @@ def load_geometry_thresholds(data: dict[str, Any]) -> GeometryThresholds:
     snap_tolerance = float(geometry.get("snap_tolerance", 0.5))
     dash_segment_length_max = float(geometry.get("dash_segment_length_max", 10.0))
     dash_segment_min_count = int(geometry.get("dash_segment_min_count", 6))
+    polyline_max_points = int(geometry.get("polyline_max_points", 32))
     return GeometryThresholds(
         snap_tolerance=snap_tolerance,
         dash_segment_length_max=dash_segment_length_max,
         dash_segment_min_count=dash_segment_min_count,
+        polyline_max_points=polyline_max_points,
     )

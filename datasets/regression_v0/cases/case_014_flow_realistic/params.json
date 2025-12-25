@@ -1,0 +1,45 @@
+{
+  "template": "t_procedure_flow",
+  "title": "Multi-Stage Handover Procedure",
+  "canvas": {"width": 980, "height": 420},
+  "lanes": [
+    {"id": "ue", "label": "UE", "x": 40, "y": 60, "width": 900, "height": 100},
+    {"id": "ran", "label": "gNB", "x": 40, "y": 180, "width": 900, "height": 100},
+    {"id": "core", "label": "Core", "x": 40, "y": 300, "width": 900, "height": 90}
+  ],
+  "nodes": [
+    {"id": "ue_meas", "x": 80, "y": 90, "width": 160, "height": 60, "text": "Measure\nSignal"},
+    {"id": "ue_report", "x": 280, "y": 90, "width": 180, "height": 60, "text": "Report\nQuality"},
+    {"id": "ran_decide", "x": 280, "y": 210, "width": 200, "height": 60, "text": "Decide\nHandover"},
+    {"id": "ran_prepare", "x": 520, "y": 210, "width": 200, "height": 60, "text": "Prepare\nResources"},
+    {"id": "core_auth", "x": 520, "y": 330, "width": 200, "height": 50, "text": "Authorize"},
+    {"id": "ran_execute", "x": 760, "y": 210, "width": 160, "height": 60, "text": "Execute\nSwitch"}
+  ],
+  "edges": [
+    {"from": "ue_meas", "to": "ue_report", "label": "periodic"},
+    {
+      "from": "ue_report",
+      "to": "ran_decide",
+      "label": "report",
+      "points": [
+        {"x": 470, "y": 120},
+        {"x": 470, "y": 240},
+        {"x": 280, "y": 240}
+      ]
+    },
+    {"from": "ran_decide", "to": "ran_prepare", "label": "trigger"},
+    {"from": "ran_prepare", "to": "ran_execute", "label": "command"},
+    {
+      "from": "ran_prepare",
+      "to": "core_auth",
+      "label": "auth",
+      "dashed": true,
+      "points": [
+        {"x": 620, "y": 240},
+        {"x": 620, "y": 330},
+        {"x": 520, "y": 330}
+      ]
+    },
+    {"from": "core_auth", "to": "ran_execute", "label": "ack", "dashed": true}
+  ]
+}

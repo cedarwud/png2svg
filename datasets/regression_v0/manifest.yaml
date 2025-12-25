@@ -39,3 +39,12 @@ cases:
   - id: case_012_lineplot_dense
     dir: cases/case_012_lineplot_dense
     tags: [dense_ticks, multi_series, dashed, small_canvas]
+  - id: case_013_3gpp_realistic
+    dir: cases/case_013_3gpp_realistic
+    tags: [large_canvas, long_text]
+  - id: case_014_flow_realistic
+    dir: cases/case_014_flow_realistic
+    tags: [lane_layout, dashed, many_nodes, long_text]
+  - id: case_015_lineplot_realistic
+    dir: cases/case_015_lineplot_realistic
+    tags: [multi_series, dashed, dense_ticks, large_canvas, long_text]

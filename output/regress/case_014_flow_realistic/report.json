@@ -1,0 +1,17 @@
+{
+  "errors": [],
+  "stats": {
+    "color_count": 3,
+    "max_path_commands": 0,
+    "visual_diff": {
+      "backend": "cairosvg",
+      "bad_pixel_ratio": 0.0,
+      "bad_pixel_ratio_max": 0.01,
+      "pixel_tolerance": 10,
+      "rmse": 0.0,
+      "rmse_max": 0.02
+    }
+  },
+  "status": "pass",
+  "warnings": []
+}

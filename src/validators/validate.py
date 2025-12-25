@@ -44,6 +44,9 @@ E3002_DIFF_FAILED = "E3002_DIFF_FAILED"
 E3003_VISUAL_THRESHOLD_EXCEEDED = "E3003_VISUAL_THRESHOLD_EXCEEDED"
 W2101_LINE_NOT_SNAPPED = "W2101_LINE_NOT_SNAPPED"
 W2102_DASHED_SIMULATED = "W2102_DASHED_SIMULATED"
+W2103_TEXT_OUTSIDE_TEXT_GROUP = "W2103_TEXT_OUTSIDE_TEXT_GROUP"
+W2104_POLYLINE_TOO_COMPLEX = "W2104_POLYLINE_TOO_COMPLEX"
+W2105_POLYLINE_NOT_SNAPPED = "W2105_POLYLINE_NOT_SNAPPED"
 
 
 def _font_family_ok(value: str, allowed: list[str]) -> bool:
@@ -262,6 +265,103 @@ def _check_text_requirements(
                 )
             )
     return issues
+
+
+def _check_text_grouping(
+    elements: list[ET.Element], parent_map: dict[ET.Element, ET.Element]
+) -> list[ValidationIssue]:
+    warnings: list[ValidationIssue] = []
+    for node in elements:
+        if local_name(node.tag) != "text":
+            continue
+        if not _has_ancestor_group(node, parent_map, "g_text"):
+            warnings.append(
+                ValidationIssue(
+                    code=W2103_TEXT_OUTSIDE_TEXT_GROUP,
+                    message="Text element is outside g_text group.",
+                    hint="Place editable text elements under the g_text group.",
+                    context=_element_context(node),
+                )
+            )
+    return warnings
+
+
+def _parse_polyline_points(points: str) -> list[tuple[float, float]]:
+    coords: list[float] = []
+    for token in points.replace(",", " ").split():
+        try:
+            coords.append(float(token))
+        except ValueError:
+            return []
+    if len(coords) < 2 or len(coords) % 2 != 0:
+        return []
+    return list(zip(coords[0::2], coords[1::2]))
+
+
+def _check_polyline_complexity(
+    elements: list[ET.Element], thresholds: GeometryThresholds
+) -> list[ValidationIssue]:
+    warnings: list[ValidationIssue] = []
+    max_points = thresholds.polyline_max_points
+    for node in elements:
+        if local_name(node.tag) != "polyline":
+            continue
+        points_attr = node.get("points", "")
+        points = _parse_polyline_points(points_attr)
+        if not points:
+            continue
+        if len(points) > max_points:
+            warnings.append(
+                ValidationIssue(
+                    code=W2104_POLYLINE_TOO_COMPLEX,
+                    message=f"Polyline has {len(points)} points (limit {max_points}).",
+                    hint="Simplify polylines to fewer points to avoid traced look.",
+                    context={"point_count": len(points), "max_points": max_points, **_element_context(node)},
+                )
+            )
+    return warnings
+
+
+def _check_polyline_snapping(
+    elements: list[ET.Element], thresholds: GeometryThresholds
+) -> list[ValidationIssue]:
+    warnings: list[ValidationIssue] = []
+    tolerance = thresholds.snap_tolerance
+    for node in elements:
+        if local_name(node.tag) != "polyline":
+            continue
+        points_attr = node.get("points", "")
+        points = _parse_polyline_points(points_attr)
+        if len(points) < 2:
+            continue
+        near_horizontal = False
+        near_vertical = False
+        for (x1, y1), (x2, y2) in zip(points, points[1:]):
+            dx = x2 - x1
+            dy = y2 - y1
+            if 0 < abs(dy) <= tolerance:
+                near_horizontal = True
+            if 0 < abs(dx) <= tolerance:
+                near_vertical = True
+        if near_horizontal:
+            warnings.append(
+                ValidationIssue(
+                    code=W2105_POLYLINE_NOT_SNAPPED,
+                    message="Polyline has a near-horizontal segment that is not snapped.",
+                    hint="Snap polyline segment coordinates so y-values match exactly.",
+                    context={"axis": "horizontal", **_element_context(node)},
+                )
+            )
+        if near_vertical:
+            warnings.append(
+                ValidationIssue(
+                    code=W2105_POLYLINE_NOT_SNAPPED,
+                    message="Polyline has a near-vertical segment that is not snapped.",
+                    hint="Snap polyline segment coordinates so x-values match exactly.",
+                    context={"axis": "vertical", **_element_context(node)},
+                )
+            )
+    return warnings
 
 
 def _check_colors(
@@ -591,6 +691,7 @@ def validate_svg(
     issues.extend(_check_forbidden_elements(elements, contract))
     issues.extend(_check_required_groups(elements, contract))
     issues.extend(_check_text_requirements(elements, contract))
+    warnings.extend(_check_text_grouping(elements, parent_map))
     issues.extend(_check_font_families(elements, contract))
     issues.extend(_check_text_as_path(elements, parent_map))
     color_issues, color_count = _check_colors(elements, contract)
@@ -600,7 +701,9 @@ def validate_svg(
     path_issues, max_path_commands = _check_path_complexity(elements, contract)
     issues.extend(path_issues)
     warnings.extend(_check_line_snapping(elements, geometry_thresholds))
+    warnings.extend(_check_polyline_snapping(elements, geometry_thresholds))
     warnings.extend(_check_dashed_simulation(elements, geometry_thresholds))
+    warnings.extend(_check_polyline_complexity(elements, geometry_thresholds))
 
     stats.update(
         {
