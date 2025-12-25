@@ -1,0 +1,38 @@
+# Figure Contract v1: hard SVG structure/style rules for validation.
+# Key fields: svg.forbid_elements/required_groups, text.require_text_elements,
+# typography.allowed_font_families_any_of, style.max_colors/allowed_stroke_widths,
+# complexity.max_path_commands.
+version: v1
+svg:
+  forbid_elements:
+    - image
+    - filter
+    - linearGradient
+    - radialGradient
+  forbid_element_prefixes:
+    - fe
+  required_groups:
+    - figure_root
+    - g_axes
+    - g_curves
+    - g_annotations
+    - g_text
+    - g_markers
+
+text:
+  require_text_elements: true
+  require_text_ids: true
+
+typography:
+  allowed_font_families_any_of:
+    - Arial
+    - Liberation Sans
+    - sans-serif
+
+style:
+  max_colors: 6
+  allowed_stroke_widths: [1, 2]
+  stroke_width_tolerance: 0.2
+
+complexity:
+  max_path_commands: 60

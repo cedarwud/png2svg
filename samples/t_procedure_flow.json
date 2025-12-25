@@ -1,0 +1,14 @@
+{
+  "template": "t_procedure_flow",
+  "title": "Procedure Flow Example",
+  "canvas": {"width": 760, "height": 260},
+  "nodes": [
+    {"id": "start", "x": 60, "y": 90, "width": 160, "height": 60, "text": "Start"},
+    {"id": "process", "x": 280, "y": 90, "width": 180, "height": 60, "text": "Process"},
+    {"id": "end", "x": 520, "y": 90, "width": 160, "height": 60, "text": "End"}
+  ],
+  "edges": [
+    {"from": "start", "to": "process", "label": "step 1"},
+    {"from": "process", "to": "end", "label": "done", "dashed": true}
+  ]
+}

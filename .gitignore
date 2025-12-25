@@ -1,0 +1,11 @@
+# Python caches/venv
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+
+# Local tooling artifacts
+get-pip.py
+
+# Generated outputs
+output/

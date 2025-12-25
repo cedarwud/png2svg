@@ -1,0 +1,59 @@
+{
+  "template": "t_performance_lineplot",
+  "title": "Throughput Performance Under Extended Observation Window",
+  "canvas": {"width": 1000, "height": 260},
+  "axes": {
+    "plot": {"x": 100, "y": 40, "width": 760, "height": 160},
+    "x": {
+      "label": "Elapsed Time (seconds)",
+      "min": 0,
+      "max": 100,
+      "ticks": [0, 25, 50, 75, 100]
+    },
+    "y": {
+      "label": "Average Throughput (Mbps)",
+      "min": 0,
+      "max": 120,
+      "ticks": [0, 40, 80, 120]
+    }
+  },
+  "series": [
+    {
+      "id": "sat_a",
+      "label": "Satellite A",
+      "color": "#1f77b4",
+      "points": [
+        {"x": 0, "y": 30},
+        {"x": 25, "y": 60},
+        {"x": 50, "y": 85},
+        {"x": 75, "y": 95},
+        {"x": 100, "y": 110}
+      ]
+    },
+    {
+      "id": "sat_b",
+      "label": "Satellite B",
+      "color": "#2ca02c",
+      "dashed": true,
+      "points": [
+        {"x": 0, "y": 20},
+        {"x": 25, "y": 50},
+        {"x": 50, "y": 70},
+        {"x": 75, "y": 78},
+        {"x": 100, "y": 90}
+      ]
+    },
+    {
+      "id": "sat_c",
+      "label": "Satellite C",
+      "color": "#ff7f0e",
+      "points": [
+        {"x": 0, "y": 25},
+        {"x": 25, "y": 55},
+        {"x": 50, "y": 75},
+        {"x": 75, "y": 88},
+        {"x": 100, "y": 100}
+      ]
+    }
+  ]
+}

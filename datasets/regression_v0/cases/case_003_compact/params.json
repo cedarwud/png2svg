@@ -1,0 +1,24 @@
+{
+  "template": "t_3gpp_events_3panel",
+  "title": "Handover Thresholds",
+  "canvas": {"width": 780, "height": 240},
+  "panels": [
+    {"id": "A3", "label": "A3", "x": 30, "y": 50, "width": 200, "height": 140},
+    {"id": "A4", "label": "A4", "x": 290, "y": 50, "width": 200, "height": 140},
+    {"id": "A5", "label": "A5", "x": 550, "y": 50, "width": 200, "height": 140}
+  ],
+  "t_start_ratio": 0.25,
+  "t_trigger_ratio": 0.7,
+  "curves": {
+    "serving": [
+      {"x": 0.05, "y": 0.15},
+      {"x": 0.5, "y": 0.75},
+      {"x": 0.95, "y": 0.35}
+    ],
+    "neighbor": [
+      {"x": 0.05, "y": 0.55},
+      {"x": 0.5, "y": 0.25},
+      {"x": 0.95, "y": 0.85}
+    ]
+  }
+}

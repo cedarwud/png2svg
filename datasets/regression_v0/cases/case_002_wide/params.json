@@ -1,0 +1,23 @@
+{
+  "template": "t_3gpp_events_3panel",
+  "canvas": {"width": 960, "height": 320},
+  "panels": [
+    {"id": "A3", "label": "A3", "x": 40, "y": 70, "width": 260, "height": 200},
+    {"id": "A4", "label": "A4", "x": 320, "y": 70, "width": 260, "height": 200},
+    {"id": "A5", "label": "A5", "x": 600, "y": 70, "width": 260, "height": 200}
+  ],
+  "t_start_ratio": 0.15,
+  "t_trigger_ratio": 0.55,
+  "curves": {
+    "serving": [
+      {"x": 0.05, "y": 0.3},
+      {"x": 0.45, "y": 0.85},
+      {"x": 0.95, "y": 0.5}
+    ],
+    "neighbor": [
+      {"x": 0.05, "y": 0.5},
+      {"x": 0.55, "y": 0.35},
+      {"x": 0.95, "y": 0.75}
+    ]
+  }
+}

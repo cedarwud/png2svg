@@ -1,0 +1,67 @@
+{
+  "template": "t_performance_lineplot",
+  "title": "Latency Comparison (4 Links)",
+  "canvas": {"width": 900, "height": 320},
+  "axes": {
+    "plot": {"x": 90, "y": 50, "width": 660, "height": 200},
+    "x": {
+      "label": "Time (s)",
+      "min": 0,
+      "max": 8,
+      "ticks": [0, 2, 4, 6, 8]
+    },
+    "y": {
+      "label": "Latency (ms)",
+      "min": 0,
+      "max": 60,
+      "ticks": [0, 20, 40, 60]
+    }
+  },
+  "series": [
+    {
+      "id": "link_a",
+      "label": "Link A",
+      "color": "#1f77b4",
+      "points": [
+        {"x": 0, "y": 10},
+        {"x": 2, "y": 18},
+        {"x": 5, "y": 25},
+        {"x": 8, "y": 22}
+      ]
+    },
+    {
+      "id": "link_b",
+      "label": "Link B",
+      "color": "#ff7f0e",
+      "points": [
+        {"x": 0, "y": 20},
+        {"x": 2, "y": 28},
+        {"x": 5, "y": 35},
+        {"x": 8, "y": 30}
+      ]
+    },
+    {
+      "id": "link_c",
+      "label": "Link C",
+      "color": "#2ca02c",
+      "points": [
+        {"x": 0, "y": 15},
+        {"x": 2, "y": 24},
+        {"x": 5, "y": 30},
+        {"x": 8, "y": 26}
+      ]
+    },
+    {
+      "id": "link_d",
+      "label": "Link D",
+      "color": "#d62728",
+      "dashed": true,
+      "points": [
+        {"x": 0, "y": 25},
+        {"x": 2, "y": 32},
+        {"x": 5, "y": 40},
+        {"x": 8, "y": 34}
+      ]
+    }
+  ]
+}

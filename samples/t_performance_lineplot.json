@@ -1,0 +1,43 @@
+{
+  "template": "t_performance_lineplot",
+  "title": "Line Plot Example",
+  "canvas": {"width": 820, "height": 280},
+  "axes": {
+    "plot": {"x": 80, "y": 40, "width": 640, "height": 180},
+    "x": {
+      "label": "Time (s)",
+      "min": 0,
+      "max": 10,
+      "ticks": [0, 5, 10]
+    },
+    "y": {
+      "label": "Metric",
+      "min": 0,
+      "max": 100,
+      "ticks": [0, 50, 100]
+    }
+  },
+  "series": [
+    {
+      "id": "series_a",
+      "label": "Series A",
+      "color": "#1f77b4",
+      "points": [
+        {"x": 0, "y": 20},
+        {"x": 5, "y": 60},
+        {"x": 10, "y": 90}
+      ]
+    },
+    {
+      "id": "series_b",
+      "label": "Series B",
+      "color": "#ff7f0e",
+      "dashed": true,
+      "points": [
+        {"x": 0, "y": 10},
+        {"x": 5, "y": 45},
+        {"x": 10, "y": 75}
+      ]
+    }
+  ]
+}

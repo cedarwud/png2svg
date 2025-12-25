@@ -1,0 +1,22 @@
+# Regression manifest v0 for template validation.
+# Each entry references a case directory with input.png, params.json, expected.svg/png.
+version: v0
+cases:
+  - id: case_001_basic
+    dir: cases/case_001_basic
+  - id: case_002_wide
+    dir: cases/case_002_wide
+  - id: case_003_compact
+    dir: cases/case_003_compact
+  - id: case_004_flow_simple
+    dir: cases/case_004_flow_simple
+  - id: case_005_flow_lanes
+    dir: cases/case_005_flow_lanes
+  - id: case_006_flow_multiline
+    dir: cases/case_006_flow_multiline
+  - id: case_007_lineplot_basic
+    dir: cases/case_007_lineplot_basic
+  - id: case_008_lineplot_multi
+    dir: cases/case_008_lineplot_multi
+  - id: case_009_lineplot_wide
+    dir: cases/case_009_lineplot_wide

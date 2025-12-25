@@ -1,0 +1,14 @@
+{
+  "template": "t_procedure_flow",
+  "title": "Decision Flow",
+  "canvas": {"width": 820, "height": 300},
+  "nodes": [
+    {"id": "detect", "x": 60, "y": 90, "width": 200, "height": 90, "text": "Detect\nNeighbor\nCells"},
+    {"id": "evaluate", "x": 300, "y": 90, "width": 220, "height": 90, "text": "Evaluate\nHandover\nThresholds"},
+    {"id": "switch", "x": 560, "y": 100, "width": 200, "height": 80, "text": "Switch\nConnection"}
+  ],
+  "edges": [
+    {"from": "detect", "to": "evaluate", "label": "report", "dashed": true},
+    {"from": "evaluate", "to": "switch", "label": "execute"}
+  ]
+}

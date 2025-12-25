@@ -1,0 +1,29 @@
+{
+  "template": "t_procedure_flow",
+  "title": "Handover Procedure",
+  "canvas": {"width": 900, "height": 360},
+  "lanes": [
+    {"id": "ue", "label": "UE", "x": 40, "y": 60, "width": 820, "height": 120},
+    {"id": "net", "label": "Network", "x": 40, "y": 200, "width": 820, "height": 120}
+  ],
+  "nodes": [
+    {"id": "ue_scan", "x": 80, "y": 90, "width": 160, "height": 60, "text": "Scan"},
+    {"id": "ue_report", "x": 280, "y": 90, "width": 180, "height": 60, "text": "Report\nMeasurements"},
+    {"id": "net_decide", "x": 280, "y": 230, "width": 200, "height": 60, "text": "Decide"},
+    {"id": "net_execute", "x": 520, "y": 230, "width": 200, "height": 60, "text": "Execute"}
+  ],
+  "edges": [
+    {"from": "ue_scan", "to": "ue_report", "label": "periodic"},
+    {
+      "from": "ue_report",
+      "to": "net_decide",
+      "label": "report",
+      "points": [
+        {"x": 460, "y": 120},
+        {"x": 460, "y": 260},
+        {"x": 280, "y": 260}
+      ]
+    },
+    {"from": "net_decide", "to": "net_execute", "label": "handover"}
+  ]
+}

@@ -1,0 +1,10 @@
+# Validator Thresholds v1: numeric limits for visual regression checks.
+# Key fields: visual_diff.rmse_max, visual_diff.bad_pixel_ratio_max,
+# visual_diff.pixel_tolerance.
+# Note: thresholds are conservative to tolerate minor rasterizer differences.
+version: v1
+
+visual_diff:
+  pixel_tolerance: 10
+  rmse_max: 0.02
+  bad_pixel_ratio_max: 0.01
