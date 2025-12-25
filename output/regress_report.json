@@ -1,0 +1,321 @@
+{
+  "cases": [
+    {
+      "diff_path": null,
+      "dir": "/home/u24/png2svg/datasets/regression_v0/cases/case_001_basic",
+      "generated_png": "/home/u24/png2svg/output/regress/case_001_basic/generated.png",
+      "generated_svg": "/home/u24/png2svg/output/regress/case_001_basic/generated.svg",
+      "id": "case_001_basic",
+      "report": {
+        "errors": [],
+        "stats": {
+          "color_count": 6,
+          "max_path_commands": 3,
+          "visual_diff": {
+            "backend": "cairosvg",
+            "bad_pixel_ratio": 0.0,
+            "bad_pixel_ratio_max": 0.01,
+            "pixel_tolerance": 10,
+            "rmse": 0.0,
+            "rmse_max": 0.02
+          }
+        },
+        "status": "pass",
+        "warnings": []
+      },
+      "report_path": "/home/u24/png2svg/output/regress/case_001_basic/report.json",
+      "status": "pass"
+    },
+    {
+      "diff_path": null,
+      "dir": "/home/u24/png2svg/datasets/regression_v0/cases/case_002_wide",
+      "generated_png": "/home/u24/png2svg/output/regress/case_002_wide/generated.png",
+      "generated_svg": "/home/u24/png2svg/output/regress/case_002_wide/generated.svg",
+      "id": "case_002_wide",
+      "report": {
+        "errors": [],
+        "stats": {
+          "color_count": 6,
+          "max_path_commands": 3,
+          "visual_diff": {
+            "backend": "cairosvg",
+            "bad_pixel_ratio": 0.0,
+            "bad_pixel_ratio_max": 0.01,
+            "pixel_tolerance": 10,
+            "rmse": 0.0,
+            "rmse_max": 0.02
+          }
+        },
+        "status": "pass",
+        "warnings": []
+      },
+      "report_path": "/home/u24/png2svg/output/regress/case_002_wide/report.json",
+      "status": "pass"
+    },
+    {
+      "diff_path": null,
+      "dir": "/home/u24/png2svg/datasets/regression_v0/cases/case_003_compact",
+      "generated_png": "/home/u24/png2svg/output/regress/case_003_compact/generated.png",
+      "generated_svg": "/home/u24/png2svg/output/regress/case_003_compact/generated.svg",
+      "id": "case_003_compact",
+      "report": {
+        "errors": [],
+        "stats": {
+          "color_count": 6,
+          "max_path_commands": 3,
+          "visual_diff": {
+            "backend": "cairosvg",
+            "bad_pixel_ratio": 0.0,
+            "bad_pixel_ratio_max": 0.01,
+            "pixel_tolerance": 10,
+            "rmse": 0.0,
+            "rmse_max": 0.02
+          }
+        },
+        "status": "pass",
+        "warnings": []
+      },
+      "report_path": "/home/u24/png2svg/output/regress/case_003_compact/report.json",
+      "status": "pass"
+    },
+    {
+      "diff_path": null,
+      "dir": "/home/u24/png2svg/datasets/regression_v0/cases/case_004_flow_simple",
+      "generated_png": "/home/u24/png2svg/output/regress/case_004_flow_simple/generated.png",
+      "generated_svg": "/home/u24/png2svg/output/regress/case_004_flow_simple/generated.svg",
+      "id": "case_004_flow_simple",
+      "report": {
+        "errors": [],
+        "stats": {
+          "color_count": 2,
+          "max_path_commands": 0,
+          "visual_diff": {
+            "backend": "cairosvg",
+            "bad_pixel_ratio": 0.0,
+            "bad_pixel_ratio_max": 0.01,
+            "pixel_tolerance": 10,
+            "rmse": 0.0,
+            "rmse_max": 0.02
+          }
+        },
+        "status": "pass",
+        "warnings": []
+      },
+      "report_path": "/home/u24/png2svg/output/regress/case_004_flow_simple/report.json",
+      "status": "pass"
+    },
+    {
+      "diff_path": null,
+      "dir": "/home/u24/png2svg/datasets/regression_v0/cases/case_005_flow_lanes",
+      "generated_png": "/home/u24/png2svg/output/regress/case_005_flow_lanes/generated.png",
+      "generated_svg": "/home/u24/png2svg/output/regress/case_005_flow_lanes/generated.svg",
+      "id": "case_005_flow_lanes",
+      "report": {
+        "errors": [],
+        "stats": {
+          "color_count": 3,
+          "max_path_commands": 0,
+          "visual_diff": {
+            "backend": "cairosvg",
+            "bad_pixel_ratio": 0.0,
+            "bad_pixel_ratio_max": 0.01,
+            "pixel_tolerance": 10,
+            "rmse": 0.0,
+            "rmse_max": 0.02
+          }
+        },
+        "status": "pass",
+        "warnings": []
+      },
+      "report_path": "/home/u24/png2svg/output/regress/case_005_flow_lanes/report.json",
+      "status": "pass"
+    },
+    {
+      "diff_path": null,
+      "dir": "/home/u24/png2svg/datasets/regression_v0/cases/case_006_flow_multiline",
+      "generated_png": "/home/u24/png2svg/output/regress/case_006_flow_multiline/generated.png",
+      "generated_svg": "/home/u24/png2svg/output/regress/case_006_flow_multiline/generated.svg",
+      "id": "case_006_flow_multiline",
+      "report": {
+        "errors": [],
+        "stats": {
+          "color_count": 2,
+          "max_path_commands": 0,
+          "visual_diff": {
+            "backend": "cairosvg",
+            "bad_pixel_ratio": 0.0,
+            "bad_pixel_ratio_max": 0.01,
+            "pixel_tolerance": 10,
+            "rmse": 0.0,
+            "rmse_max": 0.02
+          }
+        },
+        "status": "pass",
+        "warnings": []
+      },
+      "report_path": "/home/u24/png2svg/output/regress/case_006_flow_multiline/report.json",
+      "status": "pass"
+    },
+    {
+      "diff_path": null,
+      "dir": "/home/u24/png2svg/datasets/regression_v0/cases/case_007_lineplot_basic",
+      "generated_png": "/home/u24/png2svg/output/regress/case_007_lineplot_basic/generated.png",
+      "generated_svg": "/home/u24/png2svg/output/regress/case_007_lineplot_basic/generated.svg",
+      "id": "case_007_lineplot_basic",
+      "report": {
+        "errors": [],
+        "stats": {
+          "color_count": 3,
+          "max_path_commands": 0,
+          "visual_diff": {
+            "backend": "cairosvg",
+            "bad_pixel_ratio": 0.0,
+            "bad_pixel_ratio_max": 0.01,
+            "pixel_tolerance": 10,
+            "rmse": 0.0,
+            "rmse_max": 0.02
+          }
+        },
+        "status": "pass",
+        "warnings": []
+      },
+      "report_path": "/home/u24/png2svg/output/regress/case_007_lineplot_basic/report.json",
+      "status": "pass"
+    },
+    {
+      "diff_path": null,
+      "dir": "/home/u24/png2svg/datasets/regression_v0/cases/case_008_lineplot_multi",
+      "generated_png": "/home/u24/png2svg/output/regress/case_008_lineplot_multi/generated.png",
+      "generated_svg": "/home/u24/png2svg/output/regress/case_008_lineplot_multi/generated.svg",
+      "id": "case_008_lineplot_multi",
+      "report": {
+        "errors": [],
+        "stats": {
+          "color_count": 5,
+          "max_path_commands": 0,
+          "visual_diff": {
+            "backend": "cairosvg",
+            "bad_pixel_ratio": 0.0,
+            "bad_pixel_ratio_max": 0.01,
+            "pixel_tolerance": 10,
+            "rmse": 0.0,
+            "rmse_max": 0.02
+          }
+        },
+        "status": "pass",
+        "warnings": []
+      },
+      "report_path": "/home/u24/png2svg/output/regress/case_008_lineplot_multi/report.json",
+      "status": "pass"
+    },
+    {
+      "diff_path": null,
+      "dir": "/home/u24/png2svg/datasets/regression_v0/cases/case_009_lineplot_wide",
+      "generated_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/generated.png",
+      "generated_svg": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/generated.svg",
+      "id": "case_009_lineplot_wide",
+      "report": {
+        "errors": [],
+        "stats": {
+          "color_count": 4,
+          "max_path_commands": 0,
+          "visual_diff": {
+            "backend": "cairosvg",
+            "bad_pixel_ratio": 0.0,
+            "bad_pixel_ratio_max": 0.01,
+            "pixel_tolerance": 10,
+            "rmse": 0.0,
+            "rmse_max": 0.02
+          }
+        },
+        "status": "pass",
+        "warnings": []
+      },
+      "report_path": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/report.json",
+      "status": "pass"
+    },
+    {
+      "diff_path": null,
+      "dir": "/home/u24/png2svg/datasets/regression_v0/cases/case_010_3gpp_small_long",
+      "generated_png": "/home/u24/png2svg/output/regress/case_010_3gpp_small_long/generated.png",
+      "generated_svg": "/home/u24/png2svg/output/regress/case_010_3gpp_small_long/generated.svg",
+      "id": "case_010_3gpp_small_long",
+      "report": {
+        "errors": [],
+        "stats": {
+          "color_count": 6,
+          "max_path_commands": 3,
+          "visual_diff": {
+            "backend": "cairosvg",
+            "bad_pixel_ratio": 0.0,
+            "bad_pixel_ratio_max": 0.01,
+            "pixel_tolerance": 10,
+            "rmse": 0.0,
+            "rmse_max": 0.02
+          }
+        },
+        "status": "pass",
+        "warnings": []
+      },
+      "report_path": "/home/u24/png2svg/output/regress/case_010_3gpp_small_long/report.json",
+      "status": "pass"
+    },
+    {
+      "diff_path": null,
+      "dir": "/home/u24/png2svg/datasets/regression_v0/cases/case_011_flow_many_nodes",
+      "generated_png": "/home/u24/png2svg/output/regress/case_011_flow_many_nodes/generated.png",
+      "generated_svg": "/home/u24/png2svg/output/regress/case_011_flow_many_nodes/generated.svg",
+      "id": "case_011_flow_many_nodes",
+      "report": {
+        "errors": [],
+        "stats": {
+          "color_count": 2,
+          "max_path_commands": 0,
+          "visual_diff": {
+            "backend": "cairosvg",
+            "bad_pixel_ratio": 0.0,
+            "bad_pixel_ratio_max": 0.01,
+            "pixel_tolerance": 10,
+            "rmse": 0.0,
+            "rmse_max": 0.02
+          }
+        },
+        "status": "pass",
+        "warnings": []
+      },
+      "report_path": "/home/u24/png2svg/output/regress/case_011_flow_many_nodes/report.json",
+      "status": "pass"
+    },
+    {
+      "diff_path": null,
+      "dir": "/home/u24/png2svg/datasets/regression_v0/cases/case_012_lineplot_dense",
+      "generated_png": "/home/u24/png2svg/output/regress/case_012_lineplot_dense/generated.png",
+      "generated_svg": "/home/u24/png2svg/output/regress/case_012_lineplot_dense/generated.svg",
+      "id": "case_012_lineplot_dense",
+      "report": {
+        "errors": [],
+        "stats": {
+          "color_count": 4,
+          "max_path_commands": 0,
+          "visual_diff": {
+            "backend": "cairosvg",
+            "bad_pixel_ratio": 0.0,
+            "bad_pixel_ratio_max": 0.01,
+            "pixel_tolerance": 10,
+            "rmse": 0.0,
+            "rmse_max": 0.02
+          }
+        },
+        "status": "pass",
+        "warnings": []
+      },
+      "report_path": "/home/u24/png2svg/output/regress/case_012_lineplot_dense/report.json",
+      "status": "pass"
+    }
+  ],
+  "summary": {
+    "failed": 0,
+    "passed": 12,
+    "total": 12
+  }
+}

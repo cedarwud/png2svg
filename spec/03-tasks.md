@@ -32,7 +32,7 @@ DoD:
 - 加入 resvg rasterize（後備 cairosvg）
 - diff 計算 RMSE + bad_pixel_ratio
 DoD:
-- validate 可以附帶 visual_diff metrics（若提供 expected.png）
+- validate 可以附帶 visual_diff metrics（若提供 expected.svg 或 expected.png）
 - regress 工具可以跑完一個 case
 
 ## Phase 4 — png2svg template framework

@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="80">
+  <g id="figure_root">
+    <g id="g_axes" />
+    <g id="g_curves" />
+    <g id="g_annotations" />
+    <g id="g_text">
+      <text font-family="Arial">Label</text>
+    </g>
+    <g id="g_markers" />
+  </g>
+</svg>

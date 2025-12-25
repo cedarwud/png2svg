@@ -18,7 +18,7 @@
 
 (3) Regression (visual + structural)
 - regress
-  - 對每個 case：render → validate → rasterize → diff expected.png
+  - 對每個 case：render → validate → rasterize → diff expected.svg（必要時 fallback expected.png）
   - fail-fast + summary
 
 ## 2) Key Design Decisions

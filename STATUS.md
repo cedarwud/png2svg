@@ -1,5 +1,7 @@
 # Project Status (MVP v0)
 
+Scope: PNG→SVG only (editable in Adobe Illustrator).
+
 ## Current Capabilities
 - Template-based SVG rendering via `tools/png2svg.py` using `params.json` + `input.png` canvas size (or explicit canvas in params).
 - Supported templates: `t_3gpp_events_3panel`, `t_procedure_flow`, `t_performance_lineplot`.
@@ -18,6 +20,5 @@
 - Add more templates beyond MVP v0 scope or automate params extraction from PNGs.
 
 ## Testing
-- Unit tests: `python3 -m pytest`
-- Regression suite: `python3 tools/regress.py datasets/regression_v0/manifest.yaml`
+- Phase 8 gate: `python3 -m pytest` and `python3 tools/regress.py datasets/regression_v0/manifest.yaml` must both pass.
 - Manual validation: `python3 tools/validate_svg.py path/to/output.svg --expected path/to/expected.png --report report.json`

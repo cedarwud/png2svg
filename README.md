@@ -18,6 +18,10 @@ Top-level commands:
 - Validate: `python tools/validate_svg.py path/to/output.svg --expected path/to/expected.png --report report.json`
 - Regress: `python tools/regress.py datasets/regression_v0/manifest.yaml --report report.json`
 
+Regression assets:
+- `expected.svg` is the golden source; regress rasterizes it to compare with generated output.
+- `expected.png` is optional and only used when `expected.svg` is missing.
+
 Template examples (using `samples/`):
 - 3GPP events: `python tools/png2svg.py samples/input.png samples/t_3gpp_events_3panel.json output/3gpp.svg`
 - Procedure flow: `python tools/png2svg.py samples/input.png samples/t_procedure_flow.json output/flow.svg`

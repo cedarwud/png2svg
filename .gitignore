@@ -7,5 +7,3 @@ __pycache__/
 # Local tooling artifacts
 get-pip.py
 
-# Generated outputs
-output/
