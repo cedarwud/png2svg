@@ -64,3 +64,30 @@ Triage failures:
 ```
 python tools/triage_real_failures.py output/regress_real --out output/regress_real/triage.json
 ```
+
+## Case Input Rebuild
+Regenerate deterministic FAST/HARD inputs from `expected.svg`:
+```
+python tools/rebuild_case_inputs.py datasets/regression_v0 --variants fast,hard --overwrite
+```
+
+## Dataset Sanity Check
+Validate that case inputs are not near-blank placeholders:
+```
+python tools/check_dataset_sanity.py datasets/regression_v0
+```
+
+## Convert Regression Variants
+FAST (full run):
+```
+python tools/regress.py datasets/regression_v0 --pipeline convert --input-variant fast
+```
+
+HARD (sampled):
+```
+python tools/regress.py datasets/regression_v0 --pipeline convert --input-variant hard --limit 3
+```
+
+Input naming:
+- `input.png` (fast)
+- `input_hard.png` (hard)

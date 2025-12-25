@@ -214,6 +214,28 @@ def _case_gate_overrides(entry: Any) -> dict[str, Any]:
     return overrides
 
 
+def _variant_gate_overrides(thresholds_path: Path, input_variant: str) -> dict[str, Any]:
+    if input_variant != "hard":
+        return {}
+    try:
+        data = yaml.safe_load(thresholds_path.read_text())
+    except Exception:
+        return {}
+    if not isinstance(data, dict):
+        return {}
+    hard = data.get("quality_gate_hard")
+    if not isinstance(hard, dict):
+        return {}
+    overrides: dict[str, Any] = {}
+    if "rmse_max" in hard:
+        overrides["rmse_max"] = hard.get("rmse_max")
+    if "bad_pixel_ratio_max" in hard:
+        overrides["bad_pixel_ratio_max"] = hard.get("bad_pixel_ratio_max")
+    if "pixel_tolerance" in hard:
+        overrides["pixel_tolerance"] = hard.get("pixel_tolerance")
+    return overrides
+
+
 def _issue_payload(
     code: str,
     message: str,
@@ -234,8 +256,10 @@ def _run_case(
     output_root: Path,
     pipeline: str,
     gate_overrides: dict[str, Any] | None = None,
+    input_variant: str = "fast",
 ) -> dict[str, Any]:
-    input_png = case_dir / "input.png"
+    input_name = "input_hard.png" if input_variant == "hard" else "input.png"
+    input_png = case_dir / input_name
     params = case_dir / "params.json"
     expected_png = case_dir / "expected.png"
     expected_svg = case_dir / "expected.svg"
@@ -278,6 +302,7 @@ def _run_case(
             "errors": [_issue_payload(code, message, hint, context)],
             "warnings": [],
             "stats": {},
+            "input_variant": input_variant,
         }
         _write_report(payload)
         return {
@@ -287,14 +312,15 @@ def _run_case(
             "generated_png": str(output_png),
             "diff_path": None,
             "report": payload,
+            "input_variant": input_variant,
         }
 
     if not input_png.exists():
         return _error_report(
             "E1200_INPUT_MISSING",
             "input.png not found.",
-            "Place input.png in the case directory.",
-            context={"path": str(input_png), "tag": "png"},
+            f"Place {input_name} in the case directory.",
+            context={"path": str(input_png), "tag": "png", "input_variant": input_variant},
         )
     if pipeline == "render" and not params.exists():
         return _error_report(
@@ -326,7 +352,11 @@ def _run_case(
                         "W1201_INPUT_PNG_INVALID_CANVAS_USED",
                         "input.png is not a valid PNG; using canvas from params.json.",
                         "Fix or replace input.png to avoid relying on fallback canvas.",
-                        context={"path": str(input_png), "tag": "png"},
+                        context={
+                            "path": str(input_png),
+                            "tag": "png",
+                            "input_variant": input_variant,
+                        },
                     )
                 )
             else:
@@ -334,7 +364,11 @@ def _run_case(
                     "E1205_INPUT_PNG_INVALID",
                     "input.png is not a valid PNG and no canvas override was provided.",
                     "Provide a valid input.png or set canvas.width/height in params.json.",
-                    context={"path": str(input_png), "tag": "png"},
+                    context={
+                        "path": str(input_png),
+                        "tag": "png",
+                        "input_variant": input_variant,
+                    },
                 )
 
         try:
@@ -354,7 +388,11 @@ def _run_case(
                 "E1205_INPUT_PNG_INVALID",
                 "input.png is not a valid PNG.",
                 "Provide a valid input.png for convert pipeline.",
-                context={"path": str(input_png), "tag": "png"},
+                context={
+                    "path": str(input_png),
+                    "tag": "png",
+                    "input_variant": input_variant,
+                },
             )
         gate_overrides = gate_overrides or {}
         gate_enabled = gate_overrides.get("quality_gate")
@@ -427,6 +465,7 @@ def _run_case(
     report_payload = result.to_dict()
     report_payload.setdefault("errors", [])
     report_payload.setdefault("warnings", [])
+    report_payload["input_variant"] = input_variant
     if expected_error:
         report_payload["errors"].append(expected_error)
     if regress_warnings:
@@ -454,6 +493,7 @@ def _run_case(
         "generated_png": str(output_png),
         "diff_path": diff_path_value,
         "report": report_payload,
+        "input_variant": input_variant,
     }
 
 
@@ -731,6 +771,21 @@ def main(
         "--pipeline",
         help="Pipeline to run: render or convert.",
     ),
+    input_variant: str = typer.Option(
+        "fast",
+        "--input-variant",
+        help="Input variant: fast (input.png) or hard (input_hard.png).",
+    ),
+    limit: int | None = typer.Option(
+        None,
+        "--limit",
+        help="Optional limit on number of cases to run.",
+    ),
+    only: str | None = typer.Option(
+        None,
+        "--only",
+        help="Only run a specific case id.",
+    ),
     real_manifest: Path | None = typer.Option(
         REPO_ROOT / "datasets" / "real_regression_v1" / "manifest.yaml",
         "--real-manifest",
@@ -762,15 +817,26 @@ def main(
         typer.echo("ERROR E1302_PIPELINE_INVALID: pipeline must be 'render' or 'convert'.", err=True)
         typer.echo("HINT: Use --pipeline render (default) or --pipeline convert.", err=True)
         raise typer.Exit(code=1)
+    if input_variant not in {"fast", "hard"}:
+        typer.echo("ERROR E1303_INPUT_VARIANT_INVALID: input variant must be fast or hard.", err=True)
+        typer.echo("HINT: Use --input-variant fast or --input-variant hard.", err=True)
+        raise typer.Exit(code=1)
+
+    variant_gate_overrides = _variant_gate_overrides(thresholds, input_variant)
 
     results: list[dict[str, Any]] = []
     passed = 0
     failed = 0
     template_counts: dict[str, int] = {}
     tag_counts: dict[str, int] = {}
+    processed = 0
     for entry in entries:
         case_dir = _case_entry_dir(base_dir, entry)
         case_id = _case_entry_id(entry, case_dir)
+        if only and case_id != only:
+            continue
+        if limit is not None and processed >= limit:
+            break
         params_path = case_dir / "params.json"
         template = "unknown"
         if params_path.exists():
@@ -792,7 +858,8 @@ def main(
             thresholds,
             REPO_ROOT / "output" / "regress",
             pipeline,
-            gate_overrides=_case_gate_overrides(entry),
+            gate_overrides={**variant_gate_overrides, **_case_gate_overrides(entry)},
+            input_variant=input_variant,
         )
         case_result["id"] = case_id
         case_result["dir"] = str(case_dir)
@@ -801,13 +868,19 @@ def main(
         else:
             failed += 1
         results.append(case_result)
+        processed += 1
         status_line = f"{case_id}: {case_result['status']} (report: {case_result['report_path']})"
         if case_result["diff_path"]:
             status_line += f" diff: {case_result['diff_path']}"
         typer.echo(status_line)
 
     summary = {"total": len(results), "passed": passed, "failed": failed}
-    payload_dict: dict[str, Any] = {"summary": summary, "cases": results}
+    payload_dict: dict[str, Any] = {
+        "summary": summary,
+        "cases": results,
+        "pipeline": pipeline,
+        "input_variant": input_variant,
+    }
 
     real_results: list[dict[str, Any]] = []
     real_summary: dict[str, Any] | None = None
@@ -862,7 +935,10 @@ def main(
     if report is not None:
         report.write_text(payload)
     typer.echo(payload)
-    typer.echo(f"Summary: total={summary['total']} passed={summary['passed']} failed={summary['failed']}")
+    typer.echo(
+        f"Summary: total={summary['total']} passed={summary['passed']} failed={summary['failed']} "
+        f"variant={input_variant} pipeline={pipeline}"
+    )
     typer.echo("Template summary:")
     for template, count in sorted(template_counts.items()):
         typer.echo(f"  {template}: {count}")

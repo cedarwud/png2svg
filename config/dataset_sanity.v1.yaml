@@ -1,0 +1,9 @@
+# Dataset sanity thresholds v1 for input.png / input_hard.png.
+# Key fields: variance_min, ink_ratio_min/max, edge_ratio_min, edge_threshold.
+version: v1
+
+variance_min: 2.0
+ink_ratio_min: 0.002
+ink_ratio_max: 0.98
+edge_ratio_min: 0.001
+edge_threshold: 8

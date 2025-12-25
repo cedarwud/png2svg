@@ -1,0 +1,33 @@
+{
+  "candidate_templates": [
+    {
+      "score": 1.2,
+      "template_id": "t_procedure_flow"
+    },
+    {
+      "score": 0.5,
+      "template_id": "t_performance_lineplot"
+    },
+    {
+      "score": 0.2,
+      "template_id": "t_3gpp_events_3panel"
+    }
+  ],
+  "confidence": 0.7692307692307692,
+  "decision": "known",
+  "features_summary": {
+    "axis_aligned_ratio": 0.7765991642558663,
+    "ink_ratio": 0.027349593495934958,
+    "long_horizontal_lines": 0,
+    "long_vertical_lines": 0,
+    "saturated_ratio": 0.2522294887039239,
+    "short_horizontal_segments": 1332,
+    "short_vertical_segments": 1908
+  },
+  "image_meta": {
+    "height": 300,
+    "width": 820
+  },
+  "reason_codes": [],
+  "template_id": "t_procedure_flow"
+}

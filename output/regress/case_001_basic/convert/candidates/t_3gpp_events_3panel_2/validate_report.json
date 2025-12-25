@@ -1,0 +1,48 @@
+{
+  "errors": [],
+  "stats": {
+    "color_count": 6,
+    "max_path_commands": 3,
+    "text_count": 15,
+    "texts_detected": 0
+  },
+  "status": "pass",
+  "warnings": [
+    {
+      "code": "W2106_TEXT_BASELINE_NOT_ALIGNED",
+      "context": {
+        "id": "txt_t_start_A5",
+        "tag": "text"
+      },
+      "hint": "Snap text y positions or set a consistent dominant-baseline.",
+      "message": "Text baselines within a line are not aligned."
+    },
+    {
+      "code": "W2106_TEXT_BASELINE_NOT_ALIGNED",
+      "context": {
+        "id": "txt_panel_A5",
+        "tag": "text"
+      },
+      "hint": "Snap text y positions or set a consistent dominant-baseline.",
+      "message": "Text baselines within a line are not aligned."
+    },
+    {
+      "code": "W2106_TEXT_BASELINE_NOT_ALIGNED",
+      "context": {
+        "id": "txt_serving_A5",
+        "tag": "text"
+      },
+      "hint": "Snap text y positions or set a consistent dominant-baseline.",
+      "message": "Text baselines within a line are not aligned."
+    },
+    {
+      "code": "W2106_TEXT_BASELINE_NOT_ALIGNED",
+      "context": {
+        "id": "txt_neighbor_A5",
+        "tag": "text"
+      },
+      "hint": "Snap text y positions or set a consistent dominant-baseline.",
+      "message": "Text baselines within a line are not aligned."
+    }
+  ]
+}

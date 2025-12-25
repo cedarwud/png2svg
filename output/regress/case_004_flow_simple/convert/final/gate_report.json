@@ -1,0 +1,12 @@
+{
+  "backend": "cairosvg",
+  "bad_pixel_ratio": 0.04629326923076923,
+  "bad_pixel_ratio_max": 0.65,
+  "diff_png": "/home/u24/png2svg/output/regress/case_004_flow_simple/convert/candidates/t_procedure_flow/diff.png",
+  "errors": [],
+  "pixel_tolerance": 10,
+  "rmse": 0.20281589031219482,
+  "rmse_max": 0.75,
+  "status": "pass",
+  "warnings": []
+}

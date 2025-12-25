@@ -1,0 +1,457 @@
+{
+  "canvas": {
+    "height": 320,
+    "width": 900
+  },
+  "edges": [
+    {
+      "dashed": false,
+      "from": "node_1",
+      "label": "",
+      "to": "node_2"
+    },
+    {
+      "dashed": false,
+      "from": "node_2",
+      "label": "",
+      "to": "node_3"
+    }
+  ],
+  "extracted": {
+    "arrow_candidates": [],
+    "effective_config": {
+      "binarization": {
+        "alpha_threshold": 10,
+        "block_size": 35,
+        "c": 10,
+        "enabled": true,
+        "luminance_threshold": 245
+      },
+      "curves": {
+        "max_points": 8,
+        "sample_spacing_px": 135
+      },
+      "dashes": {
+        "max_len_px": 43,
+        "min_count": 6,
+        "min_len_px": 11
+      },
+      "lines": {
+        "long_line_min_len_px": 180,
+        "long_line_ratio": 0.5
+      },
+      "ocr": {
+        "roi_pad_px": 7
+      },
+      "scale": 1.125,
+      "text_boxes": {
+        "max_area": 5760,
+        "max_height_ratio": 0.4,
+        "max_width_ratio": 0.6,
+        "min_area": 14,
+        "min_size": 3
+      }
+    },
+    "node_candidates": [
+      {
+        "height": 64.0,
+        "id": "node_1",
+        "rx": 8.0,
+        "ry": 8.0,
+        "text": "Unknown",
+        "width": 180.0,
+        "x": 108.0,
+        "y": 112.0
+      },
+      {
+        "height": 64.0,
+        "id": "node_2",
+        "rx": 8.0,
+        "ry": 8.0,
+        "text": "Unknown",
+        "width": 180.0,
+        "x": 360.0,
+        "y": 112.0
+      },
+      {
+        "height": 64.0,
+        "id": "node_3",
+        "rx": 8.0,
+        "ry": 8.0,
+        "text": "Unknown",
+        "width": 180.0,
+        "x": 612.0,
+        "y": 112.0
+      }
+    ],
+    "normalization": {
+      "grid": 1.0
+    },
+    "ocr_backend": "auto",
+    "text_blocks": [
+      {
+        "bbox": {
+          "height": 8,
+          "width": 9,
+          "x": 128,
+          "y": 94.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 8,
+          "width": 7,
+          "x": 144,
+          "y": 94.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 8,
+          "width": 9,
+          "x": 408,
+          "y": 94.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 8,
+          "width": 7,
+          "x": 424,
+          "y": 94.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 8,
+          "width": 9,
+          "x": 688,
+          "y": 94.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 8,
+          "width": 7,
+          "x": 704,
+          "y": 94.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 6,
+          "width": 6,
+          "x": 137,
+          "y": 96.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 6,
+          "width": 6,
+          "x": 417,
+          "y": 96.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 6,
+          "width": 6,
+          "x": 697,
+          "y": 96.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 46,
+          "width": 26,
+          "x": 97,
+          "y": 129.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 46,
+          "width": 27,
+          "x": 376,
+          "y": 129.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 46,
+          "width": 27,
+          "x": 656,
+          "y": 129.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 47,
+          "width": 68,
+          "x": 121,
+          "y": 128.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 47,
+          "width": 69,
+          "x": 401,
+          "y": 128.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 47,
+          "width": 69,
+          "x": 681,
+          "y": 128.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 8,
+          "width": 13,
+          "x": 76,
+          "y": 132.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 8,
+          "width": 13,
+          "x": 356,
+          "y": 132.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 8,
+          "width": 13,
+          "x": 636,
+          "y": 132.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 6,
+          "width": 5,
+          "x": 124,
+          "y": 134.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 6,
+          "width": 5,
+          "x": 404,
+          "y": 134.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 6,
+          "width": 5,
+          "x": 684,
+          "y": 134.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 7,
+          "width": 6,
+          "x": 178,
+          "y": 146.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 7,
+          "width": 6,
+          "x": 458,
+          "y": 168.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 7,
+          "width": 6,
+          "x": 738,
+          "y": 180.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 21,
+          "width": 63,
+          "x": 124,
+          "y": 181.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 21,
+          "width": 63,
+          "x": 404,
+          "y": 181.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 21,
+          "width": 62,
+          "x": 684,
+          "y": 181.0
+        },
+        "confidence": 0.0,
+        "text": null
+      }
+    ],
+    "text_items": [],
+    "texts_detected": 0
+  },
+  "geometry": {
+    "lines": [
+      {
+        "role": "edge",
+        "stroke": "#000000",
+        "stroke_width": 2,
+        "x1": 198.0,
+        "x2": 450.0,
+        "y1": 144.0,
+        "y2": 144.0
+      },
+      {
+        "role": "edge",
+        "stroke": "#000000",
+        "stroke_width": 2,
+        "x1": 450.0,
+        "x2": 702.0,
+        "y1": 144.0,
+        "y2": 144.0
+      }
+    ],
+    "markers": [],
+    "rects": [
+      {
+        "fill": "none",
+        "height": 64.0,
+        "role": "node",
+        "stroke": "#000000",
+        "stroke_width": 2,
+        "width": 180.0,
+        "x": 108.0,
+        "y": 112.0
+      },
+      {
+        "fill": "none",
+        "height": 64.0,
+        "role": "node",
+        "stroke": "#000000",
+        "stroke_width": 2,
+        "width": 180.0,
+        "x": 360.0,
+        "y": 112.0
+      },
+      {
+        "fill": "none",
+        "height": 64.0,
+        "role": "node",
+        "stroke": "#000000",
+        "stroke_width": 2,
+        "width": 180.0,
+        "x": 612.0,
+        "y": 112.0
+      }
+    ]
+  },
+  "lanes": [],
+  "nodes": [
+    {
+      "height": 64.0,
+      "id": "node_1",
+      "rx": 8.0,
+      "ry": 8.0,
+      "text": "Unknown",
+      "width": 180.0,
+      "x": 108.0,
+      "y": 112.0
+    },
+    {
+      "height": 64.0,
+      "id": "node_2",
+      "rx": 8.0,
+      "ry": 8.0,
+      "text": "Unknown",
+      "width": 180.0,
+      "x": 360.0,
+      "y": 112.0
+    },
+    {
+      "height": 64.0,
+      "id": "node_3",
+      "rx": 8.0,
+      "ry": 8.0,
+      "text": "Unknown",
+      "width": 180.0,
+      "x": 612.0,
+      "y": 112.0
+    }
+  ],
+  "template": "t_procedure_flow",
+  "texts": [],
+  "title": null
+}

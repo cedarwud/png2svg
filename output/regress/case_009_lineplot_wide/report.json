@@ -1,18 +1,20 @@
 {
   "errors": [],
+  "input_variant": "fast",
   "stats": {
-    "color_count": 4,
+    "color_count": 6,
     "max_path_commands": 0,
-    "text_count": 15,
-    "visual_diff": {
-      "backend": "cairosvg",
-      "bad_pixel_ratio": 0.0,
-      "bad_pixel_ratio_max": 0.01,
-      "pixel_tolerance": 10,
-      "rmse": 0.0,
-      "rmse_max": 0.02
-    }
+    "text_count": 10
   },
   "status": "pass",
-  "warnings": []
+  "warnings": [
+    {
+      "code": "W1300_EXPECTED_SKIPPED",
+      "context": {
+        "tag": "regress"
+      },
+      "hint": "Use render pipeline for strict regression diffs.",
+      "message": "Convert pipeline compares against input.png instead of expected assets."
+    }
+  ]
 }

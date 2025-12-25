@@ -1,0 +1,24 @@
+{
+  "features": {
+    "axis_aligned_ratio": 0.8312202852614897,
+    "ink_ratio": 0.021615384615384616,
+    "line_positions": {
+      "horizontal": [],
+      "vertical": []
+    },
+    "long_horizontal_lines": 0,
+    "long_vertical_lines": 0,
+    "saturated_ratio": 0.07895907473309609,
+    "short_horizontal_segments": 741,
+    "short_vertical_segments": 1424,
+    "thresholds": {
+      "long_h_min": 360,
+      "long_v_min": 117
+    }
+  },
+  "scores": {
+    "t_3gpp_events_3panel": 0.2,
+    "t_performance_lineplot": -0.09999999999999998,
+    "t_procedure_flow": 1.2
+  }
+}

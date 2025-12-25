@@ -1,0 +1,365 @@
+{
+  "canvas": {
+    "height": 260,
+    "width": 800
+  },
+  "curves": {
+    "neighbor": [
+      {
+        "x": 0.05,
+        "y": 0.4
+      },
+      {
+        "x": 0.5,
+        "y": 0.3
+      },
+      {
+        "x": 0.95,
+        "y": 0.8
+      }
+    ],
+    "serving": [
+      {
+        "x": 0.05,
+        "y": 0.2
+      },
+      {
+        "x": 0.5,
+        "y": 0.8
+      },
+      {
+        "x": 0.95,
+        "y": 0.4
+      }
+    ]
+  },
+  "extracted": {
+    "axes_candidates": {
+      "vertical": []
+    },
+    "dash_candidates": [],
+    "effective_config": {
+      "binarization": {
+        "alpha_threshold": 10,
+        "block_size": 31,
+        "c": 10,
+        "enabled": true,
+        "luminance_threshold": 245
+      },
+      "curves": {
+        "max_points": 8,
+        "sample_spacing_px": 120
+      },
+      "dashes": {
+        "max_len_px": 31,
+        "min_count": 6,
+        "min_len_px": 8
+      },
+      "lines": {
+        "long_line_min_len_px": 130,
+        "long_line_ratio": 0.5
+      },
+      "ocr": {
+        "roi_pad_px": 5
+      },
+      "scale": 1.0,
+      "text_boxes": {
+        "max_area": 4160,
+        "max_height_ratio": 0.4,
+        "max_width_ratio": 0.6,
+        "min_area": 10,
+        "min_size": 3
+      }
+    },
+    "normalization": {
+      "grid": 1.0
+    },
+    "ocr_backend": "auto",
+    "text_blocks": [
+      {
+        "bbox": {
+          "height": 62,
+          "width": 174,
+          "x": 59,
+          "y": 89.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 62,
+          "width": 199,
+          "x": 287,
+          "y": 89.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 62,
+          "width": 171,
+          "x": 550,
+          "y": 89.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 10,
+          "width": 7,
+          "x": 588,
+          "y": 104.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 9,
+          "width": 6,
+          "x": 73,
+          "y": 105.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 9,
+          "width": 5,
+          "x": 80,
+          "y": 105.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 9,
+          "width": 9,
+          "x": 93,
+          "y": 105.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 9,
+          "width": 6,
+          "x": 313,
+          "y": 105.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 9,
+          "width": 6,
+          "x": 573,
+          "y": 105.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 8,
+          "width": 3,
+          "x": 287,
+          "y": 106.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 7,
+          "width": 7,
+          "x": 85,
+          "y": 107.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 7,
+          "width": 4,
+          "x": 320,
+          "y": 107.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 7,
+          "width": 13,
+          "x": 324,
+          "y": 107.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 7,
+          "width": 19,
+          "x": 338,
+          "y": 107.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 7,
+          "width": 6,
+          "x": 581,
+          "y": 107.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 6,
+          "width": 7,
+          "x": 547,
+          "y": 108.0
+        },
+        "confidence": 0.0,
+        "text": null
+      }
+    ],
+    "text_items": [],
+    "texts_detected": 0
+  },
+  "geometry": {
+    "lines": [
+      {
+        "role": "axis",
+        "stroke": "#000000",
+        "stroke_width": 2,
+        "x1": 60.0,
+        "x2": 60.0,
+        "y1": 92.0,
+        "y2": 146.0
+      },
+      {
+        "role": "axis",
+        "stroke": "#000000",
+        "stroke_width": 2,
+        "x1": 62.0,
+        "x2": 217.0,
+        "y1": 149.0,
+        "y2": 149.0
+      },
+      {
+        "role": "axis",
+        "stroke": "#000000",
+        "stroke_width": 2,
+        "x1": 299.0,
+        "x2": 299.0,
+        "y1": 94.0,
+        "y2": 145.0
+      },
+      {
+        "role": "axis",
+        "stroke": "#000000",
+        "stroke_width": 2,
+        "x1": 302.0,
+        "x2": 477.0,
+        "y1": 149.0,
+        "y2": 149.0
+      },
+      {
+        "role": "axis",
+        "stroke": "#000000",
+        "stroke_width": 2,
+        "x1": 560.0,
+        "x2": 560.0,
+        "y1": 92.0,
+        "y2": 146.0
+      },
+      {
+        "role": "axis",
+        "stroke": "#000000",
+        "stroke_width": 2,
+        "x1": 562.0,
+        "x2": 717.0,
+        "y1": 149.0,
+        "y2": 149.0
+      }
+    ],
+    "markers": [],
+    "rects": [
+      {
+        "fill": "none",
+        "height": 61.0,
+        "role": "panel",
+        "stroke": "#555555",
+        "stroke_width": 1,
+        "width": 233.0,
+        "x": 10.0,
+        "y": 89.0
+      },
+      {
+        "fill": "none",
+        "height": 61.0,
+        "role": "panel",
+        "stroke": "#555555",
+        "stroke_width": 1,
+        "width": 240.0,
+        "x": 263.0,
+        "y": 89.0
+      },
+      {
+        "fill": "none",
+        "height": 61.0,
+        "role": "panel",
+        "stroke": "#555555",
+        "stroke_width": 1,
+        "width": 265.0,
+        "x": 524.0,
+        "y": 89.0
+      }
+    ]
+  },
+  "panels": [
+    {
+      "height": 61.0,
+      "id": "A3",
+      "label": "A3",
+      "width": 233.0,
+      "x": 10.0,
+      "y": 89.0
+    },
+    {
+      "height": 61.0,
+      "id": "A4",
+      "label": "A4",
+      "width": 240.0,
+      "x": 263.0,
+      "y": 89.0
+    },
+    {
+      "height": 61.0,
+      "id": "A5",
+      "label": "A5",
+      "width": 265.0,
+      "x": 524.0,
+      "y": 89.0
+    }
+  ],
+  "t_start_ratio": 0.2,
+  "t_trigger_ratio": 0.6,
+  "template": "t_3gpp_events_3panel",
+  "texts": [],
+  "title": null
+}

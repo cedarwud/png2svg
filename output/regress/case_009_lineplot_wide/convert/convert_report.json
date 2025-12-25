@@ -1,0 +1,160 @@
+{
+  "candidates": [
+    {
+      "paths": {
+        "diff_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot/diff.png",
+        "gate_report": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot/gate_report.json",
+        "params": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot/params.json",
+        "rendered_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot/rendered.png",
+        "snap_preview_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot/snap_preview.png",
+        "snap_preview_svg": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot/snap_preview.svg",
+        "svg": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot/out.svg",
+        "validate_report": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot/validate_report.json"
+      },
+      "quality_gate": {
+        "backend": "cairosvg",
+        "bad_pixel_ratio": 0.0695576923076923,
+        "bad_pixel_ratio_max": 0.65,
+        "diff_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot/diff.png",
+        "errors": [],
+        "pixel_tolerance": 10,
+        "rmse": 0.12404885143041611,
+        "rmse_max": 0.75,
+        "status": "pass",
+        "warnings": []
+      },
+      "score": 2.1,
+      "status": "pass",
+      "template_id": "t_performance_lineplot",
+      "validation": {
+        "errors": [],
+        "stats": {
+          "color_count": 6,
+          "max_path_commands": 0,
+          "text_count": 10,
+          "texts_detected": 0
+        },
+        "status": "pass",
+        "warnings": []
+      },
+      "validation_error_count": 0,
+      "validation_warning_count": 0
+    },
+    {
+      "paths": {
+        "diff_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_procedure_flow/diff.png",
+        "gate_report": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_procedure_flow/gate_report.json",
+        "params": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_procedure_flow/params.json",
+        "rendered_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_procedure_flow/rendered.png",
+        "snap_preview_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_procedure_flow/snap_preview.png",
+        "snap_preview_svg": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_procedure_flow/snap_preview.svg",
+        "svg": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_procedure_flow/out.svg",
+        "validate_report": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_procedure_flow/validate_report.json"
+      },
+      "quality_gate": {
+        "backend": "cairosvg",
+        "bad_pixel_ratio": 0.14486153846153846,
+        "bad_pixel_ratio_max": 0.65,
+        "diff_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_procedure_flow/diff.png",
+        "errors": [],
+        "pixel_tolerance": 10,
+        "rmse": 0.3550373911857605,
+        "rmse_max": 0.75,
+        "status": "pass",
+        "warnings": []
+      },
+      "score": 0.8999999999999999,
+      "status": "pass",
+      "template_id": "t_procedure_flow",
+      "validation": {
+        "errors": [],
+        "stats": {
+          "color_count": 2,
+          "max_path_commands": 0,
+          "text_count": 3,
+          "texts_detected": 0
+        },
+        "status": "pass",
+        "warnings": []
+      },
+      "validation_error_count": 0,
+      "validation_warning_count": 0
+    }
+  ],
+  "classification": {
+    "candidate_templates": [
+      {
+        "score": 2.1,
+        "template_id": "t_performance_lineplot"
+      },
+      {
+        "score": 0.8999999999999999,
+        "template_id": "t_procedure_flow"
+      },
+      {
+        "score": 0.6000000000000001,
+        "template_id": "t_3gpp_events_3panel"
+      }
+    ],
+    "confidence": 0.8333333333333334,
+    "decision": "known",
+    "features_summary": {
+      "axis_aligned_ratio": 0.9066666666666666,
+      "ink_ratio": 0.05033846153846154,
+      "long_horizontal_lines": 1,
+      "long_vertical_lines": 1,
+      "saturated_ratio": 0.4620262836185819,
+      "short_horizontal_segments": 2178,
+      "short_vertical_segments": 3935
+    },
+    "image_meta": {
+      "height": 260,
+      "width": 1000
+    },
+    "reason_codes": [],
+    "template_id": "t_performance_lineplot"
+  },
+  "output_svg": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/generated.svg",
+  "selected": {
+    "paths": {
+      "diff_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot/diff.png",
+      "gate_report": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot/gate_report.json",
+      "params": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot/params.json",
+      "rendered_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot/rendered.png",
+      "snap_preview_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot/snap_preview.png",
+      "snap_preview_svg": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot/snap_preview.svg",
+      "svg": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot/out.svg",
+      "validate_report": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot/validate_report.json"
+    },
+    "quality_gate": {
+      "backend": "cairosvg",
+      "bad_pixel_ratio": 0.0695576923076923,
+      "bad_pixel_ratio_max": 0.65,
+      "diff_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot/diff.png",
+      "errors": [],
+      "pixel_tolerance": 10,
+      "rmse": 0.12404885143041611,
+      "rmse_max": 0.75,
+      "status": "pass",
+      "warnings": []
+    },
+    "score": 2.1,
+    "status": "pass",
+    "template_id": "t_performance_lineplot",
+    "validation": {
+      "errors": [],
+      "stats": {
+        "color_count": 6,
+        "max_path_commands": 0,
+        "text_count": 10,
+        "texts_detected": 0
+      },
+      "status": "pass",
+      "warnings": []
+    },
+    "validation_error_count": 0,
+    "validation_warning_count": 0
+  },
+  "selected_template": "t_performance_lineplot",
+  "status": "pass"
+}

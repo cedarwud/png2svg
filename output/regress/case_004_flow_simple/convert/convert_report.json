@@ -1,0 +1,160 @@
+{
+  "candidates": [
+    {
+      "paths": {
+        "diff_png": "/home/u24/png2svg/output/regress/case_004_flow_simple/convert/candidates/t_procedure_flow/diff.png",
+        "gate_report": "/home/u24/png2svg/output/regress/case_004_flow_simple/convert/candidates/t_procedure_flow/gate_report.json",
+        "params": "/home/u24/png2svg/output/regress/case_004_flow_simple/convert/candidates/t_procedure_flow/params.json",
+        "rendered_png": "/home/u24/png2svg/output/regress/case_004_flow_simple/convert/candidates/t_procedure_flow/rendered.png",
+        "snap_preview_png": "/home/u24/png2svg/output/regress/case_004_flow_simple/convert/candidates/t_procedure_flow/snap_preview.png",
+        "snap_preview_svg": "/home/u24/png2svg/output/regress/case_004_flow_simple/convert/candidates/t_procedure_flow/snap_preview.svg",
+        "svg": "/home/u24/png2svg/output/regress/case_004_flow_simple/convert/candidates/t_procedure_flow/out.svg",
+        "validate_report": "/home/u24/png2svg/output/regress/case_004_flow_simple/convert/candidates/t_procedure_flow/validate_report.json"
+      },
+      "quality_gate": {
+        "backend": "cairosvg",
+        "bad_pixel_ratio": 0.04629326923076923,
+        "bad_pixel_ratio_max": 0.65,
+        "diff_png": "/home/u24/png2svg/output/regress/case_004_flow_simple/convert/candidates/t_procedure_flow/diff.png",
+        "errors": [],
+        "pixel_tolerance": 10,
+        "rmse": 0.20281589031219482,
+        "rmse_max": 0.75,
+        "status": "pass",
+        "warnings": []
+      },
+      "score": 1.2,
+      "status": "pass",
+      "template_id": "t_procedure_flow",
+      "validation": {
+        "errors": [],
+        "stats": {
+          "color_count": 2,
+          "max_path_commands": 0,
+          "text_count": 3,
+          "texts_detected": 0
+        },
+        "status": "pass",
+        "warnings": []
+      },
+      "validation_error_count": 0,
+      "validation_warning_count": 0
+    },
+    {
+      "paths": {
+        "diff_png": "/home/u24/png2svg/output/regress/case_004_flow_simple/convert/candidates/t_3gpp_events_3panel/diff.png",
+        "gate_report": "/home/u24/png2svg/output/regress/case_004_flow_simple/convert/candidates/t_3gpp_events_3panel/gate_report.json",
+        "params": "/home/u24/png2svg/output/regress/case_004_flow_simple/convert/candidates/t_3gpp_events_3panel/params.json",
+        "rendered_png": "/home/u24/png2svg/output/regress/case_004_flow_simple/convert/candidates/t_3gpp_events_3panel/rendered.png",
+        "snap_preview_png": "/home/u24/png2svg/output/regress/case_004_flow_simple/convert/candidates/t_3gpp_events_3panel/snap_preview.png",
+        "snap_preview_svg": "/home/u24/png2svg/output/regress/case_004_flow_simple/convert/candidates/t_3gpp_events_3panel/snap_preview.svg",
+        "svg": "/home/u24/png2svg/output/regress/case_004_flow_simple/convert/candidates/t_3gpp_events_3panel/out.svg",
+        "validate_report": "/home/u24/png2svg/output/regress/case_004_flow_simple/convert/candidates/t_3gpp_events_3panel/validate_report.json"
+      },
+      "quality_gate": {
+        "backend": "cairosvg",
+        "bad_pixel_ratio": 0.16952884615384614,
+        "bad_pixel_ratio_max": 0.65,
+        "diff_png": "/home/u24/png2svg/output/regress/case_004_flow_simple/convert/candidates/t_3gpp_events_3panel/diff.png",
+        "errors": [],
+        "pixel_tolerance": 10,
+        "rmse": 0.24802477657794952,
+        "rmse_max": 0.75,
+        "status": "pass",
+        "warnings": []
+      },
+      "score": 0.2,
+      "status": "pass",
+      "template_id": "t_3gpp_events_3panel",
+      "validation": {
+        "errors": [],
+        "stats": {
+          "color_count": 6,
+          "max_path_commands": 3,
+          "text_count": 15,
+          "texts_detected": 0
+        },
+        "status": "pass",
+        "warnings": []
+      },
+      "validation_error_count": 0,
+      "validation_warning_count": 0
+    }
+  ],
+  "classification": {
+    "candidate_templates": [
+      {
+        "score": 1.2,
+        "template_id": "t_procedure_flow"
+      },
+      {
+        "score": 0.2,
+        "template_id": "t_3gpp_events_3panel"
+      },
+      {
+        "score": -0.09999999999999998,
+        "template_id": "t_performance_lineplot"
+      }
+    ],
+    "confidence": 0.8125,
+    "decision": "known",
+    "features_summary": {
+      "axis_aligned_ratio": 0.8312202852614897,
+      "ink_ratio": 0.021615384615384616,
+      "long_horizontal_lines": 0,
+      "long_vertical_lines": 0,
+      "saturated_ratio": 0.07895907473309609,
+      "short_horizontal_segments": 741,
+      "short_vertical_segments": 1424
+    },
+    "image_meta": {
+      "height": 260,
+      "width": 800
+    },
+    "reason_codes": [],
+    "template_id": "t_procedure_flow"
+  },
+  "output_svg": "/home/u24/png2svg/output/regress/case_004_flow_simple/generated.svg",
+  "selected": {
+    "paths": {
+      "diff_png": "/home/u24/png2svg/output/regress/case_004_flow_simple/convert/candidates/t_procedure_flow/diff.png",
+      "gate_report": "/home/u24/png2svg/output/regress/case_004_flow_simple/convert/candidates/t_procedure_flow/gate_report.json",
+      "params": "/home/u24/png2svg/output/regress/case_004_flow_simple/convert/candidates/t_procedure_flow/params.json",
+      "rendered_png": "/home/u24/png2svg/output/regress/case_004_flow_simple/convert/candidates/t_procedure_flow/rendered.png",
+      "snap_preview_png": "/home/u24/png2svg/output/regress/case_004_flow_simple/convert/candidates/t_procedure_flow/snap_preview.png",
+      "snap_preview_svg": "/home/u24/png2svg/output/regress/case_004_flow_simple/convert/candidates/t_procedure_flow/snap_preview.svg",
+      "svg": "/home/u24/png2svg/output/regress/case_004_flow_simple/convert/candidates/t_procedure_flow/out.svg",
+      "validate_report": "/home/u24/png2svg/output/regress/case_004_flow_simple/convert/candidates/t_procedure_flow/validate_report.json"
+    },
+    "quality_gate": {
+      "backend": "cairosvg",
+      "bad_pixel_ratio": 0.04629326923076923,
+      "bad_pixel_ratio_max": 0.65,
+      "diff_png": "/home/u24/png2svg/output/regress/case_004_flow_simple/convert/candidates/t_procedure_flow/diff.png",
+      "errors": [],
+      "pixel_tolerance": 10,
+      "rmse": 0.20281589031219482,
+      "rmse_max": 0.75,
+      "status": "pass",
+      "warnings": []
+    },
+    "score": 1.2,
+    "status": "pass",
+    "template_id": "t_procedure_flow",
+    "validation": {
+      "errors": [],
+      "stats": {
+        "color_count": 2,
+        "max_path_commands": 0,
+        "text_count": 3,
+        "texts_detected": 0
+      },
+      "status": "pass",
+      "warnings": []
+    },
+    "validation_error_count": 0,
+    "validation_warning_count": 0
+  },
+  "selected_template": "t_procedure_flow",
+  "status": "pass"
+}

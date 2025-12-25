@@ -1,0 +1,12 @@
+{
+  "backend": "cairosvg",
+  "bad_pixel_ratio": 0.6047345679012346,
+  "bad_pixel_ratio_max": 0.65,
+  "diff_png": "/home/u24/png2svg/output/regress/case_005_flow_lanes/convert/candidates/t_performance_lineplot/diff.png",
+  "errors": [],
+  "pixel_tolerance": 10,
+  "rmse": 0.7259759306907654,
+  "rmse_max": 0.75,
+  "status": "pass",
+  "warnings": []
+}

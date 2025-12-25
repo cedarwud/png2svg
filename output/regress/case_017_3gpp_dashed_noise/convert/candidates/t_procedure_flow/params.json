@@ -1,0 +1,487 @@
+{
+  "canvas": {
+    "height": 240,
+    "width": 720
+  },
+  "edges": [
+    {
+      "dashed": false,
+      "from": "node_1",
+      "label": "",
+      "to": "node_2"
+    },
+    {
+      "dashed": false,
+      "from": "node_2",
+      "label": "",
+      "to": "node_3"
+    }
+  ],
+  "extracted": {
+    "arrow_candidates": [],
+    "effective_config": {
+      "binarization": {
+        "alpha_threshold": 10,
+        "block_size": 29,
+        "c": 10,
+        "enabled": true,
+        "luminance_threshold": 245
+      },
+      "curves": {
+        "max_points": 8,
+        "sample_spacing_px": 108
+      },
+      "dashes": {
+        "max_len_px": 26,
+        "min_count": 6,
+        "min_len_px": 6
+      },
+      "lines": {
+        "long_line_min_len_px": 108,
+        "long_line_ratio": 0.5
+      },
+      "ocr": {
+        "roi_pad_px": 4
+      },
+      "scale": 0.9,
+      "text_boxes": {
+        "max_area": 3456,
+        "max_height_ratio": 0.4,
+        "max_width_ratio": 0.6,
+        "min_area": 8,
+        "min_size": 3
+      }
+    },
+    "node_candidates": [
+      {
+        "height": 60.0,
+        "id": "node_1",
+        "rx": 8.0,
+        "ry": 8.0,
+        "text": "Unknown",
+        "width": 144.0,
+        "x": 87.0,
+        "y": 84.0
+      },
+      {
+        "height": 60.0,
+        "id": "node_2",
+        "rx": 8.0,
+        "ry": 8.0,
+        "text": "Unknown",
+        "width": 144.0,
+        "x": 288.0,
+        "y": 84.0
+      },
+      {
+        "height": 60.0,
+        "id": "node_3",
+        "rx": 8.0,
+        "ry": 8.0,
+        "text": "Unknown",
+        "width": 144.0,
+        "x": 489.0,
+        "y": 84.0
+      }
+    ],
+    "normalization": {
+      "grid": 1.0
+    },
+    "ocr_backend": "auto",
+    "text_blocks": [
+      {
+        "bbox": {
+          "height": 8,
+          "width": 9,
+          "x": 91,
+          "y": 74.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 8,
+          "width": 14,
+          "x": 100,
+          "y": 74.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 8,
+          "width": 9,
+          "x": 316,
+          "y": 74.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 8,
+          "width": 14,
+          "x": 325,
+          "y": 74.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 8,
+          "width": 9,
+          "x": 541,
+          "y": 74.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 8,
+          "width": 14,
+          "x": 550,
+          "y": 74.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 7,
+          "width": 4,
+          "x": 82,
+          "y": 75.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 7,
+          "width": 4,
+          "x": 307,
+          "y": 75.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 7,
+          "width": 4,
+          "x": 532,
+          "y": 75.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 39,
+          "width": 8,
+          "x": 72,
+          "y": 90.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 39,
+          "width": 9,
+          "x": 296,
+          "y": 90.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 39,
+          "width": 9,
+          "x": 521,
+          "y": 90.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 6,
+          "width": 11,
+          "x": 57,
+          "y": 96.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 6,
+          "width": 11,
+          "x": 282,
+          "y": 96.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 6,
+          "width": 11,
+          "x": 507,
+          "y": 96.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 3,
+          "width": 7,
+          "x": 49,
+          "y": 99.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 3,
+          "width": 7,
+          "x": 274,
+          "y": 99.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 3,
+          "width": 7,
+          "x": 499,
+          "y": 99.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 55,
+          "width": 55,
+          "x": 84,
+          "y": 101.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 55,
+          "width": 55,
+          "x": 309,
+          "y": 101.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 55,
+          "width": 55,
+          "x": 534,
+          "y": 101.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 9,
+          "width": 4,
+          "x": 82,
+          "y": 109.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 9,
+          "width": 4,
+          "x": 307,
+          "y": 109.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 9,
+          "width": 4,
+          "x": 532,
+          "y": 109.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 6,
+          "width": 3,
+          "x": 76,
+          "y": 133.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 6,
+          "width": 3,
+          "x": 301,
+          "y": 133.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 6,
+          "width": 3,
+          "x": 526,
+          "y": 133.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 5,
+          "width": 4,
+          "x": 82,
+          "y": 134.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 5,
+          "width": 4,
+          "x": 307,
+          "y": 134.0
+        },
+        "confidence": 0.0,
+        "text": null
+      },
+      {
+        "bbox": {
+          "height": 5,
+          "width": 4,
+          "x": 532,
+          "y": 134.0
+        },
+        "confidence": 0.0,
+        "text": null
+      }
+    ],
+    "text_items": [],
+    "texts_detected": 0
+  },
+  "geometry": {
+    "lines": [
+      {
+        "role": "edge",
+        "stroke": "#000000",
+        "stroke_width": 2,
+        "x1": 159.0,
+        "x2": 360.0,
+        "y1": 114.0,
+        "y2": 114.0
+      },
+      {
+        "role": "edge",
+        "stroke": "#000000",
+        "stroke_width": 2,
+        "x1": 360.0,
+        "x2": 561.0,
+        "y1": 114.0,
+        "y2": 114.0
+      }
+    ],
+    "markers": [],
+    "rects": [
+      {
+        "fill": "none",
+        "height": 60.0,
+        "role": "node",
+        "stroke": "#000000",
+        "stroke_width": 2,
+        "width": 144.0,
+        "x": 87.0,
+        "y": 84.0
+      },
+      {
+        "fill": "none",
+        "height": 60.0,
+        "role": "node",
+        "stroke": "#000000",
+        "stroke_width": 2,
+        "width": 144.0,
+        "x": 288.0,
+        "y": 84.0
+      },
+      {
+        "fill": "none",
+        "height": 60.0,
+        "role": "node",
+        "stroke": "#000000",
+        "stroke_width": 2,
+        "width": 144.0,
+        "x": 489.0,
+        "y": 84.0
+      }
+    ]
+  },
+  "lanes": [],
+  "nodes": [
+    {
+      "height": 60.0,
+      "id": "node_1",
+      "rx": 8.0,
+      "ry": 8.0,
+      "text": "Unknown",
+      "width": 144.0,
+      "x": 87.0,
+      "y": 84.0
+    },
+    {
+      "height": 60.0,
+      "id": "node_2",
+      "rx": 8.0,
+      "ry": 8.0,
+      "text": "Unknown",
+      "width": 144.0,
+      "x": 288.0,
+      "y": 84.0
+    },
+    {
+      "height": 60.0,
+      "id": "node_3",
+      "rx": 8.0,
+      "ry": 8.0,
+      "text": "Unknown",
+      "width": 144.0,
+      "x": 489.0,
+      "y": 84.0
+    }
+  ],
+  "template": "t_procedure_flow",
+  "texts": [],
+  "title": null
+}

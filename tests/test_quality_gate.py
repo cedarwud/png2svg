@@ -14,7 +14,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def test_quality_gate_passes_regression_sample(tmp_path: Path) -> None:
     case_dir = ROOT / "datasets" / "regression_v0" / "cases" / "case_007_lineplot_basic"
-    input_png = case_dir / "expected.png"
+    input_png = case_dir / "input.png"
     params = json.loads((case_dir / "params.json").read_text())
     template = str(params["template"])
     output_svg = tmp_path / "out.svg"

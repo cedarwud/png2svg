@@ -1,0 +1,27 @@
+# Case input degradation config v1 (deterministic).
+# Key fields: rotation/scale/blur/noise/gamma/contrast ranges.
+version: v1
+
+rotation_deg:
+  min: -0.15
+  max: 0.15
+
+scale:
+  min: 0.98
+  max: 1.02
+
+blur_radius:
+  min: 0.2
+  max: 0.6
+
+noise_sigma:
+  min: 1.0
+  max: 3.0
+
+gamma:
+  min: 0.98
+  max: 1.02
+
+contrast:
+  min: 0.98
+  max: 1.02

@@ -1,0 +1,12 @@
+{
+  "backend": "cairosvg",
+  "bad_pixel_ratio": 0.23493489583333332,
+  "bad_pixel_ratio_max": 0.65,
+  "diff_png": "/home/u24/png2svg/output/regress/case_002_wide/convert/candidates/t_3gpp_events_3panel/diff.png",
+  "errors": [],
+  "pixel_tolerance": 10,
+  "rmse": 0.33740365505218506,
+  "rmse_max": 0.75,
+  "status": "pass",
+  "warnings": []
+}

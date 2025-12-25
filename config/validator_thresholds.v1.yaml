@@ -19,6 +19,12 @@ quality_gate:
   rmse_max: 0.75
   bad_pixel_ratio_max: 0.65
 
+# Hard-input gate thresholds (allow a bit more noise from degraded inputs).
+quality_gate_hard:
+  pixel_tolerance: 12
+  rmse_max: 0.85
+  bad_pixel_ratio_max: 0.7
+
 geometry:
   snap_tolerance: 0.5
   dash_segment_length_max: 10

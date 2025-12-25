@@ -1,0 +1,33 @@
+{
+  "binarization": {
+    "alpha_threshold": 10,
+    "block_size": 39,
+    "c": 10,
+    "enabled": true,
+    "luminance_threshold": 245
+  },
+  "curves": {
+    "max_points": 8,
+    "sample_spacing_px": 147
+  },
+  "dashes": {
+    "max_len_px": 62,
+    "min_count": 6,
+    "min_len_px": 15
+  },
+  "lines": {
+    "long_line_min_len_px": 257,
+    "long_line_ratio": 0.5
+  },
+  "ocr": {
+    "roi_pad_px": 10
+  },
+  "scale": 1.225,
+  "text_boxes": {
+    "max_area": 8232,
+    "max_height_ratio": 0.4,
+    "max_width_ratio": 0.6,
+    "min_area": 20,
+    "min_size": 3
+  }
+}
