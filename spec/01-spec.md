@@ -19,7 +19,6 @@
   - png2svg（模板模式）
   - validate（契約驗收）
   - regress（回歸套件）
-  - pdf2png（基本抽圖/抽頁，v0 可簡化）
 - 三個模板的 renderer：
   - t_3gpp_events_3panel
   - t_procedure_flow

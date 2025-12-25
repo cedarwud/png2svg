@@ -2,7 +2,6 @@
 
 ## 1) Functional Acceptance
 - 必須提供 CLI：
-  - pdf2png（可簡化：抽頁成 png 即可）
   - png2svg（template mode）
   - validate
   - regress

@@ -318,9 +318,11 @@ def _add_multiline_text(
     )
     for idx, line in enumerate(lines):
         if idx == 0:
-            text.add(builder.drawing.tspan(line, x=[x], y=[y]))
+            text.add(builder.drawing.tspan(line, x=[x], y=[y], id=f"{text_id}_line{idx}"))
         else:
-            text.add(builder.drawing.tspan(line, x=[x], dy=[LINE_HEIGHT]))
+            text.add(
+                builder.drawing.tspan(line, x=[x], dy=[LINE_HEIGHT], id=f"{text_id}_line{idx}")
+            )
     builder.groups["g_text"].add(text)
 
 
@@ -376,6 +378,7 @@ def _draw_edges(builder: SvgBuilder, edges: list[Edge], nodes: dict[str, Node]) 
         stroke_kwargs = {"stroke": "#000000", "stroke_width": 2, "fill": "none"}
         if edge.dashed:
             stroke_kwargs["stroke_dasharray"] = "6,4"
+            stroke_kwargs["class_"] = "dashed"
         if len(points) == 2:
             curves.add(
                 builder.drawing.line(start=points[0], end=points[1], **stroke_kwargs)

@@ -14,7 +14,6 @@
 - Inspect generated artifacts (SVG/PNG/report/diff) per case under `output/regress/`.
 
 ## Pending Work
-- Implement `tools/pdf2png.py` (currently a placeholder CLI).
 - Expand regression dataset to 10-15 cases and continue tightening thresholds safely.
 - Add more templates beyond MVP v0 scope or automate params extraction from PNGs.
 

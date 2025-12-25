@@ -1,22 +1,41 @@
 # Regression manifest v0 for template validation.
 # Each entry references a case directory with input.png, params.json, expected.svg/png.
+# Optional tags help track coverage (see docs/REGRESSION.md).
 version: v0
 cases:
   - id: case_001_basic
     dir: cases/case_001_basic
+    tags: [large_canvas]
   - id: case_002_wide
     dir: cases/case_002_wide
+    tags: [large_canvas]
   - id: case_003_compact
     dir: cases/case_003_compact
+    tags: [small_canvas]
   - id: case_004_flow_simple
     dir: cases/case_004_flow_simple
+    tags: [dashed]
   - id: case_005_flow_lanes
     dir: cases/case_005_flow_lanes
+    tags: [lane_layout]
   - id: case_006_flow_multiline
     dir: cases/case_006_flow_multiline
+    tags: [long_text, dashed]
   - id: case_007_lineplot_basic
     dir: cases/case_007_lineplot_basic
+    tags: [multi_series, dashed]
   - id: case_008_lineplot_multi
     dir: cases/case_008_lineplot_multi
+    tags: [multi_series, dashed, large_canvas]
   - id: case_009_lineplot_wide
     dir: cases/case_009_lineplot_wide
+    tags: [multi_series, dashed, long_text, large_canvas]
+  - id: case_010_3gpp_small_long
+    dir: cases/case_010_3gpp_small_long
+    tags: [small_canvas, long_text]
+  - id: case_011_flow_many_nodes
+    dir: cases/case_011_flow_many_nodes
+    tags: [many_nodes]
+  - id: case_012_lineplot_dense
+    dir: cases/case_012_lineplot_dense
+    tags: [dense_ticks, multi_series, dashed, small_canvas]

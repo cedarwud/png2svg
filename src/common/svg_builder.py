@@ -49,15 +49,33 @@ class SvgBuilder:
 
     def add_title(self, title: str, x: int = 10, y: int = 20) -> None:
         text_group = self.groups["g_text"]
-        text_group.add(
-            self.drawing.text(
-                title,
-                insert=(x, y),
-                id="txt_title",
-                font_family=DEFAULT_FONT_FAMILY,
-                fill="#000000",
+        lines = [line.strip() for line in str(title).splitlines() if line.strip()]
+        if len(lines) <= 1:
+            text_group.add(
+                self.drawing.text(
+                    title,
+                    insert=(x, y),
+                    id="txt_title",
+                    font_family=DEFAULT_FONT_FAMILY,
+                    fill="#000000",
+                )
             )
+            return
+        text = self.drawing.text(
+            "",
+            insert=(x, y),
+            id="txt_title",
+            font_family=DEFAULT_FONT_FAMILY,
+            fill="#000000",
         )
+        line_height = 14
+        for idx, line in enumerate(lines):
+            if idx == 0:
+                tspan = self.drawing.tspan(line, x=[x], y=[y], id=f"txt_title_line{idx}")
+            else:
+                tspan = self.drawing.tspan(line, x=[x], dy=[line_height], id=f"txt_title_line{idx}")
+            text.add(tspan)
+        text_group.add(text)
 
     def add_axes_placeholder(self, margin: int = 10) -> None:
         axes_group = self.groups["g_axes"]

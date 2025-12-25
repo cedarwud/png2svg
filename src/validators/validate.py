@@ -6,7 +6,9 @@ from pathlib import Path
 
 from .config import (
     FigureContract,
+    GeometryThresholds,
     load_contract,
+    load_geometry_thresholds,
     load_thresholds,
     load_visual_diff_thresholds,
 )
@@ -33,9 +35,15 @@ E2006_BAD_STROKE_WIDTH = "E2006_BAD_STROKE_WIDTH"
 E2007_PATH_TOO_COMPLEX = "E2007_PATH_TOO_COMPLEX"
 E2008_TEXT_MISSING = "E2008_TEXT_MISSING"
 E2009_TEXT_ID_MISSING = "E2009_TEXT_ID_MISSING"
+E2010_TEXT_AS_PATH = "E2010_TEXT_AS_PATH"
+E2011_TSPAN_ID_MISSING = "E2011_TSPAN_ID_MISSING"
+E2012_MULTILINE_TSPAN_MISSING = "E2012_MULTILINE_TSPAN_MISSING"
+E2013_DASHED_MISSING_DASHARRAY = "E2013_DASHED_MISSING_DASHARRAY"
 E3001_RASTERIZE_FAILED = "E3001_RASTERIZE_FAILED"
 E3002_DIFF_FAILED = "E3002_DIFF_FAILED"
 E3003_VISUAL_THRESHOLD_EXCEEDED = "E3003_VISUAL_THRESHOLD_EXCEEDED"
+W2101_LINE_NOT_SNAPPED = "W2101_LINE_NOT_SNAPPED"
+W2102_DASHED_SIMULATED = "W2102_DASHED_SIMULATED"
 
 
 def _font_family_ok(value: str, allowed: list[str]) -> bool:
@@ -61,6 +69,57 @@ def _element_context(node: ET.Element) -> dict[str, str]:
     return context
 
 
+def _parent_map(root: ET.Element) -> dict[ET.Element, ET.Element]:
+    return {child: parent for parent in root.iter() for child in parent}
+
+
+def _has_ancestor_group(node: ET.Element, parent_map: dict[ET.Element, ET.Element], group_id: str) -> bool:
+    current = parent_map.get(node)
+    while current is not None:
+        if local_name(current.tag) == "g" and current.get("id") == group_id:
+            return True
+        current = parent_map.get(current)
+    return False
+
+
+def _text_has_newline(node: ET.Element) -> bool:
+    if node.text and "\n" in node.text:
+        return True
+    for child in node:
+        if child.tail and "\n" in child.tail:
+            return True
+    return False
+
+
+def _tspan_elements(node: ET.Element) -> list[ET.Element]:
+    return [child for child in node if local_name(child.tag) == "tspan"]
+
+
+def _looks_like_text_path(node: ET.Element) -> bool:
+    node_id = (node.get("id") or "").lower()
+    if node_id.startswith(("txt_", "text_", "glyph_")):
+        return True
+    class_attr = (node.get("class") or "").lower()
+    return any(token in class_attr for token in ("text", "glyph", "font"))
+
+
+def _has_dasharray(node: ET.Element, style: dict[str, str]) -> bool:
+    values = extract_property_values(node, style, "stroke-dasharray")
+    for value in values:
+        lowered = value.strip().lower()
+        if lowered and lowered not in {"none", "0"}:
+            return True
+    return False
+
+
+def _is_marked_dashed(node: ET.Element) -> bool:
+    class_attr = (node.get("class") or "").lower()
+    if any(token in {"dash", "dashed"} for token in class_attr.split()):
+        return True
+    data_dashed = (node.get("data-dashed") or "").lower()
+    return data_dashed in {"1", "true", "yes"}
+
+
 def _check_forbidden_elements(
     elements: list[ET.Element], contract: FigureContract
 ) -> list[ValidationIssue]:
@@ -74,7 +133,7 @@ def _check_forbidden_elements(
                 ValidationIssue(
                     code=E2001_FORBIDDEN_ELEMENT,
                     message=f"Forbidden element <{name}> found.",
-                    hint="Remove the forbidden SVG elements from the output.",
+                    hint="Remove the element and replace it with vector primitives (<line>, <rect>, <path>, <text>).",
                     context={"element": name, **_element_context(node)},
                 )
             )
@@ -84,7 +143,7 @@ def _check_forbidden_elements(
                 ValidationIssue(
                     code=E2002_FORBIDDEN_PREFIX,
                     message=f"Forbidden element prefix in <{name}>.",
-                    hint="Remove fe* filter primitive elements; filters are not permitted.",
+                    hint="Remove fe* filter primitives and any filter references.",
                     context={"element": name, **_element_context(node)},
                 )
             )
@@ -106,8 +165,8 @@ def _check_required_groups(
                 ValidationIssue(
                     code=E2003_MISSING_GROUP,
                     message=f"Required group id '{required}' is missing.",
-                    hint=f"Add a <g> element with id '{required}'.",
-                    context={"group": required},
+                    hint=f"Add <g id=\"{required}\"> and place the expected elements inside it.",
+                    context={"tag": "g", "id": required},
                 )
             )
     return issues
@@ -158,25 +217,50 @@ def _check_text_requirements(
             ValidationIssue(
                 code=E2008_TEXT_MISSING,
                 message="No <text> elements found, but text is required.",
-                hint="Add at least one <text> element to the SVG.",
+                hint="Add editable text using <text> elements (avoid converting text to paths).",
+                context={"tag": "text"},
             )
         )
         return issues
-    if contract.require_text_ids:
-        for node in text_elements:
-            if not node.get("id"):
-                context = _element_context(node)
-                text_value = (node.text or "").strip()
-                if text_value:
-                    context["text"] = text_value
-                issues.append(
-                    ValidationIssue(
-                        code=E2009_TEXT_ID_MISSING,
-                        message="Text element is missing a stable id.",
-                        hint="Assign an id attribute to each editable text element.",
-                        context=context,
-                    )
+    for node in text_elements:
+        if contract.require_text_ids and not node.get("id"):
+            context = _element_context(node)
+            text_value = (node.text or "").strip()
+            if text_value:
+                context["text"] = text_value
+            issues.append(
+                ValidationIssue(
+                    code=E2009_TEXT_ID_MISSING,
+                    message="Text element is missing a stable id.",
+                    hint="Give every <text> element an id (e.g., txt_title, txt_axis_x).",
+                    context=context,
                 )
+            )
+        tspans = _tspan_elements(node)
+        if tspans:
+            for tspan in tspans:
+                if not tspan.get("id"):
+                    issues.append(
+                        ValidationIssue(
+                            code=E2011_TSPAN_ID_MISSING,
+                            message="Multiline text <tspan> is missing a stable id.",
+                            hint="Add ids to each <tspan> (e.g., txt_title_line0).",
+                            context={
+                                "tag": "tspan",
+                                "text_id": node.get("id"),
+                                **_element_context(tspan),
+                            },
+                        )
+                    )
+        elif _text_has_newline(node):
+            issues.append(
+                ValidationIssue(
+                    code=E2012_MULTILINE_TSPAN_MISSING,
+                    message="Multiline <text> must use <tspan> elements.",
+                    hint="Split lines into <tspan id=\"...\"> elements with dy offsets.",
+                    context=_element_context(node),
+                )
+            )
     return issues
 
 
@@ -185,24 +269,32 @@ def _check_colors(
 ) -> tuple[list[ValidationIssue], int]:
     max_colors = contract.max_colors
     colors: set[object] = set()
+    example_context: dict[str, str] | None = None
     for node, style in iter_with_style(elements):
         for prop in ("fill", "stroke"):
             for value in extract_property_values(node, style, prop):
                 parsed = parse_color(value)
                 if parsed is not None:
                     colors.add(parsed)
+                    if example_context is None:
+                        example_context = _element_context(node)
     color_count = len(colors)
     if max_colors is None or color_count <= max_colors:
         return [], color_count
+    context = {
+        "color_count": color_count,
+        "max_colors": max_colors,
+        "colors": [str(color) for color in sorted(colors, key=str)[:12]],
+    }
+    if example_context:
+        context.update(example_context)
+    else:
+        context["tag"] = "svg"
     issue = ValidationIssue(
         code=E2005_TOO_MANY_COLORS,
         message=f"Color count {color_count} exceeds max_colors {max_colors}.",
-        hint="Reduce the palette by consolidating fill/stroke colors.",
-        context={
-            "color_count": color_count,
-            "max_colors": max_colors,
-            "colors": [str(color) for color in sorted(colors, key=str)[:12]],
-        },
+        hint="Reduce the palette by reusing fill/stroke colors across elements.",
+        context=context,
     )
     return [issue], color_count
 
@@ -231,7 +323,7 @@ def _check_stroke_widths(
                     ValidationIssue(
                         code=E2006_BAD_STROKE_WIDTH,
                         message=f"Unparseable stroke-width '{value}'.",
-                        hint="Use numeric stroke widths matching the allowed set.",
+                        hint="Use numeric stroke widths that match the allowed set (e.g., 1 or 2).",
                         context={"stroke_width": value, **_element_context(node)},
                     )
                 )
@@ -246,7 +338,7 @@ def _check_stroke_widths(
                 ValidationIssue(
                     code=E2006_BAD_STROKE_WIDTH,
                     message=f"Stroke-width {parsed} is not within tolerance.",
-                    hint="Use allowed stroke widths within tolerance.",
+                    hint="Use allowed stroke widths within tolerance (e.g., 1 or 2).",
                     context={
                         "stroke_width": parsed,
                         "allowed": allowed,
@@ -280,7 +372,7 @@ def _check_path_complexity(
             ValidationIssue(
                 code=E2007_PATH_TOO_COMPLEX,
                 message=f"Path command count {command_count} exceeds limit {max_commands}.",
-                hint="Simplify the path to use fewer commands.",
+                hint="Reduce path complexity by using fewer segments or simplifying curves.",
                 context={
                     "command_count": command_count,
                     "max_commands": max_commands,
@@ -289,6 +381,144 @@ def _check_path_complexity(
             )
         )
     return issues, max_seen
+
+
+def _check_text_as_path(
+    elements: list[ET.Element], parent_map: dict[ET.Element, ET.Element]
+) -> list[ValidationIssue]:
+    issues: list[ValidationIssue] = []
+    for node in elements:
+        if local_name(node.tag) != "path":
+            continue
+        if _has_ancestor_group(node, parent_map, "g_text") or _looks_like_text_path(node):
+            issues.append(
+                ValidationIssue(
+                    code=E2010_TEXT_AS_PATH,
+                    message="Text appears to be converted to <path>.",
+                    hint="Keep editable text as <text> elements (do not outline text).",
+                    context=_element_context(node),
+                )
+            )
+    return issues
+
+
+def _check_dasharray_required(elements: list[ET.Element]) -> list[ValidationIssue]:
+    issues: list[ValidationIssue] = []
+    for node, style in iter_with_style(elements):
+        tag = local_name(node.tag)
+        if tag not in {"line", "polyline", "path"}:
+            continue
+        if _is_marked_dashed(node) and not _has_dasharray(node, style):
+            issues.append(
+                ValidationIssue(
+                    code=E2013_DASHED_MISSING_DASHARRAY,
+                    message="Dashed element is missing stroke-dasharray.",
+                    hint="Use stroke-dasharray on dashed lines instead of custom segments.",
+                    context=_element_context(node),
+                )
+            )
+    return issues
+
+
+def _check_line_snapping(
+    elements: list[ET.Element], thresholds: GeometryThresholds
+) -> list[ValidationIssue]:
+    warnings: list[ValidationIssue] = []
+    tolerance = thresholds.snap_tolerance
+    for node in elements:
+        if local_name(node.tag) != "line":
+            continue
+        x1 = parse_number(node.get("x1", ""))
+        y1 = parse_number(node.get("y1", ""))
+        x2 = parse_number(node.get("x2", ""))
+        y2 = parse_number(node.get("y2", ""))
+        if None in (x1, y1, x2, y2):
+            continue
+        dx = x2 - x1
+        dy = y2 - y1
+        if 0 < abs(dy) <= tolerance:
+            warnings.append(
+                ValidationIssue(
+                    code=W2101_LINE_NOT_SNAPPED,
+                    message="Line is nearly horizontal but not snapped.",
+                    hint="Snap line coordinates so y1 equals y2 exactly.",
+                    context={"axis": "horizontal", **_element_context(node)},
+                )
+            )
+        if 0 < abs(dx) <= tolerance:
+            warnings.append(
+                ValidationIssue(
+                    code=W2101_LINE_NOT_SNAPPED,
+                    message="Line is nearly vertical but not snapped.",
+                    hint="Snap line coordinates so x1 equals x2 exactly.",
+                    context={"axis": "vertical", **_element_context(node)},
+                )
+            )
+    return warnings
+
+
+def _check_dashed_simulation(
+    elements: list[ET.Element], thresholds: GeometryThresholds
+) -> list[ValidationIssue]:
+    warnings: list[ValidationIssue] = []
+    tolerance = thresholds.snap_tolerance
+    max_length = thresholds.dash_segment_length_max
+    min_count = thresholds.dash_segment_min_count
+    groups: dict[tuple[str, float, str, float], list[ET.Element]] = {}
+
+    for node, style in iter_with_style(elements):
+        if local_name(node.tag) != "line":
+            continue
+        if _has_dasharray(node, style):
+            continue
+        x1 = parse_number(node.get("x1", ""))
+        y1 = parse_number(node.get("y1", ""))
+        x2 = parse_number(node.get("x2", ""))
+        y2 = parse_number(node.get("y2", ""))
+        if None in (x1, y1, x2, y2):
+            continue
+        dx = x2 - x1
+        dy = y2 - y1
+        if abs(dy) <= tolerance and abs(dx) > tolerance:
+            length = abs(dx)
+            axis = "h"
+            coord = round(y1, 3)
+        elif abs(dx) <= tolerance and abs(dy) > tolerance:
+            length = abs(dy)
+            axis = "v"
+            coord = round(x1, 3)
+        else:
+            continue
+        if length > max_length:
+            continue
+        stroke_values = extract_property_values(node, style, "stroke")
+        stroke = stroke_values[0] if stroke_values else ""
+        stroke_width_value = extract_property_values(node, style, "stroke-width")
+        stroke_width = parse_number(stroke_width_value[0]) if stroke_width_value else 0.0
+        key = (axis, coord, stroke, stroke_width or 0.0)
+        groups.setdefault(key, []).append(node)
+
+    for key, nodes in groups.items():
+        if len(nodes) < min_count:
+            continue
+        axis, coord, stroke, stroke_width = key
+        context = {
+            "axis": "horizontal" if axis == "h" else "vertical",
+            "coord": coord,
+            "segment_count": len(nodes),
+            "stroke": stroke,
+            "stroke_width": stroke_width,
+            **_element_context(nodes[0]),
+        }
+        warnings.append(
+            ValidationIssue(
+                code=W2102_DASHED_SIMULATED,
+                message="Multiple short segments suggest a dashed line built from segments.",
+                hint="Use a single line with stroke-dasharray for dashed styles.",
+                context=context,
+            )
+        )
+    return warnings
 
 
 def validate_svg(
@@ -300,6 +530,7 @@ def validate_svg(
     diff_png_path: Path | str | None = None,
 ) -> ValidationReport:
     issues: list[ValidationIssue] = []
+    warnings: list[ValidationIssue] = []
     stats: dict[str, object] = {}
 
     try:
@@ -310,7 +541,7 @@ def validate_svg(
                 code=E1001_CONFIG_ERROR,
                 message=f"Failed to load contract: {exc}",
                 hint="Check that the contract YAML is present and valid.",
-                context={"path": str(contract_path)},
+                context={"path": str(contract_path), "tag": "config"},
             )
         )
         return ValidationReport(status="fail", errors=issues, stats=stats)
@@ -325,7 +556,7 @@ def validate_svg(
                     code=E1002_THRESHOLDS_ERROR,
                     message=f"Failed to load thresholds: {exc}",
                     hint="Check that the thresholds YAML is present and valid.",
-                    context={"path": str(thresholds_path)},
+                    context={"path": str(thresholds_path), "tag": "config"},
                 )
             )
             return ValidationReport(status="fail", errors=issues, stats=stats)
@@ -335,7 +566,7 @@ def validate_svg(
                 code=E1002_THRESHOLDS_ERROR,
                 message="Thresholds are required when running visual diff.",
                 hint="Provide the validator thresholds YAML.",
-                context={"path": str(thresholds_path) if thresholds_path else None},
+                context={"path": str(thresholds_path) if thresholds_path else None, "tag": "config"},
             )
         )
         return ValidationReport(status="fail", errors=issues, stats=stats)
@@ -348,22 +579,28 @@ def validate_svg(
                 code=E1000_PARSE_ERROR,
                 message=f"Failed to parse SVG: {exc}",
                 hint="Ensure the SVG is well-formed XML.",
-                context={"path": str(svg_path)},
+                context={"path": str(svg_path), "tag": "svg"},
             )
         )
         return ValidationReport(status="fail", errors=issues, stats=stats)
 
     elements = list(root.iter())
+    parent_map = _parent_map(root)
+    geometry_thresholds = load_geometry_thresholds(thresholds or {})
 
     issues.extend(_check_forbidden_elements(elements, contract))
     issues.extend(_check_required_groups(elements, contract))
     issues.extend(_check_text_requirements(elements, contract))
     issues.extend(_check_font_families(elements, contract))
+    issues.extend(_check_text_as_path(elements, parent_map))
     color_issues, color_count = _check_colors(elements, contract)
     issues.extend(color_issues)
     issues.extend(_check_stroke_widths(elements, contract))
+    issues.extend(_check_dasharray_required(elements))
     path_issues, max_path_commands = _check_path_complexity(elements, contract)
     issues.extend(path_issues)
+    warnings.extend(_check_line_snapping(elements, geometry_thresholds))
+    warnings.extend(_check_dashed_simulation(elements, geometry_thresholds))
 
     stats.update(
         {
@@ -381,6 +618,7 @@ def validate_svg(
                     code=E1002_THRESHOLDS_ERROR,
                     message=f"Invalid visual_diff thresholds: {exc}",
                     hint="Check visual_diff thresholds in the YAML config.",
+                    context={"tag": "config"},
                 )
             )
             return ValidationReport(status="fail", errors=issues, stats=stats)
@@ -405,7 +643,7 @@ def validate_svg(
                     code=E3001_RASTERIZE_FAILED,
                     message=f"Rasterization failed: {exc}",
                     hint="Install resvg or cairosvg and ensure the SVG is valid.",
-                    context={"svg": str(svg_path)},
+                    context={"svg": str(svg_path), "tag": "svg"},
                 )
             )
         except DiffError as exc:
@@ -417,6 +655,7 @@ def validate_svg(
                     context={
                         "expected_png": str(expected_png),
                         "actual_png": str(actual_png_path) if actual_png_path else None,
+                        "tag": "svg",
                     },
                 )
             )
@@ -455,9 +694,10 @@ def validate_svg(
                             "rmse_max": visual_thresholds.rmse_max,
                             "bad_pixel_ratio": metrics.bad_pixel_ratio,
                             "bad_pixel_ratio_max": visual_thresholds.bad_pixel_ratio_max,
+                            "tag": "svg",
                         },
                     )
                 )
 
     status = "pass" if not issues else "fail"
-    return ValidationReport(status=status, errors=issues, stats=stats)
+    return ValidationReport(status=status, errors=issues, warnings=warnings, stats=stats)

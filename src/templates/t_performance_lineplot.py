@@ -390,7 +390,7 @@ def _draw_series(builder: SvgBuilder, plot: PlotArea, series_list: list[Series])
             id=f"series_{series.series_id}",
         )
         if series.dashed:
-            poly.update({"stroke-dasharray": "6,4"})
+            poly.update({"stroke-dasharray": "6,4", "class": "dashed"})
         curves.add(poly)
 
 
@@ -412,7 +412,7 @@ def _draw_legend(builder: SvgBuilder, plot: PlotArea, series_list: list[Series])
             )
         )
         if series.dashed:
-            legend.elements[-1].update({"stroke-dasharray": "6,4"})
+            legend.elements[-1].update({"stroke-dasharray": "6,4", "class": "dashed"})
         legend.add(
             builder.drawing.text(
                 series.label,

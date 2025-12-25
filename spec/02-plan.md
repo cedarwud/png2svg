@@ -1,25 +1,22 @@
 # Plan — Technical Implementation Plan (MVP v0)
 
 ## 1) Architecture Overview
-以 Template-based renderer 為核心，形成四段 pipeline：
+以 Template-based renderer 為核心，形成三段 pipeline：
 
-(1) Prepare (optional)
-- pdf2png：把 PDF figure 轉成 input.png（v0 可先做抽頁/手動挑）
-
-(2) Render
+(1) Render
 - png2svg --mode template
   - 讀 input.png 取得 canvas size（預設輸出同尺寸）
   - 讀 params.json → 呼叫指定 template renderer
   - renderer 用乾淨幾何 primitives + 少段數曲線產生 SVG
   - 保證 group/id/字體/顏色/線寬符合 contract
 
-(3) Validate
+(2) Validate
 - validate_svg
   - 解析 SVG XML
   - 檢查：結構/禁用元素/群組命名/字體/顏色數/線寬集合/path 複雜度
   - 產出 JSON report（可定位原因）
 
-(4) Regression (visual + structural)
+(3) Regression (visual + structural)
 - regress
   - 對每個 case：render → validate → rasterize → diff expected.png
   - fail-fast + summary
@@ -35,7 +32,6 @@
 
 ## 3) Dependencies
 ### System (Linux)
-- poppler-utils（pdf2png）
 - resvg（SVG rasterize for diff；若不可用，後備 cairosvg）
 
 ### Python

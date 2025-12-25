@@ -1,0 +1,40 @@
+{
+  "template": "t_procedure_flow",
+  "title": "Expanded Procedure Flow",
+  "canvas": {"width": 960, "height": 320},
+  "nodes": [
+    {"id": "collect", "x": 80, "y": 60, "width": 160, "height": 60, "text": "Collect"},
+    {"id": "analyze", "x": 330, "y": 60, "width": 160, "height": 60, "text": "Analyze"},
+    {"id": "decide", "x": 580, "y": 60, "width": 160, "height": 60, "text": "Decide"},
+    {"id": "prepare", "x": 160, "y": 200, "width": 160, "height": 60, "text": "Prepare"},
+    {"id": "execute", "x": 410, "y": 200, "width": 160, "height": 60, "text": "Execute"},
+    {"id": "verify", "x": 660, "y": 200, "width": 160, "height": 60, "text": "Verify"}
+  ],
+  "edges": [
+    {"from": "collect", "to": "analyze", "label": "input"},
+    {"from": "analyze", "to": "decide", "label": "score"},
+    {"from": "prepare", "to": "execute", "label": "handoff"},
+    {"from": "execute", "to": "verify", "label": "confirm"},
+    {
+      "from": "analyze",
+      "to": "execute",
+      "label": "branch",
+      "points": [
+        {"x": 410, "y": 90},
+        {"x": 410, "y": 230},
+        {"x": 490, "y": 230}
+      ]
+    },
+    {
+      "from": "decide",
+      "to": "verify",
+      "label": "finalize",
+      "points": [
+        {"x": 660, "y": 90},
+        {"x": 660, "y": 230},
+        {"x": 740, "y": 230}
+      ]
+    },
+    {"from": "collect", "to": "prepare", "label": "prep"}
+  ]
+}

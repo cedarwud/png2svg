@@ -28,6 +28,13 @@ class VisualDiffThresholds:
     bad_pixel_ratio_max: float
 
 
+@dataclass(frozen=True)
+class GeometryThresholds:
+    snap_tolerance: float
+    dash_segment_length_max: float
+    dash_segment_min_count: int
+
+
 def _load_yaml(path: Path) -> dict[str, Any]:
     data = yaml.safe_load(path.read_text())
     if data is None:
@@ -95,4 +102,16 @@ def load_visual_diff_thresholds(data: dict[str, Any]) -> VisualDiffThresholds:
         pixel_tolerance=pixel_tolerance,
         rmse_max=rmse_max,
         bad_pixel_ratio_max=bad_pixel_ratio_max,
+    )
+
+
+def load_geometry_thresholds(data: dict[str, Any]) -> GeometryThresholds:
+    geometry = data.get("geometry", {}) or {}
+    snap_tolerance = float(geometry.get("snap_tolerance", 0.5))
+    dash_segment_length_max = float(geometry.get("dash_segment_length_max", 10.0))
+    dash_segment_min_count = int(geometry.get("dash_segment_min_count", 6))
+    return GeometryThresholds(
+        snap_tolerance=snap_tolerance,
+        dash_segment_length_max=dash_segment_length_max,
+        dash_segment_min_count=dash_segment_min_count,
     )

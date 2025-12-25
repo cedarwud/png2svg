@@ -8,6 +8,7 @@ from typing import Any
 
 import typer
 import yaml
+from PIL import Image
 
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SRC_ROOT = REPO_ROOT / "src"
@@ -68,6 +69,26 @@ def _run_case(
     output_png = output_dir / "generated.png"
     report_path = output_dir / "report.json"
     diff_path = output_dir / "diff.png"
+
+    def _write_placeholder_svg(path: Path, reason: str) -> None:
+        if path.exists():
+            return
+        path.write_text(
+            f"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1\" height=\"1\">"
+            f"<!-- {reason} --></svg>"
+        )
+
+    def _write_placeholder_png(path: Path) -> None:
+        if path.exists():
+            return
+        try:
+            image = Image.new("RGBA", (1, 1), (0, 0, 0, 0))
+            image.save(path)
+        except Exception:
+            path.write_bytes(b"")
+
+    _write_placeholder_svg(output_svg, "placeholder")
+    _write_placeholder_png(output_png)
 
     def _write_report(payload: dict[str, Any]) -> None:
         report_path.write_text(json.dumps(payload, indent=2, sort_keys=True))
@@ -239,9 +260,25 @@ def main(
     results: list[dict[str, Any]] = []
     passed = 0
     failed = 0
+    template_counts: dict[str, int] = {}
+    tag_counts: dict[str, int] = {}
     for entry in entries:
         case_dir = _case_entry_dir(base_dir, entry)
         case_id = _case_entry_id(entry, case_dir)
+        params_path = case_dir / "params.json"
+        template = "unknown"
+        if params_path.exists():
+            try:
+                params = json.loads(params_path.read_text())
+                template = str(params.get("template") or "unknown")
+            except json.JSONDecodeError:
+                template = "unknown"
+        template_counts[template] = template_counts.get(template, 0) + 1
+        if isinstance(entry, dict):
+            tags = entry.get("tags", [])
+            if isinstance(tags, list):
+                for tag in tags:
+                    tag_counts[str(tag)] = tag_counts.get(str(tag), 0) + 1
         case_result = _run_case(case_dir, case_id, contract, thresholds, REPO_ROOT / "output" / "regress")
         case_result["id"] = case_id
         case_result["dir"] = str(case_dir)
@@ -260,6 +297,12 @@ def main(
     if report is not None:
         report.write_text(payload)
     typer.echo(payload)
+    typer.echo("Template summary:")
+    for template, count in sorted(template_counts.items()):
+        typer.echo(f"  {template}: {count}")
+    typer.echo("Tag summary:")
+    for tag, count in sorted(tag_counts.items(), key=lambda item: (-item[1], item[0])):
+        typer.echo(f"  {tag}: {count}")
     raise typer.Exit(code=0 if failed == 0 else 1)
 
 

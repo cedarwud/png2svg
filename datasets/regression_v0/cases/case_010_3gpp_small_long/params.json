@@ -1,0 +1,24 @@
+{
+  "template": "t_3gpp_events_3panel",
+  "title": "Extended Handover Timing Thresholds (Compact View)",
+  "canvas": {"width": 640, "height": 220},
+  "panels": [
+    {"id": "A3", "label": "A3", "x": 20, "y": 60, "width": 180, "height": 120},
+    {"id": "A4", "label": "A4", "x": 220, "y": 60, "width": 180, "height": 120},
+    {"id": "A5", "label": "A5", "x": 420, "y": 60, "width": 180, "height": 120}
+  ],
+  "t_start_ratio": 0.15,
+  "t_trigger_ratio": 0.5,
+  "curves": {
+    "serving": [
+      {"x": 0.05, "y": 0.2},
+      {"x": 0.55, "y": 0.7},
+      {"x": 0.95, "y": 0.45}
+    ],
+    "neighbor": [
+      {"x": 0.05, "y": 0.6},
+      {"x": 0.55, "y": 0.3},
+      {"x": 0.95, "y": 0.8}
+    ]
+  }
+}
