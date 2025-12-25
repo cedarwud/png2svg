@@ -161,6 +161,8 @@ def _normalize_text_items(text_items: list[dict[str, Any]], grid: float) -> None
             item["y"] = _snap_value(float(item.get("y", 0.0)), grid)
         except (TypeError, ValueError):
             continue
+        if "anchor" in item and isinstance(item["anchor"], str):
+            item["anchor"] = item["anchor"].lower()
         group = item.get("baseline_group")
         if isinstance(group, str) and group:
             groups.setdefault(group, []).append(item)
@@ -172,6 +174,36 @@ def _normalize_text_items(text_items: list[dict[str, Any]], grid: float) -> None
         snapped = _snap_value(baseline, grid)
         for item in group_items:
             item["y"] = snapped
+
+
+def _normalize_geometry(geometry: dict[str, Any], grid: float) -> None:
+    for line in geometry.get("lines", []):
+        if not isinstance(line, dict):
+            continue
+        for key in ("x1", "y1", "x2", "y2"):
+            if key in line:
+                try:
+                    line[key] = _snap_value(float(line[key]), grid)
+                except (TypeError, ValueError):
+                    pass
+        if line.get("dashed") and not line.get("dasharray"):
+            stroke_width = float(line.get("stroke_width", 1))
+            dash = max(4.0, stroke_width * 3.0)
+            gap = max(3.0, stroke_width * 2.0)
+            line["dasharray"] = [dash, gap]
+    for rect in geometry.get("rects", []):
+        if not isinstance(rect, dict):
+            continue
+        _snap_box(rect, grid)
+    for marker in geometry.get("markers", []):
+        if not isinstance(marker, dict):
+            continue
+        if "x" in marker:
+            marker["x"] = _snap_value(float(marker["x"]), grid)
+        if "y" in marker:
+            marker["y"] = _snap_value(float(marker["y"]), grid)
+        if "radius" in marker:
+            marker["radius"] = _snap_value(float(marker["radius"]), grid)
 
 
 def _normalize_3gpp(params: dict[str, Any], grid: float) -> dict[str, Any]:
@@ -312,4 +344,10 @@ def normalize_params(template_id: str, params: dict[str, Any], grid: float = 1.0
         extracted["normalization"] = {
             "grid": grid,
         }
+    texts = params.get("texts")
+    if isinstance(texts, list):
+        _normalize_text_items(texts, grid=grid)
+    geometry = params.get("geometry")
+    if isinstance(geometry, dict):
+        _normalize_geometry(geometry, grid=grid)
     return params

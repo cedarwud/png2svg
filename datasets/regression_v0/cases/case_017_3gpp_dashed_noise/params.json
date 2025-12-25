@@ -1,0 +1,225 @@
+{
+  "canvas": {
+    "height": 240,
+    "width": 720
+  },
+  "curves": {
+    "neighbor": [
+      {
+        "x": 0.05,
+        "y": 0.6
+      },
+      {
+        "x": 0.5,
+        "y": 0.35
+      },
+      {
+        "x": 0.95,
+        "y": 0.8
+      }
+    ],
+    "serving": [
+      {
+        "x": 0.05,
+        "y": 0.2
+      },
+      {
+        "x": 0.5,
+        "y": 0.75
+      },
+      {
+        "x": 0.95,
+        "y": 0.45
+      }
+    ]
+  },
+  "geometry": {
+    "lines": [
+      {
+        "dasharray": [
+          3,
+          4
+        ],
+        "dashed": true,
+        "role": "threshold",
+        "stroke": "#555555",
+        "stroke_width": 1,
+        "x1": 78.0,
+        "x2": 78.0,
+        "y1": 70,
+        "y2": 200
+      },
+      {
+        "dasharray": [
+          3,
+          4
+        ],
+        "dashed": true,
+        "role": "threshold",
+        "stroke": "#555555",
+        "stroke_width": 1,
+        "x1": 144.5,
+        "x2": 144.5,
+        "y1": 70,
+        "y2": 200
+      },
+      {
+        "dasharray": [
+          3,
+          4
+        ],
+        "dashed": true,
+        "role": "threshold",
+        "stroke": "#555555",
+        "stroke_width": 1,
+        "x1": 303.0,
+        "x2": 303.0,
+        "y1": 70,
+        "y2": 200
+      },
+      {
+        "dasharray": [
+          3,
+          4
+        ],
+        "dashed": true,
+        "role": "threshold",
+        "stroke": "#555555",
+        "stroke_width": 1,
+        "x1": 369.5,
+        "x2": 369.5,
+        "y1": 70,
+        "y2": 200
+      },
+      {
+        "dasharray": [
+          3,
+          4
+        ],
+        "dashed": true,
+        "role": "threshold",
+        "stroke": "#555555",
+        "stroke_width": 1,
+        "x1": 528.0,
+        "x2": 528.0,
+        "y1": 70,
+        "y2": 200
+      },
+      {
+        "dasharray": [
+          3,
+          4
+        ],
+        "dashed": true,
+        "role": "threshold",
+        "stroke": "#555555",
+        "stroke_width": 1,
+        "x1": 594.5,
+        "x2": 594.5,
+        "y1": 70,
+        "y2": 200
+      }
+    ],
+    "markers": [
+      {
+        "fill": "#2b6cb0",
+        "radius": 3,
+        "role": "event_marker",
+        "x": 173.0,
+        "y": 102.5
+      },
+      {
+        "fill": "#2b6cb0",
+        "radius": 3,
+        "role": "event_marker",
+        "x": 398.0,
+        "y": 122.0
+      },
+      {
+        "fill": "#2b6cb0",
+        "radius": 3,
+        "role": "event_marker",
+        "x": 623.0,
+        "y": 141.5
+      }
+    ],
+    "rects": []
+  },
+  "panels": [
+    {
+      "height": 130,
+      "id": "A3",
+      "label": "A3",
+      "width": 190,
+      "x": 40,
+      "y": 70
+    },
+    {
+      "height": 130,
+      "id": "A4",
+      "label": "A4",
+      "width": 190,
+      "x": 265,
+      "y": 70
+    },
+    {
+      "height": 130,
+      "id": "A5",
+      "label": "A5",
+      "width": 190,
+      "x": 490,
+      "y": 70
+    }
+  ],
+  "t_start_ratio": 0.2,
+  "t_trigger_ratio": 0.55,
+  "template": "t_3gpp_events_3panel",
+  "texts": [
+    {
+      "anchor": "start",
+      "baseline_group": "anno_0",
+      "bbox": {
+        "height": 12,
+        "width": 60,
+        "x": 48,
+        "y": 90
+      },
+      "conf": 0.8,
+      "content": "bias 1",
+      "role": "annotation",
+      "x": 48,
+      "y": 102
+    },
+    {
+      "anchor": "start",
+      "baseline_group": "anno_1",
+      "bbox": {
+        "height": 12,
+        "width": 60,
+        "x": 273,
+        "y": 90
+      },
+      "conf": 0.8,
+      "content": "bias 2",
+      "role": "annotation",
+      "x": 273,
+      "y": 102
+    },
+    {
+      "anchor": "start",
+      "baseline_group": "anno_2",
+      "bbox": {
+        "height": 12,
+        "width": 60,
+        "x": 498,
+        "y": 90
+      },
+      "conf": 0.8,
+      "content": "bias 3",
+      "role": "annotation",
+      "x": 498,
+      "y": 102
+    }
+  ],
+  "title": "Compact Event Timing with Threshold Noise"
+}

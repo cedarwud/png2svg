@@ -63,6 +63,116 @@ def _real_gates(entry: dict[str, Any]) -> dict[str, Any]:
     return gates
 
 
+def _real_allow_force_template(entry: dict[str, Any]) -> bool:
+    return bool(entry.get("allow_force_template", False))
+
+
+def _load_extract_warnings(extract_report_path: Path) -> list[dict[str, Any]]:
+    if not extract_report_path.exists():
+        return []
+    try:
+        payload = json.loads(extract_report_path.read_text())
+    except json.JSONDecodeError:
+        return []
+    warnings = payload.get("warnings")
+    return warnings if isinstance(warnings, list) else []
+
+
+def _detect_ocr_empty(extract_report_path: Path) -> bool:
+    warnings = _load_extract_warnings(extract_report_path)
+    for item in warnings:
+        code = str(item.get("code", ""))
+        if code in {"W4011_OCR_EMPTY", "W4004_OCR_EMPTY"}:
+            return True
+    return False
+
+
+def _classify_failure_reasons(
+    errors: list[dict[str, Any]],
+    validation: dict[str, Any] | None,
+    ocr_empty: bool,
+) -> list[str]:
+    reasons: set[str] = set()
+    error_codes = {str(item.get("code", "")) for item in errors}
+    if "E5107_CLASSIFY_UNKNOWN" in error_codes:
+        reasons.add("CLASSIFY_UNKNOWN")
+    if "E5108_QUALITY_GATE_FAILED" in error_codes or "E1408_REAL_VISUAL_THRESHOLD" in error_codes:
+        reasons.add("GATE_FAIL")
+    if "E5105_CONVERT_FAILED" in error_codes or "E1407_REAL_VALIDATION_FAILED" in error_codes:
+        reasons.add("VALIDATOR_FAIL")
+    if "E1406_REAL_TEMPLATE_MISMATCH" in error_codes:
+        reasons.add("TEMPLATE_MISMATCH")
+    if "E1409_REAL_VISUAL_DIFF_FAILED" in error_codes:
+        reasons.add("DIFF_FAIL")
+    if any(code == "E2007_PATH_TOO_COMPLEX" for code in error_codes):
+        reasons.add("CURVE_FAIL")
+    if ocr_empty:
+        reasons.add("OCR_EMPTY")
+    if validation:
+        for err in validation.get("errors", []) if isinstance(validation.get("errors"), list) else []:
+            if str(err.get("code")) == "E2007_PATH_TOO_COMPLEX":
+                reasons.add("CURVE_FAIL")
+    if not reasons:
+        reasons.add("UNKNOWN")
+    return sorted(reasons)
+
+
+def _write_real_summary(
+    output_root: Path,
+    real_results: list[dict[str, Any]],
+    real_summary: dict[str, Any] | None,
+) -> None:
+    if real_summary is None:
+        return
+    output_root.mkdir(parents=True, exist_ok=True)
+    failures_by_reason: dict[str, int] = {}
+    failed_cases: list[dict[str, Any]] = []
+    for result in real_results:
+        if result.get("status") == "pass":
+            continue
+        report = result.get("report", {}) if isinstance(result.get("report"), dict) else {}
+        reasons = report.get("failure_reasons") or ["UNKNOWN"]
+        for reason in reasons:
+            failures_by_reason[str(reason)] = failures_by_reason.get(str(reason), 0) + 1
+        failed_cases.append(
+            {
+                "id": result.get("id"),
+                "reasons": reasons,
+                "report_path": result.get("report_path"),
+                "diff_path": result.get("diff_path"),
+            }
+        )
+    payload = {
+        "summary": real_summary,
+        "failures_by_reason": failures_by_reason,
+        "failed_cases": failed_cases,
+    }
+    (output_root / "summary.json").write_text(json.dumps(payload, indent=2, sort_keys=True))
+    lines = [
+        "# Real Regression Summary",
+        "",
+        f"Total: {real_summary.get('total', 0)}",
+        f"Passed: {real_summary.get('passed', 0)}",
+        f"Failed: {real_summary.get('failed', 0)}",
+        "",
+        "## Failures by reason",
+    ]
+    if failures_by_reason:
+        for reason, count in sorted(failures_by_reason.items(), key=lambda item: (-item[1], item[0])):
+            lines.append(f"- {reason}: {count}")
+    else:
+        lines.append("- none")
+    lines.append("")
+    lines.append("## Failed cases")
+    if failed_cases:
+        for case in failed_cases:
+            reasons_str = ", ".join(case.get("reasons", []))
+            lines.append(f"- {case.get('id')}: {reasons_str} ({case.get('report_path')})")
+    else:
+        lines.append("- none")
+    (output_root / "summary.md").write_text("\n".join(lines))
+
+
 def _resolve_manifest(dataset: Path) -> tuple[Path, Path | None]:
     if dataset.is_file():
         return dataset, dataset.parent
@@ -86,6 +196,24 @@ def _case_entry_id(entry: Any, case_dir: Path) -> str:
     return case_dir.name
 
 
+def _case_gate_overrides(entry: Any) -> dict[str, Any]:
+    if not isinstance(entry, dict):
+        return {}
+    gates = entry.get("gates")
+    if not isinstance(gates, dict):
+        return {}
+    overrides: dict[str, Any] = {}
+    if "rmse_max" in gates:
+        overrides["rmse_max"] = gates.get("rmse_max")
+    if "bad_pixel_ratio_max" in gates:
+        overrides["bad_pixel_ratio_max"] = gates.get("bad_pixel_ratio_max")
+    if "pixel_tolerance" in gates:
+        overrides["pixel_tolerance"] = gates.get("pixel_tolerance")
+    if "quality_gate" in gates:
+        overrides["quality_gate"] = gates.get("quality_gate")
+    return overrides
+
+
 def _issue_payload(
     code: str,
     message: str,
@@ -105,6 +233,7 @@ def _run_case(
     thresholds: Path,
     output_root: Path,
     pipeline: str,
+    gate_overrides: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     input_png = case_dir / "input.png"
     params = case_dir / "params.json"
@@ -227,6 +356,8 @@ def _run_case(
                 "Provide a valid input.png for convert pipeline.",
                 context={"path": str(input_png), "tag": "png"},
             )
+        gate_overrides = gate_overrides or {}
+        gate_enabled = gate_overrides.get("quality_gate")
         try:
             convert_png(
                 input_png,
@@ -235,12 +366,15 @@ def _run_case(
                 topk=2,
                 contract_path=contract,
                 thresholds_path=thresholds,
-                enable_visual_diff=False,
+                quality_gate=bool(gate_enabled) if gate_enabled is not None else True,
+                gate_rmse_max=gate_overrides.get("rmse_max"),
+                gate_bad_pixel_max=gate_overrides.get("bad_pixel_ratio_max"),
+                gate_pixel_tolerance=gate_overrides.get("pixel_tolerance"),
             )
             regress_warnings.append(
                 _issue_payload(
                     "W1300_EXPECTED_SKIPPED",
-                    "Convert pipeline skips expected.svg/expected.png comparison.",
+                    "Convert pipeline compares against input.png instead of expected assets.",
                     "Use render pipeline for strict regression diffs.",
                     context={"tag": "regress"},
                 )
@@ -418,25 +552,42 @@ def _run_real_case(
         )
 
     expected_templates = _real_expected_templates(entry)
+    allow_force_template = _real_allow_force_template(entry)
+    force_template = expected_templates[0] if allow_force_template and expected_templates else None
 
     try:
         convert_result = convert_png(
             input_png,
             output_svg,
             debug_dir=output_dir,
-            topk=2,
+            topk=1 if force_template else 2,
+            force_template=force_template,
             contract_path=contract,
             thresholds_path=thresholds,
-            enable_visual_diff=False,
+            gate_rmse_max=max_rmse,
+            gate_bad_pixel_max=max_bad_pixel_ratio,
+            gate_pixel_tolerance=pixel_tolerance,
         )
     except Png2SvgError as exc:
-        return _fail(exc.code, exc.message, exc.hint, context={"tag": "convert"})
+        failure_payload = _fail(exc.code, exc.message, exc.hint, context={"tag": "convert"})
+        failure_payload["report"]["failure_reasons"] = _classify_failure_reasons(
+            failure_payload["report"]["errors"], None, False
+        )
+        failure_payload["report"]["allow_force_template"] = allow_force_template
+        _write_report(failure_payload["report"])
+        return failure_payload
 
     selected_template = convert_result.get("selected_template")
     selected = convert_result.get("selected", {})
     validation = selected.get("validation", {})
     validation_errors = validation.get("errors", [])
     validation_warnings = validation.get("warnings", [])
+    candidate_dir = None
+    selected_paths = selected.get("paths", {})
+    if isinstance(selected_paths, dict):
+        svg_path = selected_paths.get("svg")
+        if isinstance(svg_path, str):
+            candidate_dir = Path(svg_path).parent
 
     errors: list[dict[str, Any]] = []
     warnings: list[dict[str, Any]] = []
@@ -462,6 +613,11 @@ def _run_real_case(
     stats: dict[str, Any] = {
         "validation": validation,
     }
+
+    ocr_empty = False
+    if candidate_dir is not None:
+        extract_report_path = candidate_dir / "extract" / "extract_report.json"
+        ocr_empty = _detect_ocr_empty(extract_report_path)
 
     try:
         backend = rasterize_svg_to_png(output_svg, output_png)
@@ -512,9 +668,13 @@ def _run_real_case(
         "relative_path": str(relative_path),
         "input_png": str(input_png),
         "expected_templates": expected_templates,
+        "allow_force_template": allow_force_template,
         "selected_template": selected_template,
         "errors": errors,
         "warnings": warnings,
+        "failure_reasons": _classify_failure_reasons(errors, validation, ocr_empty)
+        if errors
+        else [],
         "stats": stats,
         "paths": {
             "generated_svg": str(output_svg),
@@ -632,6 +792,7 @@ def main(
             thresholds,
             REPO_ROOT / "output" / "regress",
             pipeline,
+            gate_overrides=_case_gate_overrides(entry),
         )
         case_result["id"] = case_id
         case_result["dir"] = str(case_dir)
@@ -693,6 +854,9 @@ def main(
         payload_dict["real_cases"] = real_results
     elif real_manifest is not None:
         typer.echo("Real regression: skipped (manifest missing).")
+
+    if real_summary is not None:
+        _write_real_summary(REPO_ROOT / "output" / "regress_real", real_results, real_summary)
 
     payload = json.dumps(payload_dict, indent=2, sort_keys=True)
     if report is not None:

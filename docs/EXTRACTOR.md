@@ -4,10 +4,13 @@ The extractor returns a fixed, best-effort params schema that is accepted by the
 template renderers. Fields may be `null` or placeholder values when detection is
 uncertain. Debug artifacts are written to `--debug-dir`:
 
-- `preprocessed.png` (binary/gray image used for detection)
-- `overlay.png` (detected boxes/axes/panels drawn on the input)
-- `ocr.json` (raw OCR box list, text may be null)
+- `01_preprocessed.png` (binary/gray image used for detection)
+- `02_overlay.png` (detected boxes/axes/panels/lines drawn on the input)
+- `03_ocr_raw.json` (raw OCR box list)
+- `04_params.json` (normalized params.json output)
+- `05_snap_preview.svg` (geometry preview after snapping)
 - `extract_report.json` (warnings/errors with stable codes)
+- `effective_config.json` (adaptive parameters used for this image)
 
 Common fields:
 ```
@@ -15,6 +18,8 @@ Common fields:
   "template": "t_3gpp_events_3panel" | "t_procedure_flow" | "t_performance_lineplot",
   "canvas": {"width": int, "height": int},
   "title": string | null,
+  "texts": [ ... ],
+  "geometry": { ... },
   "extracted": { ... }   // debug-only fields
 }
 ```
@@ -24,6 +29,7 @@ Text extraction fields (debug):
 {
   "extracted": {
     "texts_detected": int,
+    "ocr_backend": "auto" | "tesseract" | "none",
     "text_items": [
       {
         "content": string,
@@ -37,6 +43,42 @@ Text extraction fields (debug):
   }
 }
 ```
+
+Text items (params):
+```
+{
+  "texts": [
+    {
+      "content": string,
+      "x": number,
+      "y": number,
+      "bbox": {"x","y","width","height"},
+      "role": string,
+      "anchor": "start" | "middle" | "end",
+      "baseline_group": string | null,
+      "conf": number
+    }
+  ]
+}
+```
+
+Geometry primitives (params):
+```
+{
+  "geometry": {
+    "lines": [{"x1","y1","x2","y2","stroke","stroke_width","dashed","dasharray","role"}],
+    "rects": [{"x","y","width","height","stroke","stroke_width","fill","role"}],
+    "markers": [{"x","y","radius","fill","role"}]
+  }
+}
+```
+
+Optional OCR (tesseract):
+- Ubuntu/Debian: `sudo apt-get install tesseract-ocr`
+- RHEL/CentOS: `sudo yum install tesseract`
+- Disable OCR: `PNG2SVG_OCR_BACKEND=none`
+
+Adaptive extractor settings are defined in `config/extract_adaptive.v1.yaml`.
 
 Template-specific fields (minimum):
 

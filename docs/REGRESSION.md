@@ -7,6 +7,14 @@ meaningful variation in layout, geometry, or constraints. Tag each case in
 `long_text`, `dashed`, `small_canvas`, `large_canvas`, `dense_ticks`,
 `multi_series`, `lane_layout`, `many_nodes`
 
+Optional quality gate overrides (convert pipeline only) can be added per case:
+```
+gates:
+  rmse_max: 0.2
+  bad_pixel_ratio_max: 0.05
+  pixel_tolerance: 10
+```
+
 ## t_3gpp_events_3panel
 - Panel geometry changes (width/height/spacing) that affect axes and shading.
 - Ratio changes (`t_start_ratio`, `t_trigger_ratio`) that move guides/TTT regions.
@@ -35,7 +43,10 @@ Example manifest entry:
 ```
 - id: real_case_001
   relative_path: example/figure_001.png
-  expected_template: t_performance_lineplot
+  expected_templates:
+    - t_performance_lineplot
+    - t_3gpp_events_3panel
+  allow_force_template: true
   gates:
     must_pass_validator: true
     max_bad_pixel_ratio: 0.05
@@ -46,4 +57,10 @@ Example manifest entry:
 Run:
 ```
 REAL_PNG_DIR=/path/to/real/pngs python tools/regress.py --real-manifest datasets/real_regression_v1/manifest.yaml
+```
+Real regression writes `output/regress_real/summary.json` and `summary.md`.
+
+Triage failures:
+```
+python tools/triage_real_failures.py output/regress_real --out output/regress_real/triage.json
 ```

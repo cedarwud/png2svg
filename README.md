@@ -24,6 +24,7 @@ Top-level commands:
 Debug artifacts:
 - `--debug-dir` stores classification/extraction/validation outputs for troubleshooting.
 - `convert` debug dirs include `snap_preview.svg/png` for quick inspection of snapped geometry.
+- `convert` runs a quality gate against the input PNG; override with `--gate-*` or disable with `--quality-gate off`.
 
 Regression assets:
 - `expected.svg` is the golden source; regress rasterizes it to compare with generated output.

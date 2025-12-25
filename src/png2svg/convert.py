@@ -10,7 +10,7 @@ from png2svg.classifier import classify_png
 from png2svg.errors import Png2SvgError
 from png2svg.extractor import extract_skeleton
 from png2svg.renderer import render_svg
-from validators.config import load_thresholds, load_visual_diff_thresholds
+from validators.config import load_thresholds
 from validators.validate import validate_svg
 from validators.visual_diff import (
     DiffError,
@@ -53,42 +53,163 @@ def _write_json(path: Path, payload: dict[str, Any]) -> None:
     path.write_text(json.dumps(payload, indent=2, sort_keys=True))
 
 
-def _candidate_dir(debug_dir: Path | None, index: int, template_id: str) -> Path | None:
+def _candidate_dir(debug_dir: Path | None, template_id: str) -> Path | None:
     if debug_dir is None:
         return None
-    name = f"candidate_{index:02d}_{template_id}"
-    path = debug_dir / name
+    base = debug_dir / "candidates" / template_id
+    path = base
+    if path.exists():
+        suffix = 2
+        while (debug_dir / "candidates" / f"{template_id}_{suffix}").exists():
+            suffix += 1
+        path = debug_dir / "candidates" / f"{template_id}_{suffix}"
     path.mkdir(parents=True, exist_ok=True)
     return path
 
 
-def _run_visual_diff(
-    svg_path: Path,
-    input_png: Path,
-    output_png: Path,
-    diff_png: Path | None,
+def _coerce_float(value: Any, label: str) -> float:
+    try:
+        return float(value)
+    except (TypeError, ValueError) as exc:
+        raise Png2SvgError(
+            code="E5110_GATE_THRESHOLD_INVALID",
+            message=f"Invalid {label} value: {value}",
+            hint="Provide a numeric threshold value.",
+        ) from exc
+
+
+def _coerce_int(value: Any, label: str) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError) as exc:
+        raise Png2SvgError(
+            code="E5110_GATE_THRESHOLD_INVALID",
+            message=f"Invalid {label} value: {value}",
+            hint="Provide an integer threshold value.",
+        ) from exc
+
+
+def _resolve_gate_thresholds(
     thresholds_path: Path,
+    gate_rmse_max: float | None,
+    gate_bad_pixel_max: float | None,
+    gate_pixel_tolerance: int | None,
 ) -> dict[str, Any]:
     thresholds = load_thresholds(thresholds_path)
-    visual_thresholds = load_visual_diff_thresholds(thresholds)
-    backend = rasterize_svg_to_png(svg_path, output_png)
-    metrics = compute_visual_diff(output_png, input_png, visual_thresholds.pixel_tolerance)
-    payload = {
-        "backend": backend,
-        "rmse": metrics.rmse,
-        "bad_pixel_ratio": metrics.bad_pixel_ratio,
-        "pixel_tolerance": visual_thresholds.pixel_tolerance,
-        "rmse_max": visual_thresholds.rmse_max,
-        "bad_pixel_ratio_max": visual_thresholds.bad_pixel_ratio_max,
+    gate_section = thresholds.get("quality_gate") or thresholds.get("visual_diff") or {}
+    if not gate_section:
+        raise Png2SvgError(
+            code="E5109_GATE_THRESHOLDS_MISSING",
+            message=f"Quality gate thresholds missing in {thresholds_path}.",
+            hint="Add quality_gate or visual_diff thresholds to the thresholds config.",
+        )
+    rmse_max = gate_rmse_max if gate_rmse_max is not None else gate_section.get("rmse_max")
+    bad_pixel_ratio_max = (
+        gate_bad_pixel_max
+        if gate_bad_pixel_max is not None
+        else gate_section.get("bad_pixel_ratio_max")
+    )
+    pixel_tolerance = (
+        gate_pixel_tolerance
+        if gate_pixel_tolerance is not None
+        else gate_section.get("pixel_tolerance")
+    )
+    if rmse_max is None or bad_pixel_ratio_max is None or pixel_tolerance is None:
+        raise Png2SvgError(
+            code="E5109_GATE_THRESHOLDS_MISSING",
+            message="Quality gate thresholds incomplete.",
+            hint="Provide rmse_max, bad_pixel_ratio_max, and pixel_tolerance.",
+        )
+    return {
+        "rmse_max": _coerce_float(rmse_max, "rmse_max"),
+        "bad_pixel_ratio_max": _coerce_float(bad_pixel_ratio_max, "bad_pixel_ratio_max"),
+        "pixel_tolerance": _coerce_int(pixel_tolerance, "pixel_tolerance"),
     }
-    if diff_png is not None and (
-        metrics.rmse > visual_thresholds.rmse_max
-        or metrics.bad_pixel_ratio > visual_thresholds.bad_pixel_ratio_max
+
+
+def _run_quality_gate(
+    svg_path: Path,
+    input_png: Path,
+    rendered_png: Path,
+    diff_png: Path | None,
+    gate_thresholds: dict[str, Any],
+) -> dict[str, Any]:
+    payload: dict[str, Any] = {
+        "status": "fail",
+        "backend": None,
+        "rmse": None,
+        "bad_pixel_ratio": None,
+        "pixel_tolerance": gate_thresholds["pixel_tolerance"],
+        "rmse_max": gate_thresholds["rmse_max"],
+        "bad_pixel_ratio_max": gate_thresholds["bad_pixel_ratio_max"],
+        "errors": [],
+        "warnings": [],
+        "diff_png": str(diff_png) if diff_png else None,
+    }
+    try:
+        backend = rasterize_svg_to_png(svg_path, rendered_png)
+    except RasterizeError as exc:
+        payload["errors"].append(
+            _issue(
+                "E5201_GATE_RASTERIZE_FAILED",
+                f"Quality gate rasterize failed: {exc}",
+                "Install resvg or cairosvg and ensure the SVG is valid.",
+            )
+        )
+        return payload
+    payload["backend"] = backend
+    try:
+        metrics = compute_visual_diff(
+            rendered_png, input_png, gate_thresholds["pixel_tolerance"]
+        )
+    except (DiffError, OSError) as exc:
+        payload["errors"].append(
+            _issue(
+                "E5202_GATE_DIFF_FAILED",
+                f"Quality gate diff failed: {exc}",
+                "Ensure input PNG and rendered PNG sizes match.",
+            )
+        )
+        return payload
+    payload["rmse"] = metrics.rmse
+    payload["bad_pixel_ratio"] = metrics.bad_pixel_ratio
+    if (
+        metrics.rmse <= gate_thresholds["rmse_max"]
+        and metrics.bad_pixel_ratio <= gate_thresholds["bad_pixel_ratio_max"]
     ):
+        payload["status"] = "pass"
+        return payload
+    payload["status"] = "fail"
+    if diff_png is not None:
         try:
-            write_diff_image(output_png, input_png, diff_png, visual_thresholds.pixel_tolerance)
+            write_diff_image(
+                rendered_png, input_png, diff_png, gate_thresholds["pixel_tolerance"]
+            )
         except Exception:
             pass
+    return payload
+
+
+def _gate_skipped_payload(
+    reason: str,
+    gate_thresholds: dict[str, Any],
+    issue: dict[str, Any] | None = None,
+) -> dict[str, Any]:
+    payload = {
+        "status": "skipped",
+        "reason": reason,
+        "backend": None,
+        "rmse": None,
+        "bad_pixel_ratio": None,
+        "pixel_tolerance": gate_thresholds["pixel_tolerance"],
+        "rmse_max": gate_thresholds["rmse_max"],
+        "bad_pixel_ratio_max": gate_thresholds["bad_pixel_ratio_max"],
+        "errors": [],
+        "warnings": [],
+        "diff_png": None,
+    }
+    if issue:
+        payload["errors"].append(issue)
     return payload
 
 
@@ -115,7 +236,10 @@ def convert_png(
     contract_path: Path | None = None,
     thresholds_path: Path | None = None,
     classifier_thresholds_path: Path | None = None,
-    enable_visual_diff: bool = True,
+    quality_gate: bool = True,
+    gate_rmse_max: float | None = None,
+    gate_bad_pixel_max: float | None = None,
+    gate_pixel_tolerance: int | None = None,
 ) -> dict[str, Any]:
     if topk <= 0:
         raise Png2SvgError(
@@ -138,6 +262,9 @@ def convert_png(
 
     contract_path = _resolve_config(contract_path, DEFAULT_CONTRACT, "Contract")
     thresholds_path = _resolve_config(thresholds_path, DEFAULT_THRESHOLDS, "Thresholds")
+    gate_thresholds = _resolve_gate_thresholds(
+        thresholds_path, gate_rmse_max, gate_bad_pixel_max, gate_pixel_tolerance
+    )
 
     if debug_dir is not None:
         debug_dir.mkdir(parents=True, exist_ok=True)
@@ -195,12 +322,12 @@ def convert_png(
         for idx, candidate in enumerate(candidate_list, start=1):
             template_id = str(candidate.get("template_id"))
             score = float(candidate.get("score", 0.0))
-            candidate_dir = _candidate_dir(debug_dir, idx, template_id)
+            candidate_dir = _candidate_dir(debug_dir, template_id)
             params_path = (
                 candidate_dir / "params.json" if candidate_dir else temp_root / f"{idx}.json"
             )
             svg_path = (
-                candidate_dir / "generated.svg" if candidate_dir else temp_root / f"{idx}.svg"
+                candidate_dir / "out.svg" if candidate_dir else temp_root / f"{idx}.svg"
             )
             report_path = (
                 candidate_dir / "validate_report.json"
@@ -208,9 +335,14 @@ def convert_png(
                 else temp_root / f"{idx}_report.json"
             )
             generated_png = (
-                candidate_dir / "generated.png" if candidate_dir else temp_root / f"{idx}.png"
+                candidate_dir / "rendered.png" if candidate_dir else temp_root / f"{idx}.png"
             )
             diff_png = candidate_dir / "diff.png" if candidate_dir else None
+            gate_report_path = (
+                candidate_dir / "gate_report.json"
+                if candidate_dir
+                else temp_root / f"{idx}_gate.json"
+            )
 
             attempt: dict[str, Any] = {
                 "template_id": template_id,
@@ -218,12 +350,14 @@ def convert_png(
                 "status": "fail",
                 "validation_warning_count": 0,
                 "validation_error_count": 0,
+                "quality_gate": None,
                 "paths": {
                     "params": str(params_path),
                     "svg": str(svg_path),
                     "validate_report": str(report_path),
-                    "generated_png": str(generated_png),
+                    "rendered_png": str(generated_png),
                     "diff_png": str(diff_png) if diff_png else None,
+                    "gate_report": str(gate_report_path),
                     "snap_preview_svg": str(candidate_dir / "snap_preview.svg")
                     if candidate_dir
                     else None,
@@ -238,6 +372,11 @@ def convert_png(
                 params = extract_skeleton(input_png, template_id, extract_debug)
             except Png2SvgError as exc:
                 attempt["error"] = _issue(exc.code, exc.message, exc.hint, {"stage": "extract"})
+                gate_payload = _gate_skipped_payload(
+                    "extract_failed", gate_thresholds, attempt["error"]
+                )
+                attempt["quality_gate"] = gate_payload
+                _write_json(gate_report_path, gate_payload)
                 results.append(attempt)
                 continue
             params_path.write_text(json.dumps(params, indent=2, sort_keys=True))
@@ -246,6 +385,11 @@ def convert_png(
                 render_svg(input_png, params_path, svg_path)
             except Png2SvgError as exc:
                 attempt["error"] = _issue(exc.code, exc.message, exc.hint, {"stage": "render"})
+                gate_payload = _gate_skipped_payload(
+                    "render_failed", gate_thresholds, attempt["error"]
+                )
+                attempt["quality_gate"] = gate_payload
+                _write_json(gate_report_path, gate_payload)
                 results.append(attempt)
                 continue
             except Exception as exc:  # noqa: BLE001
@@ -255,6 +399,11 @@ def convert_png(
                     "Check input PNG and extracted params.",
                     {"stage": "render"},
                 )
+                gate_payload = _gate_skipped_payload(
+                    "render_failed", gate_thresholds, attempt["error"]
+                )
+                attempt["quality_gate"] = gate_payload
+                _write_json(gate_report_path, gate_payload)
                 results.append(attempt)
                 continue
 
@@ -283,26 +432,41 @@ def convert_png(
             attempt["validation"] = report_payload
             attempt["validation_warning_count"] = len(report.warnings)
             attempt["validation_error_count"] = len(report.errors)
+            if quality_gate:
+                gate_payload = _run_quality_gate(
+                    svg_path, input_png, generated_png, diff_png, gate_thresholds
+                )
+                attempt["quality_gate"] = gate_payload
+                _write_json(gate_report_path, gate_payload)
+            else:
+                gate_payload = _gate_skipped_payload("quality_gate_disabled", gate_thresholds)
+                gate_payload["diff_png"] = str(diff_png) if diff_png else None
+                attempt["quality_gate"] = gate_payload
+                if candidate_dir is not None:
+                    try:
+                        backend = rasterize_svg_to_png(svg_path, generated_png)
+                        gate_payload["backend"] = backend
+                    except RasterizeError as exc:
+                        gate_payload["warnings"].append(
+                            _issue(
+                                "W5201_GATE_RASTERIZE_SKIPPED",
+                                f"Quality gate rasterize skipped: {exc}",
+                                "Install resvg or cairosvg to render debug previews.",
+                            )
+                        )
+                _write_json(gate_report_path, gate_payload)
+
             if report.errors:
+                results.append(attempt)
+                continue
+            if quality_gate and gate_payload.get("status") != "pass":
                 results.append(attempt)
                 continue
 
             attempt["status"] = "pass"
-            if enable_visual_diff:
-                try:
-                    visual_payload = _run_visual_diff(
-                        svg_path, input_png, generated_png, diff_png, thresholds_path
-                    )
-                    attempt["visual_diff"] = visual_payload
-                except (RasterizeError, DiffError, OSError) as exc:
-                    attempt["visual_diff_error"] = _issue(
-                        "W5101_VISUAL_DIFF_SKIPPED",
-                        f"Visual diff skipped: {exc}",
-                        "Install resvg or cairosvg for rasterization.",
-                        {"stage": "visual_diff"},
-                    )
             results.append(attempt)
 
+        validation_passing = [item for item in results if item.get("validation_error_count") == 0]
         passing = [item for item in results if item.get("status") == "pass"]
         report: dict[str, Any] = {
             "status": "pass" if passing else "fail",
@@ -311,7 +475,7 @@ def convert_png(
             "candidates": results,
         }
 
-        if not passing:
+        if not validation_passing:
             if debug_dir is not None:
                 _write_json(debug_dir / "convert_report.json", report)
             raise Png2SvgError(
@@ -319,16 +483,32 @@ def convert_png(
                 message="No candidate templates passed validation.",
                 hint="Use --debug-dir to inspect candidate outputs and warnings.",
             )
+        if quality_gate and not passing:
+            if debug_dir is not None:
+                _write_json(debug_dir / "convert_report.json", report)
+            raise Png2SvgError(
+                code="E5108_QUALITY_GATE_FAILED",
+                message="No candidate templates passed the quality gate.",
+                hint="Inspect gate_report.json and diff.png under the debug directory.",
+            )
+
+        def _metric_or_inf(value: Any) -> float:
+            try:
+                return float(value)
+            except (TypeError, ValueError):
+                return float("inf")
 
         def _sort_key(item: dict[str, Any]) -> tuple[float, float, float, float]:
+            gate = item.get("quality_gate") or {}
+            rmse = _metric_or_inf(gate.get("rmse"))
+            bad_ratio = _metric_or_inf(gate.get("bad_pixel_ratio"))
             warnings = float(item.get("validation_warning_count", 0))
-            visual = item.get("visual_diff") or {}
-            rmse = float(visual.get("rmse", float("inf")))
-            bad_ratio = float(visual.get("bad_pixel_ratio", float("inf")))
             score = -float(item.get("score", 0.0))
+            if quality_gate:
+                return (rmse, bad_ratio, warnings, score)
             return (warnings, rmse, bad_ratio, score)
 
-        selected = sorted(passing, key=_sort_key)[0]
+        selected = sorted(passing if quality_gate else validation_passing, key=_sort_key)[0]
         report["selected_template"] = selected.get("template_id")
         report["selected"] = selected
 
@@ -336,6 +516,20 @@ def convert_png(
         src_svg = Path(selected["paths"]["svg"])
         if src_svg.exists():
             output_svg.write_bytes(src_svg.read_bytes())
+
+        if debug_dir is not None:
+            final_dir = debug_dir / "final"
+            final_dir.mkdir(parents=True, exist_ok=True)
+            final_svg = final_dir / "out.svg"
+            final_svg.write_bytes(src_svg.read_bytes())
+            rendered_path = Path(selected["paths"]["rendered_png"])
+            if rendered_path.exists():
+                final_png = final_dir / "rendered.png"
+                final_png.write_bytes(rendered_path.read_bytes())
+            gate_report = Path(selected["paths"]["gate_report"])
+            if gate_report.exists():
+                final_gate = final_dir / "gate_report.json"
+                final_gate.write_bytes(gate_report.read_bytes())
 
         if debug_dir is None:
             for item in report["candidates"]:

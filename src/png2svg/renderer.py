@@ -97,12 +97,20 @@ def _dispatch_template(
     )
 
 
-def _add_extracted_text_items(builder: SvgBuilder, params: dict[str, Any]) -> None:
+def _text_items_from_params(params: dict[str, Any]) -> list[dict[str, Any]]:
+    items = params.get("texts")
+    if isinstance(items, list) and items:
+        return items
     extracted = params.get("extracted")
-    if not isinstance(extracted, dict):
-        return
-    items = extracted.get("text_items")
-    if not isinstance(items, list) or not items:
+    if isinstance(extracted, dict):
+        items = extracted.get("text_items")
+        if isinstance(items, list) and items:
+            return items
+    return []
+
+
+def _add_text_items(builder: SvgBuilder, items: list[dict[str, Any]]) -> None:
+    if not items:
         return
     allowed_anchors = {"start", "middle", "end"}
     sorted_items = sorted(
@@ -114,6 +122,8 @@ def _add_extracted_text_items(builder: SvgBuilder, params: dict[str, Any]) -> No
         ),
     )
     for idx, item in enumerate(sorted_items):
+        if item.get("render") is False:
+            continue
         try:
             x = float(item.get("x"))
             y = float(item.get("y"))
@@ -127,18 +137,117 @@ def _add_extracted_text_items(builder: SvgBuilder, params: dict[str, Any]) -> No
         anchor = str(item.get("anchor") or DEFAULT_TEXT_ANCHOR).lower()
         if anchor not in allowed_anchors:
             anchor = DEFAULT_TEXT_ANCHOR
-        text_id = item.get("id") or f"txt_extracted_{idx:02d}"
-        builder.groups["g_text"].add(
-            builder.drawing.text(
-                str(content),
-                insert=(x, y),
-                id=str(text_id),
-                font_family=DEFAULT_FONT_FAMILY,
-                font_size=10,
-                text_anchor=anchor,
-                fill="#000000",
-            )
+        font_family = item.get("font_family") or DEFAULT_FONT_FAMILY
+        text_id = item.get("id") or f"txt_text_{idx:02d}"
+        text_kwargs = {
+            "insert": (x, y),
+            "id": str(text_id),
+            "font_family": str(font_family),
+            "font_size": float(item.get("font_size", 10)),
+            "text_anchor": anchor,
+            "fill": str(item.get("fill", "#000000")),
+        }
+        dominant = item.get("dominant_baseline")
+        if isinstance(dominant, str) and dominant:
+            text_kwargs["dominant_baseline"] = dominant
+        builder.groups["g_text"].add(builder.drawing.text(str(content), **text_kwargs))
+
+
+def _add_geometry(builder: SvgBuilder, params: dict[str, Any]) -> None:
+    geometry = params.get("geometry")
+    if not isinstance(geometry, dict):
+        return
+    lines = geometry.get("lines", [])
+    rects = geometry.get("rects", [])
+    markers = geometry.get("markers", [])
+
+    if isinstance(lines, list):
+        sorted_lines = sorted(
+            [line for line in lines if isinstance(line, dict)],
+            key=lambda line: (
+                str(line.get("role", "")),
+                float(line.get("y1", 0.0) or 0.0),
+                float(line.get("x1", 0.0) or 0.0),
+                float(line.get("y2", 0.0) or 0.0),
+                float(line.get("x2", 0.0) or 0.0),
+            ),
         )
+        for idx, line in enumerate(sorted_lines):
+            try:
+                x1 = float(line.get("x1"))
+                y1 = float(line.get("y1"))
+                x2 = float(line.get("x2"))
+                y2 = float(line.get("y2"))
+            except (TypeError, ValueError):
+                continue
+            stroke = line.get("stroke") or "#555555"
+            stroke_width = float(line.get("stroke_width", 1))
+            line_kwargs = {
+                "start": (x1, y1),
+                "end": (x2, y2),
+                "stroke": stroke,
+                "stroke_width": stroke_width,
+                "id": line.get("id") or f"geom_line_{idx:02d}",
+            }
+            if line.get("dashed"):
+                dasharray = line.get("dasharray") or [6, 4]
+                if isinstance(dasharray, list):
+                    dasharray = ",".join(str(value) for value in dasharray)
+                line_kwargs["stroke_dasharray"] = dasharray
+                line_kwargs["class_"] = "dashed"
+            builder.groups["g_annotations"].add(builder.drawing.line(**line_kwargs))
+
+    if isinstance(rects, list):
+        sorted_rects = sorted(
+            [rect for rect in rects if isinstance(rect, dict)],
+            key=lambda rect: (
+                str(rect.get("role", "")),
+                float(rect.get("y", 0.0) or 0.0),
+                float(rect.get("x", 0.0) or 0.0),
+            ),
+        )
+        for idx, rect in enumerate(sorted_rects):
+            try:
+                x = float(rect.get("x"))
+                y = float(rect.get("y"))
+                width = float(rect.get("width"))
+                height = float(rect.get("height"))
+            except (TypeError, ValueError):
+                continue
+            rect_kwargs = {
+                "insert": (x, y),
+                "size": (width, height),
+                "fill": rect.get("fill") or "none",
+                "stroke": rect.get("stroke") or "#555555",
+                "stroke_width": float(rect.get("stroke_width", 1)),
+                "id": rect.get("id") or f"geom_rect_{idx:02d}",
+            }
+            builder.groups["g_annotations"].add(builder.drawing.rect(**rect_kwargs))
+
+    if isinstance(markers, list):
+        sorted_markers = sorted(
+            [marker for marker in markers if isinstance(marker, dict)],
+            key=lambda marker: (
+                str(marker.get("role", "")),
+                float(marker.get("y", 0.0) or 0.0),
+                float(marker.get("x", 0.0) or 0.0),
+            ),
+        )
+        for idx, marker in enumerate(sorted_markers):
+            try:
+                x = float(marker.get("x"))
+                y = float(marker.get("y"))
+            except (TypeError, ValueError):
+                continue
+            radius = float(marker.get("radius", 3))
+            builder.groups["g_markers"].add(
+                builder.drawing.circle(
+                    center=(x, y),
+                    r=radius,
+                    fill=marker.get("fill") or "#555555",
+                    id=marker.get("id") or f"geom_marker_{idx:02d}",
+                )
+            )
 
 
 def render_svg(input_png: Path, params_path: Path, output_svg: Path) -> None:
@@ -153,5 +262,6 @@ def render_svg(input_png: Path, params_path: Path, output_svg: Path) -> None:
     width, height = _resolve_canvas_size(input_png, params)
     builder = SvgBuilder.create(width=width, height=height)
     _dispatch_template(str(template), builder, params, (width, height))
-    _add_extracted_text_items(builder, params)
+    _add_geometry(builder, params)
+    _add_text_items(builder, _text_items_from_params(params))
     builder.save(output_svg)

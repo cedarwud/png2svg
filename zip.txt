@@ -1,0 +1,1 @@
+zip -r png2svg.zip png2svg -x "png2svg/.git/*" -x "png2svg/.venv/*" -x "*__pycache__*"

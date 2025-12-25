@@ -3,6 +3,7 @@
   "stats": {
     "color_count": 2,
     "max_path_commands": 0,
+    "text_count": 14,
     "visual_diff": {
       "backend": "cairosvg",
       "bad_pixel_ratio": 0.0,

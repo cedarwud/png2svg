@@ -44,7 +44,6 @@ def test_real_regression_optional(tmp_path: Path) -> None:
             topk=2,
             contract_path=CONTRACT,
             thresholds_path=THRESHOLDS,
-            enable_visual_diff=False,
         )
         assert result["status"] == "pass"
         selected = result.get("selected", {})

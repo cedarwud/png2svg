@@ -1,0 +1,42 @@
+# Adaptive extractor config v1: scale detection parameters by image size.
+# Key fields: base_long_edge (scale reference), binarization block size/C,
+# line/dash thresholds, OCR ROI padding, curve sampling spacing.
+version: v1
+
+base_long_edge: 800
+scale:
+  min: 0.6
+  max: 1.8
+
+binarization:
+  enabled: true
+  block_size: 31
+  block_size_min: 15
+  block_size_max: 61
+  c: 10
+  alpha_threshold: 10
+  luminance_threshold: 245
+
+lines:
+  long_line_ratio: 0.5
+
+dashes:
+  min_len_ratio: 0.03
+  max_len_ratio: 0.12
+  min_count: 6
+
+text_boxes:
+  min_area_ratio: 0.00005
+  max_area_ratio: 0.02
+  min_size: 3
+  max_width_ratio: 0.6
+  max_height_ratio: 0.4
+
+ocr:
+  roi_pad_ratio: 0.02
+  roi_pad_min: 2
+  roi_pad_max: 24
+
+curves:
+  sample_spacing_px: 120
+  max_points: 8

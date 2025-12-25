@@ -48,3 +48,9 @@ cases:
   - id: case_015_lineplot_realistic
     dir: cases/case_015_lineplot_realistic
     tags: [multi_series, dashed, dense_ticks, large_canvas, long_text]
+  - id: case_016_3gpp_dense_text
+    dir: cases/case_016_3gpp_dense_text
+    tags: [large_canvas, long_text, dashed]
+  - id: case_017_3gpp_dashed_noise
+    dir: cases/case_017_3gpp_dashed_noise
+    tags: [small_canvas, dashed, long_text]

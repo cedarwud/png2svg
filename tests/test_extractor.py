@@ -44,6 +44,13 @@ def _assert_schema(template_id: str, params: dict[str, object]) -> None:
     canvas = params.get("canvas")
     assert isinstance(canvas, dict)
     assert "width" in canvas and "height" in canvas
+    texts = params.get("texts")
+    assert isinstance(texts, list)
+    geometry = params.get("geometry")
+    assert isinstance(geometry, dict)
+    assert isinstance(geometry.get("lines", []), list)
+    assert isinstance(geometry.get("rects", []), list)
+    assert isinstance(geometry.get("markers", []), list)
     if template_id == "t_3gpp_events_3panel":
         panels = params.get("panels")
         assert isinstance(panels, list) and len(panels) == 3

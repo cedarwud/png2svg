@@ -1,0 +1,12 @@
+{
+  "backend": "cairosvg",
+  "bad_pixel_ratio": 0.056375,
+  "bad_pixel_ratio_max": 0.8,
+  "diff_png": "/home/u24/png2svg/output/tmp_gate_lineplot/candidates/t_performance_lineplot/diff.png",
+  "errors": [],
+  "pixel_tolerance": 10,
+  "rmse": 0.11164489388465881,
+  "rmse_max": 0.8,
+  "status": "pass",
+  "warnings": []
+}

@@ -171,8 +171,37 @@ def convert(
         dir_okay=False,
         help="Optional classifier thresholds YAML.",
     ),
+    quality_gate: str = typer.Option(
+        "on",
+        "--quality-gate",
+        help="Quality gate toggle: on or off.",
+    ),
+    gate_rmse_max: float | None = typer.Option(
+        None,
+        "--gate-rmse-max",
+        help="Override quality gate RMSE maximum.",
+    ),
+    gate_bad_pixel_max: float | None = typer.Option(
+        None,
+        "--gate-bad-pixel-max",
+        help="Override quality gate bad pixel ratio maximum.",
+    ),
+    gate_pixel_tolerance: int | None = typer.Option(
+        None,
+        "--gate-pixel-tolerance",
+        help="Override quality gate pixel tolerance.",
+    ),
 ) -> None:
     """Classify, extract, render, and validate in one step."""
+    gate_value = quality_gate.strip().lower()
+    if gate_value in {"on", "true", "1", "yes"}:
+        gate_enabled = True
+    elif gate_value in {"off", "false", "0", "no"}:
+        gate_enabled = False
+    else:
+        typer.echo("ERROR E1103_QUALITY_GATE_INVALID: quality_gate must be on or off.", err=True)
+        typer.echo("HINT: Use --quality-gate on or --quality-gate off.", err=True)
+        raise typer.Exit(code=1)
     try:
         result = convert_png(
             input_png,
@@ -181,6 +210,10 @@ def convert(
             topk=topk,
             force_template=force_template,
             classifier_thresholds_path=thresholds,
+            quality_gate=gate_enabled,
+            gate_rmse_max=gate_rmse_max,
+            gate_bad_pixel_max=gate_bad_pixel_max,
+            gate_pixel_tolerance=gate_pixel_tolerance,
         )
     except Png2SvgError as exc:
         typer.echo(f"ERROR {exc.code}: {exc.message}", err=True)

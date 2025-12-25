@@ -45,7 +45,6 @@ def test_convert_e2e_regression_cases(tmp_path: Path) -> None:
             topk=2,
             contract_path=CONTRACT,
             thresholds_path=THRESHOLDS,
-            enable_visual_diff=False,
         )
         assert result["status"] == "pass"
         report = validate_svg(output_svg, CONTRACT, THRESHOLDS)
@@ -65,17 +64,20 @@ def test_convert_debug_artifacts(tmp_path: Path) -> None:
         topk=1,
         contract_path=CONTRACT,
         thresholds_path=THRESHOLDS,
-        enable_visual_diff=False,
     )
     assert result["status"] == "pass"
     assert (debug_dir / "classification.json").exists()
     assert (debug_dir / "classify" / "overlay.png").exists()
     assert (debug_dir / "classify" / "features.json").exists()
     assert (debug_dir / "convert_report.json").exists()
-    candidate_dir = next(debug_dir.glob("candidate_01_*"))
+    candidate_dir = debug_dir / "candidates" / result["selected_template"]
     assert (candidate_dir / "params.json").exists()
-    assert (candidate_dir / "generated.svg").exists()
+    assert (candidate_dir / "out.svg").exists()
     assert (candidate_dir / "validate_report.json").exists()
+    assert (candidate_dir / "gate_report.json").exists()
+    assert (candidate_dir / "rendered.png").exists()
     assert (candidate_dir / "extract" / "extract_report.json").exists()
     assert (candidate_dir / "snap_preview.svg").exists()
     assert (candidate_dir / "snap_preview.png").exists()
+    assert (debug_dir / "final" / "out.svg").exists()
+    assert (debug_dir / "final" / "gate_report.json").exists()

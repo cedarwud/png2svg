@@ -1,0 +1,12 @@
+{
+  "errors": [],
+  "status": "pass",
+  "template_id": "t_performance_lineplot",
+  "warnings": [
+    {
+      "code": "W4010_OCR_UNAVAILABLE",
+      "hint": "Install tesseract or set PNG2SVG_OCR_BACKEND=none.",
+      "message": "Tesseract not available; OCR skipped."
+    }
+  ]
+}
