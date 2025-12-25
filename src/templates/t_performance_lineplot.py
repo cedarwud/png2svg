@@ -431,6 +431,7 @@ def _draw_legend(builder: SvgBuilder, plot: PlotArea, series_list: list[Series])
                 font_family=DEFAULT_FONT_FAMILY,
                 font_size=TICK_FONT_SIZE,
                 fill=LABEL_COLOR,
+                text_anchor="start",
             )
         )
     annotations.add(legend)

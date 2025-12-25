@@ -43,6 +43,7 @@ def test_classifier_regression_cases(tmp_path: Path) -> None:
         expected_template = _expected_template(case_dir)
         image_path = _expected_png(case_dir, tmp_path)
         result = classify_png(image_path)
+        assert result["decision"] == "known"
         top_two = [item["template_id"] for item in result["candidate_templates"][:2]]
         assert expected_template in top_two
 

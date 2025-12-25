@@ -14,7 +14,8 @@ REQUIRED_GROUP_IDS = [
     "g_markers",
 ]
 
-DEFAULT_FONT_FAMILY = "Arial"
+DEFAULT_FONT_FAMILY = "Arial, sans-serif"
+DEFAULT_TEXT_ANCHOR = "start"
 
 
 @dataclass
@@ -57,6 +58,7 @@ class SvgBuilder:
                     insert=(x, y),
                     id="txt_title",
                     font_family=DEFAULT_FONT_FAMILY,
+                    text_anchor=DEFAULT_TEXT_ANCHOR,
                     fill="#000000",
                 )
             )
@@ -66,6 +68,7 @@ class SvgBuilder:
             insert=(x, y),
             id="txt_title",
             font_family=DEFAULT_FONT_FAMILY,
+            text_anchor=DEFAULT_TEXT_ANCHOR,
             fill="#000000",
         )
         line_height = 14

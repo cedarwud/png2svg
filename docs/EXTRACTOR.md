@@ -19,6 +19,25 @@ Common fields:
 }
 ```
 
+Text extraction fields (debug):
+```
+{
+  "extracted": {
+    "texts_detected": int,
+    "text_items": [
+      {
+        "content": string,
+        "x": number,
+        "y": number,
+        "role": string,
+        "anchor": "start" | "middle" | "end",
+        "baseline_group": string | null
+      }
+    ]
+  }
+}
+```
+
 Template-specific fields (minimum):
 
 1) t_3gpp_events_3panel

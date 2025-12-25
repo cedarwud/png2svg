@@ -1,0 +1,6 @@
+# Classifier thresholds v1 for unknown gating.
+# Key fields: decision.min_confidence, decision.min_margin.
+version: v1
+decision:
+  min_confidence: 0.52
+  min_margin: 0.05

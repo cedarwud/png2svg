@@ -24,7 +24,7 @@ def _base_svg(curves_extra: str = "") -> str:
     </g>
     <g id="g_annotations" />
     <g id="g_text">
-      <text id="t1" font-family="Arial">Hello</text>
+      <text id="t1" font-family="Arial, sans-serif" text-anchor="start">Hello</text>
     </g>
     <g id="g_markers" />
   </g>
@@ -67,7 +67,7 @@ def test_warns_on_text_outside_group(tmp_path: Path) -> None:
     <g id="g_axes" />
     <g id="g_curves" />
     <g id="g_annotations">
-      <text id="txt_bad" font-family="Arial">Note</text>
+      <text id="txt_bad" font-family="Arial, sans-serif" text-anchor="start">Note</text>
     </g>
     <g id="g_text" />
     <g id="g_markers" />

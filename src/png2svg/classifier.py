@@ -1,11 +1,24 @@
 from __future__ import annotations
 
 import json
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 import numpy as np
 from PIL import Image, ImageDraw
+import yaml
+
+
+@dataclass(frozen=True)
+class ClassifierThresholds:
+    min_confidence: float
+    min_margin: float
+
+
+DEFAULT_THRESHOLDS_PATH = (
+    Path(__file__).resolve().parents[2] / "config" / "classifier_thresholds.v1.yaml"
+)
 
 TEMPLATES = [
     "t_3gpp_events_3panel",
@@ -187,6 +200,8 @@ def _score_templates(features: dict[str, Any]) -> dict[str, float]:
         score_lineplot += 0.2
     if long_v >= 4:
         score_lineplot -= 0.6
+    if saturated < 0.1:
+        score_lineplot -= 0.6
 
     score_flow = 0.0
     if axis_ratio >= 0.7:
@@ -214,6 +229,45 @@ def _confidence(scores: dict[str, float], top_id: str) -> float:
     return shifted[top_id] / total
 
 
+def _evidence_scale(features: dict[str, Any], top_id: str) -> float:
+    scale = 1.0
+    if top_id == "t_performance_lineplot":
+        if features["long_vertical_lines"] < 1 or features["long_horizontal_lines"] < 1:
+            scale *= 0.6
+        if features["ink_ratio"] > 0.2:
+            scale *= 0.4
+        if features["saturated_ratio"] < 0.2:
+            scale *= 0.6
+    elif top_id == "t_3gpp_events_3panel":
+        if features["long_vertical_lines"] < 4:
+            scale *= 0.4
+        if features["long_horizontal_lines"] > 1:
+            scale *= 0.6
+        if features["saturated_ratio"] > 0.4:
+            scale *= 0.6
+    elif top_id == "t_procedure_flow":
+        if features["axis_aligned_ratio"] < 0.7:
+            scale *= 0.6
+        if features["axis_aligned_ratio"] > 0.97:
+            scale *= 0.6
+        if features["saturated_ratio"] > 0.35:
+            scale *= 0.4
+    return scale
+
+
+def _load_thresholds(path: Path | None) -> ClassifierThresholds:
+    thresholds_path = path or DEFAULT_THRESHOLDS_PATH
+    data: dict[str, Any] = {}
+    if thresholds_path.exists():
+        loaded = yaml.safe_load(thresholds_path.read_text())
+        if isinstance(loaded, dict):
+            data = loaded
+    decision = data.get("decision", {}) or {}
+    min_confidence = float(decision.get("min_confidence", 0.55))
+    min_margin = float(decision.get("min_margin", 0.45))
+    return ClassifierThresholds(min_confidence=min_confidence, min_margin=min_margin)
+
+
 def _write_debug(
     rgba: np.ndarray,
     debug_dir: Path,
@@ -239,7 +293,11 @@ def _write_debug(
     )
 
 
-def classify_png(input_png: Path, debug_dir: Path | None = None) -> dict[str, Any]:
+def classify_png(
+    input_png: Path,
+    debug_dir: Path | None = None,
+    thresholds_path: Path | None = None,
+) -> dict[str, Any]:
     rgba, width, height = _load_image(input_png)
     features = _compute_features(rgba, width, height)
     scores = _score_templates(features)
@@ -251,9 +309,24 @@ def classify_png(input_png: Path, debug_dir: Path | None = None) -> dict[str, An
         key=lambda item: (-item["score"], item["template_id"]),
     )
     top_id = candidates[0]["template_id"]
+    confidence = _confidence(scores, top_id)
+    confidence *= _evidence_scale(features, top_id)
+    top_score = float(candidates[0]["score"])
+    second_score = float(candidates[1]["score"]) if len(candidates) > 1 else top_score
+    margin = top_score - second_score
+    thresholds = _load_thresholds(thresholds_path)
+    reason_codes: list[str] = []
+    if confidence < thresholds.min_confidence:
+        reason_codes.append("LOW_CONFIDENCE")
+    if margin < thresholds.min_margin:
+        reason_codes.append("AMBIGUOUS_MARGIN")
+    decision = "unknown" if reason_codes else "known"
+    template_id = "unknown" if decision == "unknown" else top_id
     result = {
-        "template_id": top_id,
-        "confidence": _confidence(scores, top_id),
+        "template_id": template_id,
+        "decision": decision,
+        "reason_codes": reason_codes,
+        "confidence": confidence,
         "candidate_templates": candidates,
         "image_meta": {"width": width, "height": height},
         "features_summary": {

@@ -16,3 +16,10 @@ geometry:
   dash_segment_length_max: 10
   dash_segment_min_count: 6
   polyline_max_points: 32
+
+text:
+  min_keep_ratio: 0.7
+  max_missing: 1
+  min_keep_absolute: 1
+  outline_path_min: 8
+  baseline_tolerance: 1.0

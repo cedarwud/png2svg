@@ -3,7 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from common.svg_builder import DEFAULT_FONT_FAMILY, SvgBuilder
+from common.svg_builder import DEFAULT_FONT_FAMILY, DEFAULT_TEXT_ANCHOR, SvgBuilder
 from png2svg.errors import Png2SvgError
 
 
@@ -208,6 +208,7 @@ def _add_text(
             insert=(x, y),
             id=text_id,
             font_family=DEFAULT_FONT_FAMILY,
+            text_anchor=DEFAULT_TEXT_ANCHOR,
             font_size=font_size,
             fill=fill,
         )

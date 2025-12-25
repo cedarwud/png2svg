@@ -153,6 +153,27 @@ def _align_baselines(text_blocks: list[dict[str, Any]], tolerance: float, grid: 
         bbox["y"] = snapped - float(height)
 
 
+def _normalize_text_items(text_items: list[dict[str, Any]], grid: float) -> None:
+    groups: dict[str, list[dict[str, Any]]] = {}
+    for item in text_items:
+        try:
+            item["x"] = _snap_value(float(item.get("x", 0.0)), grid)
+            item["y"] = _snap_value(float(item.get("y", 0.0)), grid)
+        except (TypeError, ValueError):
+            continue
+        group = item.get("baseline_group")
+        if isinstance(group, str) and group:
+            groups.setdefault(group, []).append(item)
+
+    for group_items in groups.values():
+        if not group_items:
+            continue
+        baseline = sum(float(item.get("y", 0.0)) for item in group_items) / len(group_items)
+        snapped = _snap_value(baseline, grid)
+        for item in group_items:
+            item["y"] = snapped
+
+
 def _normalize_3gpp(params: dict[str, Any], grid: float) -> dict[str, Any]:
     canvas = params.get("canvas", {})
     canvas_width = float(canvas.get("width", 0))
@@ -285,6 +306,9 @@ def normalize_params(template_id: str, params: dict[str, Any], grid: float = 1.0
         text_blocks = extracted.get("text_blocks")
         if isinstance(text_blocks, list):
             _align_baselines(text_blocks, tolerance=4.0, grid=grid)
+        text_items = extracted.get("text_items")
+        if isinstance(text_items, list):
+            _normalize_text_items(text_items, grid=grid)
         extracted["normalization"] = {
             "grid": grid,
         }

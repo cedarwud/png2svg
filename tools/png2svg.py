@@ -81,9 +81,15 @@ def classify(
         "--debug-dir",
         help="Optional directory to write debug overlay and features.",
     ),
+    thresholds: Path | None = typer.Option(
+        None,
+        "--classifier-thresholds",
+        dir_okay=False,
+        help="Optional classifier thresholds YAML.",
+    ),
 ) -> None:
     """Classify a PNG into a known template."""
-    result = classify_png(input_png, debug_dir)
+    result = classify_png(input_png, debug_dir, thresholds)
     payload = json.dumps(result, indent=2, sort_keys=True)
     if out is not None:
         out.write_text(payload)
@@ -154,10 +160,28 @@ def convert(
         "--topk",
         help="How many top classifier candidates to try.",
     ),
+    force_template: str | None = typer.Option(
+        None,
+        "--force-template",
+        help="Force a template id and skip unknown gating.",
+    ),
+    thresholds: Path | None = typer.Option(
+        None,
+        "--classifier-thresholds",
+        dir_okay=False,
+        help="Optional classifier thresholds YAML.",
+    ),
 ) -> None:
     """Classify, extract, render, and validate in one step."""
     try:
-        result = convert_png(input_png, output_svg, debug_dir=debug_dir, topk=topk)
+        result = convert_png(
+            input_png,
+            output_svg,
+            debug_dir=debug_dir,
+            topk=topk,
+            force_template=force_template,
+            classifier_thresholds_path=thresholds,
+        )
     except Png2SvgError as exc:
         typer.echo(f"ERROR {exc.code}: {exc.message}", err=True)
         typer.echo(f"HINT: {exc.hint}", err=True)

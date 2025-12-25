@@ -6,7 +6,9 @@ When `--debug-dir` is provided, it writes `overlay.png` and `features.json`.
 Schema (informal):
 ```
 {
-  "template_id": "t_3gpp_events_3panel" | "t_procedure_flow" | "t_performance_lineplot",
+  "template_id": "t_3gpp_events_3panel" | "t_procedure_flow" | "t_performance_lineplot" | "unknown",
+  "decision": "known" | "unknown",
+  "reason_codes": ["LOW_CONFIDENCE" | "AMBIGUOUS_MARGIN"],
   "confidence": 0.0-1.0,
   "candidate_templates": [
     {"template_id": "...", "score": number}
@@ -28,6 +30,8 @@ Example:
 ```
 {
   "template_id": "t_performance_lineplot",
+  "decision": "known",
+  "reason_codes": [],
   "confidence": 0.82,
   "candidate_templates": [
     {"template_id": "t_performance_lineplot", "score": 1.8},
@@ -46,3 +50,5 @@ Example:
   }
 }
 ```
+
+Thresholds for unknown gating live in `config/classifier_thresholds.v1.yaml`.

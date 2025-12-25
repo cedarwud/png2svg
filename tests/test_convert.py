@@ -6,6 +6,7 @@ import yaml
 
 from png2svg import convert_png
 from validators.validate import validate_svg
+from validators.visual_diff import rasterize_svg_to_png
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -23,10 +24,20 @@ def _case_dir(entry: dict[str, str]) -> Path:
     return ROOT / "datasets" / "regression_v0" / entry["dir"]
 
 
+def _expected_png(case_dir: Path, tmp_path: Path) -> Path:
+    png_path = case_dir / "expected.png"
+    if png_path.exists():
+        return png_path
+    svg_path = case_dir / "expected.svg"
+    out_path = tmp_path / f"{case_dir.name}_expected.png"
+    rasterize_svg_to_png(svg_path, out_path)
+    return out_path
+
+
 def test_convert_e2e_regression_cases(tmp_path: Path) -> None:
     for entry in _load_manifest():
         case_dir = _case_dir(entry)
-        input_png = case_dir / "input.png"
+        input_png = _expected_png(case_dir, tmp_path)
         output_svg = tmp_path / f"{case_dir.name}.svg"
         result = convert_png(
             input_png,
@@ -44,7 +55,7 @@ def test_convert_e2e_regression_cases(tmp_path: Path) -> None:
 def test_convert_debug_artifacts(tmp_path: Path) -> None:
     entry = _load_manifest()[0]
     case_dir = _case_dir(entry)
-    input_png = case_dir / "input.png"
+    input_png = _expected_png(case_dir, tmp_path)
     output_svg = tmp_path / "out.svg"
     debug_dir = tmp_path / "debug"
     result = convert_png(

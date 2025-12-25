@@ -202,6 +202,117 @@ def _detect_text_boxes(rgba: np.ndarray) -> list[dict[str, Any]]:
     return boxes
 
 
+def _text_items_from_boxes(text_boxes: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    if not text_boxes:
+        return []
+    baselines: list[float] = []
+    heights: list[float] = []
+    boxes_sorted: list[tuple[float, dict[str, Any]]] = []
+    for entry in text_boxes:
+        bbox = entry.get("bbox")
+        if not isinstance(bbox, dict):
+            continue
+        try:
+            x = float(bbox["x"])
+            y = float(bbox["y"])
+            width = float(bbox["width"])
+            height = float(bbox["height"])
+        except (KeyError, TypeError, ValueError):
+            continue
+        baseline = y + height
+        baselines.append(baseline)
+        heights.append(height)
+        boxes_sorted.append((baseline, {"x": x, "y": y, "width": width, "height": height}))
+    if not boxes_sorted:
+        return []
+    heights.sort()
+    median_height = heights[len(heights) // 2]
+    tolerance = max(4.0, median_height * 0.6)
+    boxes_sorted.sort(key=lambda item: (item[0], item[1]["x"]))
+
+    clusters: list[list[dict[str, Any]]] = []
+    cluster_baselines: list[float] = []
+    for baseline, bbox in boxes_sorted:
+        if not clusters or abs(baseline - cluster_baselines[-1]) > tolerance:
+            clusters.append([bbox])
+            cluster_baselines.append(baseline)
+        else:
+            clusters[-1].append(bbox)
+            cluster_baselines[-1] = (cluster_baselines[-1] + baseline) / 2.0
+
+    line_boxes: list[dict[str, Any]] = []
+    for cluster, baseline in zip(clusters, cluster_baselines):
+        min_x = min(box["x"] for box in cluster)
+        max_x = max(box["x"] + box["width"] for box in cluster)
+        min_y = min(box["y"] for box in cluster)
+        max_y = max(box["y"] + box["height"] for box in cluster)
+        line_boxes.append(
+            {
+                "min_x": float(min_x),
+                "max_x": float(max_x),
+                "min_y": float(min_y),
+                "max_y": float(max_y),
+                "baseline": float(baseline),
+            }
+        )
+
+    line_boxes.sort(key=lambda item: (item["min_y"], item["min_x"]))
+    line_gap = max(4.0, median_height * 1.8)
+    blocks: list[dict[str, Any]] = []
+
+    for line in line_boxes:
+        best_idx: int | None = None
+        best_overlap = 0.0
+        for idx, block in enumerate(blocks):
+            overlap = min(line["max_x"], block["max_x"]) - max(line["min_x"], block["min_x"])
+            min_width = min(line["max_x"] - line["min_x"], block["max_x"] - block["min_x"])
+            if min_width <= 0:
+                continue
+            overlap_ratio = overlap / min_width
+            vertical_gap = line["min_y"] - block["max_y"]
+            if 0 <= vertical_gap <= line_gap and overlap_ratio >= 0.4:
+                if overlap_ratio > best_overlap:
+                    best_overlap = overlap_ratio
+                    best_idx = idx
+        if best_idx is None:
+            blocks.append(
+                {
+                    "min_x": line["min_x"],
+                    "max_x": line["max_x"],
+                    "min_y": line["min_y"],
+                    "max_y": line["max_y"],
+                    "baseline": line["baseline"],
+                }
+            )
+        else:
+            block = blocks[best_idx]
+            block["min_x"] = min(block["min_x"], line["min_x"])
+            block["max_x"] = max(block["max_x"], line["max_x"])
+            block["min_y"] = min(block["min_y"], line["min_y"])
+            block["max_y"] = max(block["max_y"], line["max_y"])
+
+    items: list[dict[str, Any]] = []
+    for idx, block in enumerate(blocks):
+        items.append(
+            {
+                "content": "Unknown",
+                "text": "Unknown",
+                "x": float(block["min_x"]),
+                "y": float(block["baseline"]),
+                "role": "annotation",
+                "anchor": "start",
+                "baseline_group": f"block_{idx}",
+                "bbox": {
+                    "x": float(block["min_x"]),
+                    "y": float(block["min_y"]),
+                    "width": float(block["max_x"] - block["min_x"]),
+                    "height": float(block["max_y"] - block["min_y"]),
+                },
+            }
+        )
+    return items
+
+
 def _default_panels(width: int, height: int) -> list[dict[str, Any]]:
     margin_x = max(int(width * 0.05), 20)
     margin_top = max(int(height * 0.2), 40)
@@ -519,6 +630,7 @@ def extract_skeleton(
     preprocessed = _preprocess_image(rgba)
     mask = _ink_mask(rgba)
     text_boxes = _detect_text_boxes(rgba)
+    text_items = _text_items_from_boxes(text_boxes)
     warnings: list[ExtractIssue] = []
     errors: list[ExtractIssue] = []
 
@@ -551,6 +663,12 @@ def extract_skeleton(
         }
         overlay = {}
 
+    extracted = params.get("extracted")
+    if not isinstance(extracted, dict):
+        extracted = {}
+        params["extracted"] = extracted
+    extracted["text_items"] = text_items
+    extracted["texts_detected"] = len(text_items)
     params = normalize_params(template_id, params)
     if overlay.get("panels") is not None:
         overlay["panels"] = params.get("panels", overlay.get("panels"))

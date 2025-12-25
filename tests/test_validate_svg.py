@@ -13,7 +13,11 @@ ROOT = Path(__file__).resolve().parents[1]
 CONTRACT = ROOT / "config" / "figure_contract.v1.yaml"
 
 
-def _build_svg(font_family: str = "Arial", extra: str = "", missing_group: str | None = None) -> str:
+def _build_svg(
+    font_family: str = "Arial, sans-serif",
+    extra: str = "",
+    missing_group: str | None = None,
+) -> str:
     groups = ["g_axes", "g_curves", "g_annotations", "g_text", "g_markers"]
     if missing_group and missing_group in groups:
         groups.remove(missing_group)
@@ -22,7 +26,7 @@ def _build_svg(font_family: str = "Arial", extra: str = "", missing_group: str |
     if "g_text" in groups:
         text_markup = (
             f'      <g id="g_text"><text id="t1" font-family="{font_family}" '
-            f'fill="#000">Hello</text></g>'
+            f'text-anchor="start" fill="#000">Hello</text></g>'
         )
     return f"""<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100">
   <g id="figure_root">

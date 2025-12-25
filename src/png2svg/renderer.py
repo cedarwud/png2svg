@@ -6,7 +6,7 @@ from typing import Any
 
 from PIL import Image
 
-from common.svg_builder import SvgBuilder
+from common.svg_builder import DEFAULT_FONT_FAMILY, DEFAULT_TEXT_ANCHOR, SvgBuilder
 from png2svg.errors import Png2SvgError
 from templates.t_3gpp_events_3panel import render as render_3gpp_events_3panel
 from templates.t_procedure_flow import render as render_procedure_flow
@@ -97,6 +97,50 @@ def _dispatch_template(
     )
 
 
+def _add_extracted_text_items(builder: SvgBuilder, params: dict[str, Any]) -> None:
+    extracted = params.get("extracted")
+    if not isinstance(extracted, dict):
+        return
+    items = extracted.get("text_items")
+    if not isinstance(items, list) or not items:
+        return
+    allowed_anchors = {"start", "middle", "end"}
+    sorted_items = sorted(
+        items,
+        key=lambda item: (
+            float(item.get("y", 0.0) or 0.0),
+            float(item.get("x", 0.0) or 0.0),
+            str(item.get("content") or item.get("text") or ""),
+        ),
+    )
+    for idx, item in enumerate(sorted_items):
+        try:
+            x = float(item.get("x"))
+            y = float(item.get("y"))
+        except (TypeError, ValueError):
+            continue
+        content = item.get("content")
+        if content is None:
+            content = item.get("text")
+        if content is None:
+            content = "Unknown"
+        anchor = str(item.get("anchor") or DEFAULT_TEXT_ANCHOR).lower()
+        if anchor not in allowed_anchors:
+            anchor = DEFAULT_TEXT_ANCHOR
+        text_id = item.get("id") or f"txt_extracted_{idx:02d}"
+        builder.groups["g_text"].add(
+            builder.drawing.text(
+                str(content),
+                insert=(x, y),
+                id=str(text_id),
+                font_family=DEFAULT_FONT_FAMILY,
+                font_size=10,
+                text_anchor=anchor,
+                fill="#000000",
+            )
+        )
+
+
 def render_svg(input_png: Path, params_path: Path, output_svg: Path) -> None:
     params = _load_params(params_path)
     template = params.get("template")
@@ -109,4 +153,5 @@ def render_svg(input_png: Path, params_path: Path, output_svg: Path) -> None:
     width, height = _resolve_canvas_size(input_png, params)
     builder = SvgBuilder.create(width=width, height=height)
     _dispatch_template(str(template), builder, params, (width, height))
+    _add_extracted_text_items(builder, params)
     builder.save(output_svg)

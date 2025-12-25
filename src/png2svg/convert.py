@@ -92,13 +92,29 @@ def _run_visual_diff(
     return payload
 
 
+def _text_expectations(params: dict[str, Any]) -> dict[str, Any] | None:
+    extracted = params.get("extracted")
+    if not isinstance(extracted, dict):
+        return None
+    detected = extracted.get("texts_detected")
+    if detected is None:
+        return None
+    try:
+        detected_count = int(detected)
+    except (TypeError, ValueError):
+        return None
+    return {"texts_detected": detected_count}
+
+
 def convert_png(
     input_png: Path,
     output_svg: Path,
     debug_dir: Path | None = None,
     topk: int = 2,
+    force_template: str | None = None,
     contract_path: Path | None = None,
     thresholds_path: Path | None = None,
+    classifier_thresholds_path: Path | None = None,
     enable_visual_diff: bool = True,
 ) -> dict[str, Any]:
     if topk <= 0:
@@ -128,7 +144,11 @@ def convert_png(
 
     classify_debug = debug_dir / "classify" if debug_dir is not None else None
     try:
-        classification = classify_png(input_png, debug_dir=classify_debug)
+        classification = classify_png(
+            input_png,
+            debug_dir=classify_debug,
+            thresholds_path=classifier_thresholds_path,
+        )
     except Exception as exc:  # noqa: BLE001
         raise Png2SvgError(
             code="E5106_CLASSIFY_FAILED",
@@ -148,6 +168,27 @@ def convert_png(
         )
 
     results: list[dict[str, Any]] = []
+
+    if classification.get("decision") == "unknown" and not force_template:
+        candidate_str = ", ".join(
+            f"{item['template_id']}:{float(item['score']):.2f}" for item in candidates
+        )
+        report = {
+            "status": "fail",
+            "output_svg": str(output_svg),
+            "classification": classification,
+            "candidates": [],
+        }
+        if debug_dir is not None:
+            _write_json(debug_dir / "convert_report.json", report)
+        raise Png2SvgError(
+            code="E5107_CLASSIFY_UNKNOWN",
+            message=f"Classifier decision unknown. Top candidates: {candidate_str}.",
+            hint="Provide --force-template <id> to override or adjust classifier thresholds.",
+        )
+
+    if force_template:
+        candidate_list = [{"template_id": force_template, "score": 0.0}]
 
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_root = Path(temp_dir)
@@ -231,7 +272,12 @@ def convert_png(
                         {"stage": "snap_preview"},
                     )
 
-            report = validate_svg(svg_path, contract_path, thresholds_path)
+            report = validate_svg(
+                svg_path,
+                contract_path,
+                thresholds_path,
+                text_expectations=_text_expectations(params),
+            )
             report_payload = report.to_dict()
             _write_json(report_path, report_payload)
             attempt["validation"] = report_payload

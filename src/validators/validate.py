@@ -1,7 +1,9 @@
 from __future__ import annotations
 
+import math
 import tempfile
 import xml.etree.ElementTree as ET
+from dataclasses import dataclass
 from pathlib import Path
 
 from .config import (
@@ -20,6 +22,7 @@ from .svg_checks import (
     local_name,
     parse_color,
     parse_number,
+    parse_style,
 )
 from .visual_diff import DiffError, RasterizeError, compute_visual_diff, rasterize_svg_to_png
 
@@ -39,6 +42,10 @@ E2010_TEXT_AS_PATH = "E2010_TEXT_AS_PATH"
 E2011_TSPAN_ID_MISSING = "E2011_TSPAN_ID_MISSING"
 E2012_MULTILINE_TSPAN_MISSING = "E2012_MULTILINE_TSPAN_MISSING"
 E2013_DASHED_MISSING_DASHARRAY = "E2013_DASHED_MISSING_DASHARRAY"
+E2014_TEXT_COUNT_LOW = "E2014_TEXT_COUNT_LOW"
+E2015_TEXT_FALLBACK_MISSING = "E2015_TEXT_FALLBACK_MISSING"
+E2016_TEXT_ANCHOR_INVALID = "E2016_TEXT_ANCHOR_INVALID"
+E2017_TEXT_OUTLINE_DETECTED = "E2017_TEXT_OUTLINE_DETECTED"
 E3001_RASTERIZE_FAILED = "E3001_RASTERIZE_FAILED"
 E3002_DIFF_FAILED = "E3002_DIFF_FAILED"
 E3003_VISUAL_THRESHOLD_EXCEEDED = "E3003_VISUAL_THRESHOLD_EXCEEDED"
@@ -47,6 +54,16 @@ W2102_DASHED_SIMULATED = "W2102_DASHED_SIMULATED"
 W2103_TEXT_OUTSIDE_TEXT_GROUP = "W2103_TEXT_OUTSIDE_TEXT_GROUP"
 W2104_POLYLINE_TOO_COMPLEX = "W2104_POLYLINE_TOO_COMPLEX"
 W2105_POLYLINE_NOT_SNAPPED = "W2105_POLYLINE_NOT_SNAPPED"
+W2106_TEXT_BASELINE_NOT_ALIGNED = "W2106_TEXT_BASELINE_NOT_ALIGNED"
+
+
+@dataclass(frozen=True)
+class TextThresholds:
+    min_keep_ratio: float
+    max_missing: int
+    min_keep_absolute: int
+    outline_path_min: int
+    baseline_tolerance: float
 
 
 def _font_family_ok(value: str, allowed: list[str]) -> bool:
@@ -57,6 +74,45 @@ def _font_family_ok(value: str, allowed: list[str]) -> bool:
         item.strip().strip("'\"").lower() for item in value.split(",") if item.strip()
     ]
     return any(candidate in allowed_set for candidate in candidates)
+
+
+def _font_family_candidates(value: str) -> list[str]:
+    return [item.strip().strip("'\"").lower() for item in value.split(",") if item.strip()]
+
+
+def _font_family_has_generic(value: str) -> bool:
+    candidates = _font_family_candidates(value)
+    return any(candidate in {"sans-serif", "serif"} for candidate in candidates)
+
+
+def _load_text_thresholds(thresholds: dict | None) -> TextThresholds:
+    data = thresholds.get("text", {}) if isinstance(thresholds, dict) else {}
+    return TextThresholds(
+        min_keep_ratio=float(data.get("min_keep_ratio", 0.7)),
+        max_missing=int(data.get("max_missing", 1)),
+        min_keep_absolute=int(data.get("min_keep_absolute", 1)),
+        outline_path_min=int(data.get("outline_path_min", 8)),
+        baseline_tolerance=float(data.get("baseline_tolerance", 1.0)),
+    )
+
+
+def _resolve_property(
+    node: ET.Element,
+    style: dict[str, str],
+    parent_map: dict[ET.Element, ET.Element],
+    prop: str,
+) -> str:
+    values = extract_property_values(node, style, prop)
+    if values:
+        return values[0]
+    current = parent_map.get(node)
+    while current is not None:
+        parent_style = parse_style(current.get("style", ""))
+        values = extract_property_values(current, parent_style, prop)
+        if values:
+            return values[0]
+        current = parent_map.get(current)
+    return ""
 
 
 def _parse_svg(svg_path: Path) -> ET.Element:
@@ -176,7 +232,9 @@ def _check_required_groups(
 
 
 def _check_font_families(
-    elements: list[ET.Element], contract: FigureContract
+    elements: list[ET.Element],
+    contract: FigureContract,
+    parent_map: dict[ET.Element, ET.Element],
 ) -> list[ValidationIssue]:
     allowed = contract.allowed_font_families
     if not allowed:
@@ -186,8 +244,8 @@ def _check_font_families(
         return []
     issues: list[ValidationIssue] = []
     for node, style in iter_with_style(text_elements):
-        values = extract_property_values(node, style, "font-family")
-        if not values:
+        value = _resolve_property(node, style, parent_map, "font-family")
+        if not value:
             issues.append(
                 ValidationIssue(
                     code=E2004_BAD_FONT_FAMILY,
@@ -197,13 +255,22 @@ def _check_font_families(
                 )
             )
             continue
-        value = values[0]
         if not _font_family_ok(value, allowed):
             issues.append(
                 ValidationIssue(
                     code=E2004_BAD_FONT_FAMILY,
                     message=f"Font-family '{value}' is not allowed.",
                     hint=f"Use one of: {', '.join(allowed)}.",
+                    context={"font_family": value, **_element_context(node)},
+                )
+            )
+            continue
+        if not _font_family_has_generic(value):
+            issues.append(
+                ValidationIssue(
+                    code=E2015_TEXT_FALLBACK_MISSING,
+                    message="Font-family must include a generic fallback (sans-serif or serif).",
+                    hint="Append a generic fallback, e.g., 'Arial, sans-serif'.",
                     context={"font_family": value, **_element_context(node)},
                 )
             )
@@ -284,6 +351,166 @@ def _check_text_grouping(
                 )
             )
     return warnings
+
+
+def _text_baseline_value(node: ET.Element) -> float | None:
+    y_attr = node.get("y")
+    if y_attr:
+        value = parse_number(y_attr)
+        if value is not None:
+            return value
+    for tspan in _tspan_elements(node):
+        tspan_y = tspan.get("y")
+        if not tspan_y:
+            continue
+        value = parse_number(tspan_y)
+        if value is not None:
+            return value
+    return None
+
+
+def _check_text_anchor(
+    elements: list[ET.Element], parent_map: dict[ET.Element, ET.Element]
+) -> list[ValidationIssue]:
+    issues: list[ValidationIssue] = []
+    allowed = {"start", "middle", "end"}
+    text_elements = [node for node in elements if local_name(node.tag) == "text"]
+    for node, style in iter_with_style(text_elements):
+        value = _resolve_property(node, style, parent_map, "text-anchor").strip().lower()
+        if not value:
+            issues.append(
+                ValidationIssue(
+                    code=E2016_TEXT_ANCHOR_INVALID,
+                    message="Text element is missing text-anchor.",
+                    hint="Set text-anchor to start, middle, or end to stabilize positioning.",
+                    context=_element_context(node),
+                )
+            )
+            continue
+        if value not in allowed:
+            issues.append(
+                ValidationIssue(
+                    code=E2016_TEXT_ANCHOR_INVALID,
+                    message=f"Text-anchor '{value}' is invalid.",
+                    hint="Use text-anchor start, middle, or end.",
+                    context={"text_anchor": value, **_element_context(node)},
+                )
+            )
+    return issues
+
+
+def _check_text_baseline_alignment(
+    elements: list[ET.Element],
+    parent_map: dict[ET.Element, ET.Element],
+    thresholds: TextThresholds,
+) -> list[ValidationIssue]:
+    warnings: list[ValidationIssue] = []
+    text_elements = [node for node in elements if local_name(node.tag) == "text"]
+    baselines: list[tuple[ET.Element, float]] = []
+    for node in text_elements:
+        value = _text_baseline_value(node)
+        if value is not None:
+            baselines.append((node, value))
+    if len(baselines) < 2:
+        return warnings
+    baselines.sort(key=lambda item: item[1])
+    cluster: list[tuple[ET.Element, float]] = [baselines[0]]
+    tolerance = thresholds.baseline_tolerance
+
+    def _flush(group: list[tuple[ET.Element, float]]) -> None:
+        if len(group) < 2:
+            return
+        values = [value for _, value in group]
+        if max(values) - min(values) <= 1e-3:
+            return
+        dominant_values = set()
+        for node, _ in group:
+            style = parse_style(node.get("style", ""))
+            dominant = _resolve_property(node, style, parent_map, "dominant-baseline").strip()
+            if dominant:
+                dominant_values.add(dominant)
+        if len(dominant_values) == 1:
+            return
+        warnings.append(
+            ValidationIssue(
+                code=W2106_TEXT_BASELINE_NOT_ALIGNED,
+                message="Text baselines within a line are not aligned.",
+                hint="Snap text y positions or set a consistent dominant-baseline.",
+                context=_element_context(group[0][0]),
+            )
+        )
+
+    for item in baselines[1:]:
+        if abs(item[1] - cluster[-1][1]) <= tolerance:
+            cluster.append(item)
+        else:
+            _flush(cluster)
+            cluster = [item]
+    _flush(cluster)
+    return warnings
+
+
+def _required_text_count(texts_detected: int, thresholds: TextThresholds) -> int:
+    if texts_detected <= 0:
+        return 0
+    ratio_required = texts_detected * thresholds.min_keep_ratio
+    missing_allowed = texts_detected - thresholds.max_missing
+    required = min(ratio_required, missing_allowed)
+    required = max(required, thresholds.min_keep_absolute, 0.0)
+    return int(math.ceil(required))
+
+
+def _check_text_expectations(
+    elements: list[ET.Element],
+    text_expectations: dict[str, object] | None,
+    thresholds: TextThresholds,
+) -> list[ValidationIssue]:
+    issues: list[ValidationIssue] = []
+    if not text_expectations:
+        return issues
+    detected = text_expectations.get("texts_detected")
+    if detected is None:
+        return issues
+    try:
+        texts_detected = int(detected)
+    except (TypeError, ValueError):
+        return issues
+    if texts_detected <= 0:
+        return issues
+    text_elements = [node for node in elements if local_name(node.tag) == "text"]
+    text_count = len(text_elements)
+    required = _required_text_count(texts_detected, thresholds)
+    if text_count < required:
+        issues.append(
+            ValidationIssue(
+                code=E2014_TEXT_COUNT_LOW,
+                message="Too few text elements compared to detected text.",
+                hint="Preserve detected text using <text> elements (avoid converting to paths).",
+                context={
+                    "texts_detected": texts_detected,
+                    "text_count": text_count,
+                    "required_min": required,
+                    "tag": "text",
+                },
+            )
+        )
+    if text_count == 0:
+        path_count = sum(1 for node in elements if local_name(node.tag) == "path")
+        if path_count >= thresholds.outline_path_min:
+            issues.append(
+                ValidationIssue(
+                    code=E2017_TEXT_OUTLINE_DETECTED,
+                    message="Text appears to be outlined into paths.",
+                    hint="Keep text as editable <text> elements and remove outlined paths.",
+                    context={
+                        "texts_detected": texts_detected,
+                        "path_count": path_count,
+                        "outline_path_min": thresholds.outline_path_min,
+                        "tag": "path",
+                    },
+                )
+            )
+    return issues
 
 
 def _parse_polyline_points(points: str) -> list[tuple[float, float]]:
@@ -628,6 +855,7 @@ def validate_svg(
     expected_png: Path | str | None = None,
     actual_png_path: Path | str | None = None,
     diff_png_path: Path | str | None = None,
+    text_expectations: dict[str, object] | None = None,
 ) -> ValidationReport:
     issues: list[ValidationIssue] = []
     warnings: list[ValidationIssue] = []
@@ -687,12 +915,15 @@ def validate_svg(
     elements = list(root.iter())
     parent_map = _parent_map(root)
     geometry_thresholds = load_geometry_thresholds(thresholds or {})
+    text_thresholds = _load_text_thresholds(thresholds or {})
 
     issues.extend(_check_forbidden_elements(elements, contract))
     issues.extend(_check_required_groups(elements, contract))
     issues.extend(_check_text_requirements(elements, contract))
     warnings.extend(_check_text_grouping(elements, parent_map))
-    issues.extend(_check_font_families(elements, contract))
+    issues.extend(_check_font_families(elements, contract, parent_map))
+    issues.extend(_check_text_anchor(elements, parent_map))
+    issues.extend(_check_text_expectations(elements, text_expectations, text_thresholds))
     issues.extend(_check_text_as_path(elements, parent_map))
     color_issues, color_count = _check_colors(elements, contract)
     issues.extend(color_issues)
@@ -704,13 +935,18 @@ def validate_svg(
     warnings.extend(_check_polyline_snapping(elements, geometry_thresholds))
     warnings.extend(_check_dashed_simulation(elements, geometry_thresholds))
     warnings.extend(_check_polyline_complexity(elements, geometry_thresholds))
+    warnings.extend(_check_text_baseline_alignment(elements, parent_map, text_thresholds))
 
+    text_count = sum(1 for node in elements if local_name(node.tag) == "text")
     stats.update(
         {
             "color_count": color_count,
             "max_path_commands": max_path_commands,
+            "text_count": text_count,
         }
     )
+    if text_expectations and "texts_detected" in text_expectations:
+        stats["texts_detected"] = text_expectations.get("texts_detected")
 
     if expected_png is not None and thresholds is not None:
         try:

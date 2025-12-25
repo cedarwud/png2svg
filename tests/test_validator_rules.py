@@ -22,7 +22,7 @@ def _base_svg(extra: str = "") -> str:
     <g id="g_curves" />
     <g id="g_annotations" />
     <g id="g_text">
-      <text id="t1" font-family="Arial" fill="#000000">Label</text>
+      <text id="t1" font-family="Arial, sans-serif" text-anchor="start" fill="#000000">Label</text>
     </g>
     <g id="g_markers" />
   </g>
@@ -54,7 +54,7 @@ def test_missing_text_id(tmp_path: Path) -> None:
     <g id="g_curves" />
     <g id="g_annotations" />
     <g id="g_text">
-      <text font-family="Arial">NoId</text>
+      <text font-family="Arial, sans-serif" text-anchor="start">NoId</text>
     </g>
     <g id="g_markers" />
   </g>

@@ -28,6 +28,7 @@ typography:
     - Arial
     - Liberation Sans
     - sans-serif
+    - serif
 
 style:
   max_colors: 6

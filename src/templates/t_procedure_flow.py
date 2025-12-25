@@ -4,7 +4,7 @@ import math
 from dataclasses import dataclass
 from typing import Any
 
-from common.svg_builder import DEFAULT_FONT_FAMILY, SvgBuilder
+from common.svg_builder import DEFAULT_FONT_FAMILY, DEFAULT_TEXT_ANCHOR, SvgBuilder
 from png2svg.errors import Png2SvgError
 
 
@@ -320,6 +320,7 @@ def _add_multiline_text(
         insert=(x, y),
         id=text_id,
         font_family=DEFAULT_FONT_FAMILY,
+        text_anchor=DEFAULT_TEXT_ANCHOR,
         font_size=font_size,
         fill="#000000",
     )
@@ -402,15 +403,16 @@ def _draw_edges(builder: SvgBuilder, edges: list[Edge], nodes: dict[str, Node]) 
             mid_x = (points[0][0] + points[-1][0]) / 2
             mid_y = (points[0][1] + points[-1][1]) / 2 - 6
             builder.groups["g_text"].add(
-                builder.drawing.text(
-                    edge.label,
-                    insert=(mid_x, mid_y),
-                    id=f"txt_edge_{edge.from_id}_{edge.to_id}",
-                    font_family=DEFAULT_FONT_FAMILY,
-                    font_size=LABEL_SIZE,
-                    fill="#000000",
-                )
+            builder.drawing.text(
+                edge.label,
+                insert=(mid_x, mid_y),
+                id=f"txt_edge_{edge.from_id}_{edge.to_id}",
+                font_family=DEFAULT_FONT_FAMILY,
+                font_size=LABEL_SIZE,
+                fill="#000000",
+                text_anchor=DEFAULT_TEXT_ANCHOR,
             )
+        )
 
 
 def render(builder: SvgBuilder, params: dict[str, Any], canvas: tuple[int, int]) -> None:
