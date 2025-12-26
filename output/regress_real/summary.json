@@ -1,8 +1,0 @@
-{
-  "failed_cases": [],
-  "failures_by_reason": {},
-  "summary": {
-    "reason": "no REAL_PNG_DIR",
-    "skipped": true
-  }
-}
