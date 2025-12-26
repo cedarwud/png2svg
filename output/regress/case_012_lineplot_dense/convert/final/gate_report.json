@@ -1,11 +1,11 @@
 {
   "backend": "cairosvg",
-  "bad_pixel_ratio": 0.07353966346153847,
+  "bad_pixel_ratio": 0.06733173076923077,
   "bad_pixel_ratio_max": 0.65,
-  "diff_png": "/home/u24/png2svg/output/regress/case_012_lineplot_dense/convert/candidates/t_performance_lineplot_3/diff.png",
+  "diff_png": "/home/u24/png2svg/output/regress/case_012_lineplot_dense/convert/candidates/t_performance_lineplot_7/diff.png",
   "errors": [],
   "pixel_tolerance": 10,
-  "rmse": 0.12401066720485687,
+  "rmse": 0.17092402279376984,
   "rmse_max": 0.75,
   "status": "pass",
   "warnings": []

@@ -255,6 +255,7 @@ def _add_text(
     font_weight: str | None = None,
     text_anchor: str = DEFAULT_TEXT_ANCHOR,
     font_family: str = DEFAULT_FONT_FAMILY,
+    dominant_baseline: str = "alphabetic",
 ) -> None:
     kwargs = {
         "insert": (x, y),
@@ -266,6 +267,8 @@ def _add_text(
     }
     if font_weight:
         kwargs["font_weight"] = font_weight
+    if dominant_baseline:
+        kwargs["dominant_baseline"] = dominant_baseline
     builder.groups["g_text"].add(builder.drawing.text(text, **kwargs))
 
 

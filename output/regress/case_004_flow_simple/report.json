@@ -2,9 +2,9 @@
   "errors": [],
   "input_variant": "fast",
   "stats": {
-    "color_count": 2,
-    "max_path_commands": 0,
-    "text_count": 3
+    "color_count": 5,
+    "max_path_commands": 5,
+    "text_count": 15
   },
   "status": "pass",
   "warnings": [

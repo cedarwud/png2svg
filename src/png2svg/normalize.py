@@ -2,6 +2,8 @@ from __future__ import annotations
 
 from typing import Any
 
+import numpy as np
+
 
 def _snap_value(value: float, grid: float) -> float:
     return round(value / grid) * grid
@@ -350,4 +352,18 @@ def normalize_params(template_id: str, params: dict[str, Any], grid: float = 1.0
     geometry = params.get("geometry")
     if isinstance(geometry, dict):
         _normalize_geometry(geometry, grid=grid)
-    return params
+    return _to_builtin(params)
+
+
+def _to_builtin(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {key: _to_builtin(val) for key, val in value.items()}
+    if isinstance(value, list):
+        return [_to_builtin(item) for item in value]
+    if isinstance(value, tuple):
+        return [_to_builtin(item) for item in value]
+    if isinstance(value, np.ndarray):
+        return value.tolist()
+    if isinstance(value, np.generic):
+        return value.item()
+    return value

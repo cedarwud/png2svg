@@ -2,8 +2,8 @@
   "errors": [],
   "input_variant": "fast",
   "stats": {
-    "color_count": 6,
-    "max_path_commands": 5,
+    "color_count": 5,
+    "max_path_commands": 9,
     "text_count": 15
   },
   "status": "pass",

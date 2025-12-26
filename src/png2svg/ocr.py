@@ -192,6 +192,7 @@ def ocr_image(
             continue
         if width <= 0 or height <= 0:
             continue
+        roi_id = roi.get("id") if isinstance(roi, dict) else None
         crop = image.crop((x, y, x + width, y + height))
         if backend_value == "pytesseract":
             roi_results = _run_pytesseract(crop)
@@ -212,6 +213,9 @@ def ocr_image(
                 "width": bw,
                 "height": bh,
             }
+            if isinstance(roi_id, str) and roi_id:
+                item["roi_id"] = roi_id
+            item["roi"] = {"x": x, "y": y, "width": width, "height": height}
             results.append(item)
     results.sort(key=lambda item: (item["bbox"]["y"], item["bbox"]["x"], item["text"]))
     return results

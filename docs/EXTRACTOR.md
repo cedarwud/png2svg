@@ -56,7 +56,9 @@ Text items (params):
       "role": string,
       "anchor": "start" | "middle" | "end",
       "baseline_group": string | null,
-      "conf": number
+      "conf": number,
+      "font_size": number,
+      "roi_id": string | null
     }
   ]
 }
@@ -80,6 +82,8 @@ Optional OCR (tesseract):
 - Backend selection: `PNG2SVG_OCR_BACKEND=auto|pytesseract|tesseract|none`
 
 Adaptive extractor settings are defined in `config/extract_adaptive.v1.yaml`.
+OCR cleanup knobs include `max_bbox_height_ratio`, `max_line_height_ratio`,
+and `max_line_aspect_ratio` for filtering noisy or vertical text lines.
 
 Template-specific fields (minimum):
 

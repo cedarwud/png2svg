@@ -2,23 +2,23 @@
   "candidates": [
     {
       "paths": {
-        "diff_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_3/diff.png",
-        "gate_report": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_3/gate_report.json",
-        "params": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_3/params.json",
-        "rendered_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_3/rendered.png",
-        "snap_preview_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_3/snap_preview.png",
-        "snap_preview_svg": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_3/snap_preview.svg",
-        "svg": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_3/out.svg",
-        "validate_report": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_3/validate_report.json"
+        "diff_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_7/diff.png",
+        "gate_report": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_7/gate_report.json",
+        "params": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_7/params.json",
+        "rendered_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_7/rendered.png",
+        "snap_preview_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_7/snap_preview.png",
+        "snap_preview_svg": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_7/snap_preview.svg",
+        "svg": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_7/out.svg",
+        "validate_report": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_7/validate_report.json"
       },
       "quality_gate": {
         "backend": "cairosvg",
-        "bad_pixel_ratio": 0.0695576923076923,
+        "bad_pixel_ratio": 0.06243846153846154,
         "bad_pixel_ratio_max": 0.65,
-        "diff_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_3/diff.png",
+        "diff_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_7/diff.png",
         "errors": [],
         "pixel_tolerance": 10,
-        "rmse": 0.12404885143041611,
+        "rmse": 0.16712619364261627,
         "rmse_max": 0.75,
         "status": "pass",
         "warnings": []
@@ -29,9 +29,9 @@
       "validation": {
         "errors": [],
         "stats": {
-          "color_count": 6,
+          "color_count": 2,
           "max_path_commands": 0,
-          "text_count": 10,
+          "text_count": 12,
           "texts_detected": 0
         },
         "status": "pass",
@@ -42,23 +42,23 @@
     },
     {
       "paths": {
-        "diff_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_procedure_flow_3/diff.png",
-        "gate_report": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_procedure_flow_3/gate_report.json",
-        "params": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_procedure_flow_3/params.json",
-        "rendered_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_procedure_flow_3/rendered.png",
-        "snap_preview_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_procedure_flow_3/snap_preview.png",
-        "snap_preview_svg": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_procedure_flow_3/snap_preview.svg",
-        "svg": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_procedure_flow_3/out.svg",
-        "validate_report": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_procedure_flow_3/validate_report.json"
+        "diff_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_procedure_flow_7/diff.png",
+        "gate_report": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_procedure_flow_7/gate_report.json",
+        "params": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_procedure_flow_7/params.json",
+        "rendered_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_procedure_flow_7/rendered.png",
+        "snap_preview_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_procedure_flow_7/snap_preview.png",
+        "snap_preview_svg": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_procedure_flow_7/snap_preview.svg",
+        "svg": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_procedure_flow_7/out.svg",
+        "validate_report": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_procedure_flow_7/validate_report.json"
       },
       "quality_gate": {
         "backend": "cairosvg",
-        "bad_pixel_ratio": 0.14486153846153846,
+        "bad_pixel_ratio": 0.06376153846153847,
         "bad_pixel_ratio_max": 0.65,
-        "diff_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_procedure_flow_3/diff.png",
+        "diff_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_procedure_flow_7/diff.png",
         "errors": [],
         "pixel_tolerance": 10,
-        "rmse": 0.3550373911857605,
+        "rmse": 0.18250416219234467,
         "rmse_max": 0.75,
         "status": "pass",
         "warnings": []
@@ -117,23 +117,23 @@
   "output_svg": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/generated.svg",
   "selected": {
     "paths": {
-      "diff_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_3/diff.png",
-      "gate_report": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_3/gate_report.json",
-      "params": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_3/params.json",
-      "rendered_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_3/rendered.png",
-      "snap_preview_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_3/snap_preview.png",
-      "snap_preview_svg": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_3/snap_preview.svg",
-      "svg": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_3/out.svg",
-      "validate_report": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_3/validate_report.json"
+      "diff_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_7/diff.png",
+      "gate_report": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_7/gate_report.json",
+      "params": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_7/params.json",
+      "rendered_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_7/rendered.png",
+      "snap_preview_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_7/snap_preview.png",
+      "snap_preview_svg": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_7/snap_preview.svg",
+      "svg": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_7/out.svg",
+      "validate_report": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_7/validate_report.json"
     },
     "quality_gate": {
       "backend": "cairosvg",
-      "bad_pixel_ratio": 0.0695576923076923,
+      "bad_pixel_ratio": 0.06243846153846154,
       "bad_pixel_ratio_max": 0.65,
-      "diff_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_3/diff.png",
+      "diff_png": "/home/u24/png2svg/output/regress/case_009_lineplot_wide/convert/candidates/t_performance_lineplot_7/diff.png",
       "errors": [],
       "pixel_tolerance": 10,
-      "rmse": 0.12404885143041611,
+      "rmse": 0.16712619364261627,
       "rmse_max": 0.75,
       "status": "pass",
       "warnings": []
@@ -144,9 +144,9 @@
     "validation": {
       "errors": [],
       "stats": {
-        "color_count": 6,
+        "color_count": 2,
         "max_path_commands": 0,
-        "text_count": 10,
+        "text_count": 12,
         "texts_detected": 0
       },
       "status": "pass",
