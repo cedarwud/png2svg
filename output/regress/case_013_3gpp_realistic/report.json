@@ -3,8 +3,8 @@
   "input_variant": "fast",
   "stats": {
     "color_count": 6,
-    "max_path_commands": 3,
-    "text_count": 15
+    "max_path_commands": 5,
+    "text_count": 16
   },
   "status": "pass",
   "warnings": [

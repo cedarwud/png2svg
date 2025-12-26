@@ -496,20 +496,19 @@ def _check_text_expectations(
         )
     if text_count == 0:
         path_count = sum(1 for node in elements if local_name(node.tag) == "path")
-        if path_count >= thresholds.outline_path_min:
-            issues.append(
-                ValidationIssue(
-                    code=E2017_TEXT_OUTLINE_DETECTED,
-                    message="Text appears to be outlined into paths.",
-                    hint="Keep text as editable <text> elements and remove outlined paths.",
-                    context={
-                        "texts_detected": texts_detected,
-                        "path_count": path_count,
-                        "outline_path_min": thresholds.outline_path_min,
-                        "tag": "path",
-                    },
-                )
+        issues.append(
+            ValidationIssue(
+                code=E2017_TEXT_OUTLINE_DETECTED,
+                message="Detected text is missing from <text> elements.",
+                hint="Preserve detected text using editable <text> elements (avoid outlining text into paths).",
+                context={
+                    "texts_detected": texts_detected,
+                    "path_count": path_count,
+                    "outline_path_min": thresholds.outline_path_min,
+                    "tag": "text",
+                },
             )
+        )
     return issues
 
 

@@ -19,8 +19,9 @@ Top-level commands:
 - Extract: `python tools/png2svg.py extract path/to/input.png --template auto --out output/params.json --debug-dir output/extract_debug`
 - Convert: `python tools/png2svg.py convert path/to/input.png -o output/output.svg --debug-dir output/convert_debug --topk 2`
 - Validate: `python tools/validate_svg.py path/to/output.svg --expected path/to/expected.png --report report.json`
-- Regress: `python tools/regress.py datasets/regression_v0/manifest.yaml --report report.json`
+- Regress (fast tier): `python tools/regress.py datasets/regression_v0 --tier fast --report report.json`
 - Rebuild case inputs: `python tools/rebuild_case_inputs.py datasets/regression_v0 --variants fast,hard --overwrite`
+- Build hard case assets: `python tools/build_hard_case_assets.py datasets/regression_hard_v1 --overwrite`
 - Dataset sanity check: `python tools/check_dataset_sanity.py datasets/regression_v0`
 
 Debug artifacts:
@@ -33,6 +34,7 @@ Regression assets:
 - `expected.png` is optional and only used when `expected.svg` is missing.
 - `input.png` is the FAST convert input (rasterized from `expected.svg`).
 - `input_hard.png` is the HARD convert input (deterministically degraded from `input.png`).
+- Hard-tier inputs live under `datasets/regression_hard_v1/` and use `input.png` as a fig1-like degraded input.
 
 Classifier schema: see `docs/CLASSIFIER.md`.
 Extractor schema: see `docs/EXTRACTOR.md`.

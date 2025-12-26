@@ -1,11 +1,11 @@
 {
   "backend": "cairosvg",
-  "bad_pixel_ratio": 0.2592400568181818,
+  "bad_pixel_ratio": 0.24888494318181817,
   "bad_pixel_ratio_max": 0.65,
-  "diff_png": "/home/u24/png2svg/output/regress/case_010_3gpp_small_long/convert/candidates/t_3gpp_events_3panel/diff.png",
+  "diff_png": "/home/u24/png2svg/output/regress/case_010_3gpp_small_long/convert/candidates/t_3gpp_events_3panel_3/diff.png",
   "errors": [],
   "pixel_tolerance": 10,
-  "rmse": 0.3236375153064728,
+  "rmse": 0.3250197768211365,
   "rmse_max": 0.75,
   "status": "pass",
   "warnings": []

@@ -9,20 +9,20 @@
       "template_id": "t_procedure_flow"
     },
     {
-      "score": 0.7000000000000001,
+      "score": 0.10000000000000009,
       "template_id": "t_performance_lineplot"
     }
   ],
-  "confidence": 0.935483870967742,
+  "confidence": 0.813953488372093,
   "decision": "known",
   "features_summary": {
-    "axis_aligned_ratio": 0.7501633453119896,
-    "ink_ratio": 0.24686197916666666,
+    "axis_aligned_ratio": 0.8152482269503546,
+    "ink_ratio": 0.23017578125,
     "long_horizontal_lines": 0,
     "long_vertical_lines": 6,
-    "saturated_ratio": 0.10607099530565958,
-    "short_horizontal_segments": 1320,
-    "short_vertical_segments": 1545
+    "saturated_ratio": 0.09113279592702588,
+    "short_horizontal_segments": 1461,
+    "short_vertical_segments": 1565
   },
   "image_meta": {
     "height": 320,

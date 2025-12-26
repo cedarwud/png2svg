@@ -26,6 +26,21 @@ class DiffError(RuntimeError):
     pass
 
 
+def _flatten_png_background(png_path: Path, color: tuple[int, int, int] = (255, 255, 255)) -> None:
+    try:
+        with Image.open(png_path) as image:
+            if image.mode not in {"RGBA", "LA"} and not (
+                image.mode == "P" and "transparency" in image.info
+            ):
+                return
+            rgba = image.convert("RGBA")
+    except FileNotFoundError:
+        return
+    base = Image.new("RGBA", rgba.size, (*color, 255))
+    base.alpha_composite(rgba)
+    base.convert("RGB").save(png_path)
+
+
 def _try_resvg(svg_path: Path, png_path: Path) -> bool:
     resvg = shutil.which("resvg")
     if not resvg:
@@ -47,6 +62,7 @@ def _try_resvg(svg_path: Path, png_path: Path) -> bool:
 
 def rasterize_svg_to_png(svg_path: Path, png_path: Path) -> str:
     if _try_resvg(svg_path, png_path):
+        _flatten_png_background(png_path)
         return "resvg"
     try:
         import cairosvg
@@ -58,6 +74,7 @@ def rasterize_svg_to_png(svg_path: Path, png_path: Path) -> str:
         cairosvg.svg2png(url=str(svg_path), write_to=str(png_path))
     except Exception as exc:  # noqa: BLE001
         raise RasterizeError(f"cairosvg failed: {exc}") from exc
+    _flatten_png_background(png_path)
     return "cairosvg"
 
 

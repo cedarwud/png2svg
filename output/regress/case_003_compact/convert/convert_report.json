@@ -2,24 +2,24 @@
   "candidates": [
     {
       "paths": {
-        "diff_png": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_3gpp_events_3panel_2/diff.png",
-        "gate_report": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_3gpp_events_3panel_2/gate_report.json",
-        "params": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_3gpp_events_3panel_2/params.json",
-        "rendered_png": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_3gpp_events_3panel_2/rendered.png",
-        "snap_preview_png": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_3gpp_events_3panel_2/snap_preview.png",
-        "snap_preview_svg": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_3gpp_events_3panel_2/snap_preview.svg",
-        "svg": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_3gpp_events_3panel_2/out.svg",
-        "validate_report": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_3gpp_events_3panel_2/validate_report.json"
+        "diff_png": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_3gpp_events_3panel_4/diff.png",
+        "gate_report": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_3gpp_events_3panel_4/gate_report.json",
+        "params": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_3gpp_events_3panel_4/params.json",
+        "rendered_png": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_3gpp_events_3panel_4/rendered.png",
+        "snap_preview_png": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_3gpp_events_3panel_4/snap_preview.png",
+        "snap_preview_svg": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_3gpp_events_3panel_4/snap_preview.svg",
+        "svg": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_3gpp_events_3panel_4/out.svg",
+        "validate_report": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_3gpp_events_3panel_4/validate_report.json"
       },
       "quality_gate": {
         "backend": "cairosvg",
-        "bad_pixel_ratio": 0.2676068376068376,
-        "bad_pixel_ratio_max": 0.7,
-        "diff_png": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_3gpp_events_3panel_2/diff.png",
+        "bad_pixel_ratio": 0.31466346153846153,
+        "bad_pixel_ratio_max": 0.65,
+        "diff_png": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_3gpp_events_3panel_4/diff.png",
         "errors": [],
-        "pixel_tolerance": 12,
-        "rmse": 0.31798219680786133,
-        "rmse_max": 0.85,
+        "pixel_tolerance": 10,
+        "rmse": 0.4006308615207672,
+        "rmse_max": 0.75,
         "status": "pass",
         "warnings": []
       },
@@ -30,85 +30,48 @@
         "errors": [],
         "stats": {
           "color_count": 6,
-          "max_path_commands": 3,
+          "max_path_commands": 5,
           "text_count": 15,
           "texts_detected": 0
         },
         "status": "pass",
-        "warnings": [
-          {
-            "code": "W2106_TEXT_BASELINE_NOT_ALIGNED",
-            "context": {
-              "id": "txt_t_start_A4",
-              "tag": "text"
-            },
-            "hint": "Snap text y positions or set a consistent dominant-baseline.",
-            "message": "Text baselines within a line are not aligned."
-          },
-          {
-            "code": "W2106_TEXT_BASELINE_NOT_ALIGNED",
-            "context": {
-              "id": "txt_panel_A4",
-              "tag": "text"
-            },
-            "hint": "Snap text y positions or set a consistent dominant-baseline.",
-            "message": "Text baselines within a line are not aligned."
-          },
-          {
-            "code": "W2106_TEXT_BASELINE_NOT_ALIGNED",
-            "context": {
-              "id": "txt_serving_A4",
-              "tag": "text"
-            },
-            "hint": "Snap text y positions or set a consistent dominant-baseline.",
-            "message": "Text baselines within a line are not aligned."
-          },
-          {
-            "code": "W2106_TEXT_BASELINE_NOT_ALIGNED",
-            "context": {
-              "id": "txt_neighbor_A4",
-              "tag": "text"
-            },
-            "hint": "Snap text y positions or set a consistent dominant-baseline.",
-            "message": "Text baselines within a line are not aligned."
-          }
-        ]
+        "warnings": []
       },
       "validation_error_count": 0,
-      "validation_warning_count": 4
+      "validation_warning_count": 0
     },
     {
       "paths": {
-        "diff_png": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_performance_lineplot/diff.png",
-        "gate_report": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_performance_lineplot/gate_report.json",
-        "params": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_performance_lineplot/params.json",
-        "rendered_png": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_performance_lineplot/rendered.png",
-        "snap_preview_png": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_performance_lineplot/snap_preview.png",
-        "snap_preview_svg": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_performance_lineplot/snap_preview.svg",
-        "svg": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_performance_lineplot/out.svg",
-        "validate_report": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_performance_lineplot/validate_report.json"
+        "diff_png": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_procedure_flow_3/diff.png",
+        "gate_report": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_procedure_flow_3/gate_report.json",
+        "params": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_procedure_flow_3/params.json",
+        "rendered_png": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_procedure_flow_3/rendered.png",
+        "snap_preview_png": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_procedure_flow_3/snap_preview.png",
+        "snap_preview_svg": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_procedure_flow_3/snap_preview.svg",
+        "svg": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_procedure_flow_3/out.svg",
+        "validate_report": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_procedure_flow_3/validate_report.json"
       },
       "quality_gate": {
         "backend": "cairosvg",
-        "bad_pixel_ratio": 0.293167735042735,
-        "bad_pixel_ratio_max": 0.7,
-        "diff_png": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_performance_lineplot/diff.png",
+        "bad_pixel_ratio": 0.2841666666666667,
+        "bad_pixel_ratio_max": 0.65,
+        "diff_png": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_procedure_flow_3/diff.png",
         "errors": [],
-        "pixel_tolerance": 12,
-        "rmse": 0.3670080304145813,
-        "rmse_max": 0.85,
+        "pixel_tolerance": 10,
+        "rmse": 0.3784499764442444,
+        "rmse_max": 0.75,
         "status": "pass",
         "warnings": []
       },
-      "score": 0.7000000000000001,
+      "score": 0.8999999999999999,
       "status": "pass",
-      "template_id": "t_performance_lineplot",
+      "template_id": "t_procedure_flow",
       "validation": {
         "errors": [],
         "stats": {
-          "color_count": 6,
+          "color_count": 2,
           "max_path_commands": 0,
-          "text_count": 10,
+          "text_count": 3,
           "texts_detected": 0
         },
         "status": "pass",
@@ -125,24 +88,24 @@
         "template_id": "t_3gpp_events_3panel"
       },
       {
-        "score": 0.7000000000000001,
-        "template_id": "t_performance_lineplot"
+        "score": 0.8999999999999999,
+        "template_id": "t_procedure_flow"
       },
       {
-        "score": 0.2,
-        "template_id": "t_procedure_flow"
+        "score": 0.7000000000000001,
+        "template_id": "t_performance_lineplot"
       }
     ],
-    "confidence": 0.8717948717948718,
+    "confidence": 0.935483870967742,
     "decision": "known",
     "features_summary": {
-      "axis_aligned_ratio": 0.6922788254057604,
-      "ink_ratio": 0.2854540598290598,
+      "axis_aligned_ratio": 0.794017094017094,
+      "ink_ratio": 0.24310897435897436,
       "long_horizontal_lines": 0,
       "long_vertical_lines": 6,
-      "saturated_ratio": 0.13623519284390964,
-      "short_horizontal_segments": 1226,
-      "short_vertical_segments": 1441
+      "saturated_ratio": 0.12214897824653922,
+      "short_horizontal_segments": 1477,
+      "short_vertical_segments": 1459
     },
     "image_meta": {
       "height": 240,
@@ -154,81 +117,44 @@
   "output_svg": "/home/u24/png2svg/output/regress/case_003_compact/generated.svg",
   "selected": {
     "paths": {
-      "diff_png": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_3gpp_events_3panel_2/diff.png",
-      "gate_report": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_3gpp_events_3panel_2/gate_report.json",
-      "params": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_3gpp_events_3panel_2/params.json",
-      "rendered_png": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_3gpp_events_3panel_2/rendered.png",
-      "snap_preview_png": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_3gpp_events_3panel_2/snap_preview.png",
-      "snap_preview_svg": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_3gpp_events_3panel_2/snap_preview.svg",
-      "svg": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_3gpp_events_3panel_2/out.svg",
-      "validate_report": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_3gpp_events_3panel_2/validate_report.json"
+      "diff_png": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_procedure_flow_3/diff.png",
+      "gate_report": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_procedure_flow_3/gate_report.json",
+      "params": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_procedure_flow_3/params.json",
+      "rendered_png": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_procedure_flow_3/rendered.png",
+      "snap_preview_png": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_procedure_flow_3/snap_preview.png",
+      "snap_preview_svg": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_procedure_flow_3/snap_preview.svg",
+      "svg": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_procedure_flow_3/out.svg",
+      "validate_report": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_procedure_flow_3/validate_report.json"
     },
     "quality_gate": {
       "backend": "cairosvg",
-      "bad_pixel_ratio": 0.2676068376068376,
-      "bad_pixel_ratio_max": 0.7,
-      "diff_png": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_3gpp_events_3panel_2/diff.png",
+      "bad_pixel_ratio": 0.2841666666666667,
+      "bad_pixel_ratio_max": 0.65,
+      "diff_png": "/home/u24/png2svg/output/regress/case_003_compact/convert/candidates/t_procedure_flow_3/diff.png",
       "errors": [],
-      "pixel_tolerance": 12,
-      "rmse": 0.31798219680786133,
-      "rmse_max": 0.85,
+      "pixel_tolerance": 10,
+      "rmse": 0.3784499764442444,
+      "rmse_max": 0.75,
       "status": "pass",
       "warnings": []
     },
-    "score": 3.6000000000000005,
+    "score": 0.8999999999999999,
     "status": "pass",
-    "template_id": "t_3gpp_events_3panel",
+    "template_id": "t_procedure_flow",
     "validation": {
       "errors": [],
       "stats": {
-        "color_count": 6,
-        "max_path_commands": 3,
-        "text_count": 15,
+        "color_count": 2,
+        "max_path_commands": 0,
+        "text_count": 3,
         "texts_detected": 0
       },
       "status": "pass",
-      "warnings": [
-        {
-          "code": "W2106_TEXT_BASELINE_NOT_ALIGNED",
-          "context": {
-            "id": "txt_t_start_A4",
-            "tag": "text"
-          },
-          "hint": "Snap text y positions or set a consistent dominant-baseline.",
-          "message": "Text baselines within a line are not aligned."
-        },
-        {
-          "code": "W2106_TEXT_BASELINE_NOT_ALIGNED",
-          "context": {
-            "id": "txt_panel_A4",
-            "tag": "text"
-          },
-          "hint": "Snap text y positions or set a consistent dominant-baseline.",
-          "message": "Text baselines within a line are not aligned."
-        },
-        {
-          "code": "W2106_TEXT_BASELINE_NOT_ALIGNED",
-          "context": {
-            "id": "txt_serving_A4",
-            "tag": "text"
-          },
-          "hint": "Snap text y positions or set a consistent dominant-baseline.",
-          "message": "Text baselines within a line are not aligned."
-        },
-        {
-          "code": "W2106_TEXT_BASELINE_NOT_ALIGNED",
-          "context": {
-            "id": "txt_neighbor_A4",
-            "tag": "text"
-          },
-          "hint": "Snap text y positions or set a consistent dominant-baseline.",
-          "message": "Text baselines within a line are not aligned."
-        }
-      ]
+      "warnings": []
     },
     "validation_error_count": 0,
-    "validation_warning_count": 4
+    "validation_warning_count": 0
   },
-  "selected_template": "t_3gpp_events_3panel",
+  "selected_template": "t_procedure_flow",
   "status": "pass"
 }

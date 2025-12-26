@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1800" height="900" viewBox="0 0 1800 900">
+  <rect x="0" y="0" width="1800" height="900" fill="#FFFFFF"/>
+  <text x="900.0" y="70" font-family="Arial" font-size="42" font-weight="700" text-anchor="middle" fill="#111">3GPP Measurement Event Triggers (A3/A4/A5): Time-to-Trigger (TTT) and Hysteresis</text>
+
+
+    <g>
+      
+    <text x="85" y="150" font-family="Arial" font-size="34" font-weight="700" fill="#111">A3 Event</text>
+    <text x="85" y="185" font-family="Arial" font-size="22" fill="#111">A3: Neighbor becomes better than serving by an offset (with hysteresis) for TTT</text>
+    
+      <rect x="225" y="225" width="200" height="560" fill="#F2DCA6" opacity="0.35" rx="12"/>
+      
+    <line x1="115" y1="785" x2="545.0" y2="785" stroke="#111" stroke-width="4"/>
+    <line x1="115" y1="785" x2="115" y2="195" stroke="#111" stroke-width="4"/>
+    <polygon points="545.0,785 531.0,777 531.0,793" fill="#111"/>
+    <polygon points="115,195 107,209 123,209" fill="#111"/>
+    
+      
+    <line x1="225" y1="785" x2="225" y2="215" stroke="#111" stroke-width="3" stroke-dasharray="8,8"/>
+    <line x1="425" y1="785" x2="425" y2="215" stroke="#111" stroke-width="3" stroke-dasharray="8,8"/>
+    
+      
+    <line x1="225" y1="205" x2="425" y2="205" stroke="#111" stroke-width="3"/>
+    <polygon points="225,205 235,199 235,211" fill="#111"/>
+    <polygon points="425,205 415,199 415,211" fill="#111"/>
+    <text x="325.0" y="195" font-family="Arial" font-size="26" text-anchor="middle" fill="#111">TTT</text>
+    
+      
+    <text x="75" y="500.0" font-family="Arial" font-size="22" fill="#111"
+          transform="rotate(-90 75,500.0)" text-anchor="middle">
+      Measured signal level (e.g., RSRP/RSRQ/SINR)
+    </text>
+    
+      
+    <text x="330.0" y="828" font-family="Arial" font-size="24" fill="#111" text-anchor="middle">Time (t)</text>
+    <text x="225" y="825" font-family="Arial" font-size="22" fill="#111" text-anchor="middle">t_start</text>
+    <text x="425" y="825" font-family="Arial" font-size="22" fill="#111" text-anchor="middle">t_trigger</text>
+    
+      
+    <text x="145" y="767" font-family="Arial" font-size="20" fill="#111">Condition</text>
+    <text x="145" y="791" font-family="Arial" font-size="20" fill="#111">first met</text>
+    
+    <text x="535.0" y="767" font-family="Arial" font-size="20" fill="#111" text-anchor="end">Report sent /</text>
+    <text x="535.0" y="791" font-family="Arial" font-size="20" fill="#111" text-anchor="end">Event triggered</text>
+    
+      
+    <line x1="285" y1="390" x2="285" y2="460" stroke="#111" stroke-width="3"/>
+    <polygon points="285,390 279,403 291,403" fill="#111"/>
+    <polygon points="285,460 279,447 291,447" fill="#111"/>
+    <text x="275" y="431" font-family="Arial" font-size="22" fill="#111" text-anchor="end">Hys</text>
+    <text x="525.0" y="455" font-family="Arial" font-size="22" fill="#111" text-anchor="end">Threshold:</text>
+    <text x="525.0" y="483" font-family="Arial" font-size="22" fill="#111" text-anchor="end">Serving +</text>
+    <text x="525.0" y="511" font-family="Arial" font-size="22" fill="#111" text-anchor="end">Offset + Hys</text>
+    <text x="450" y="315" font-family="Arial" font-size="26" fill="#111">A3</text>
+    <text x="450" y="345" font-family="Arial" font-size="22" fill="#111">triggered</text>
+    
+      
+    <path d="M 125.0,575.0 Q 165.0,555.0 205.0,535.0 Q 240.0,495.0 275.0,455.0 Q 315.0,432.5 355.0,410.0 Q 390.0,392.5 425.0,375.0 Q 460.0,362.5 495.0,350.0 Q 507.5,317.5 520.0,285.0" fill="none" stroke="#E59B4D" stroke-width="7" stroke-dasharray="14,12" stroke-linecap="round"/>
+    <path d="M 125.0,335.0 Q 160.0,352.5 195.0,370.0 Q 230.0,407.5 265.0,445.0 Q 300.0,467.5 335.0,490.0 Q 370.0,517.5 405.0,545.0 Q 440.0,562.5 475.0,580.0 Q 500.0,665.0 525.0,750.0" fill="none" stroke="#3B6EA8" stroke-width="8" stroke-linecap="round"/>
+    
+      
+    <text x="155" y="535" font-family="Arial" font-size="26" fill="#E59B4D">Neighbor/</text>
+    <text x="155" y="565" font-family="Arial" font-size="26" fill="#E59B4D">Target beam</text>
+    <text x="265" y="625" font-family="Arial" font-size="26" fill="#111">Serving beam</text>
+    
+      
+    <circle cx="425" cy="305" r="16" fill="#fff" stroke="#C73D2A" stroke-width="8"/>
+    
+    </g>
+    
+
+    <g>
+      
+    <text x="665.0" y="150" font-family="Arial" font-size="34" font-weight="700" fill="#111">A4 Event</text>
+    <text x="665.0" y="185" font-family="Arial" font-size="22" fill="#111">A4: Neighbor exceeds a threshold Th_A4 for TTT</text>
+    
+      <rect x="805.0" y="225" width="200.0" height="560" fill="#E5E5E5" opacity="0.35" rx="12"/>
+      
+    <line x1="695.0" y1="785" x2="1125.0" y2="785" stroke="#111" stroke-width="4"/>
+    <line x1="695.0" y1="785" x2="695.0" y2="195" stroke="#111" stroke-width="4"/>
+    <polygon points="1125.0,785 1111.0,777 1111.0,793" fill="#111"/>
+    <polygon points="695.0,195 687.0,209 703.0,209" fill="#111"/>
+    
+      
+    <line x1="805.0" y1="785" x2="805.0" y2="215" stroke="#111" stroke-width="3" stroke-dasharray="8,8"/>
+    <line x1="1005.0" y1="785" x2="1005.0" y2="215" stroke="#111" stroke-width="3" stroke-dasharray="8,8"/>
+    
+      
+    <line x1="805.0" y1="205" x2="1005.0" y2="205" stroke="#111" stroke-width="3"/>
+    <polygon points="805.0,205 815.0,199 815.0,211" fill="#111"/>
+    <polygon points="1005.0,205 995.0,199 995.0,211" fill="#111"/>
+    <text x="905.0" y="195" font-family="Arial" font-size="26" text-anchor="middle" fill="#111">TTT</text>
+    
+      
+    <text x="655.0" y="500.0" font-family="Arial" font-size="22" fill="#111"
+          transform="rotate(-90 655.0,500.0)" text-anchor="middle">
+      Measured signal level (e.g., RSRP/RSRQ/SINR)
+    </text>
+    
+      
+    <text x="910.0" y="828" font-family="Arial" font-size="24" fill="#111" text-anchor="middle">Time (t)</text>
+    <text x="805.0" y="825" font-family="Arial" font-size="22" fill="#111" text-anchor="middle">t_start</text>
+    <text x="1005.0" y="825" font-family="Arial" font-size="22" fill="#111" text-anchor="middle">t_trigger</text>
+    
+      
+    <text x="725.0" y="767" font-family="Arial" font-size="20" fill="#111">Condition</text>
+    <text x="725.0" y="791" font-family="Arial" font-size="20" fill="#111">first met</text>
+    
+    <text x="1115.0" y="767" font-family="Arial" font-size="20" fill="#111" text-anchor="end">Report sent /</text>
+    <text x="1115.0" y="791" font-family="Arial" font-size="20" fill="#111" text-anchor="end">Event triggered</text>
+    
+      
+    <line x1="695.0" y1="405" x2="1125.0" y2="405" stroke="#777" stroke-width="4" stroke-dasharray="10,10"/>
+    <rect x="695.0" y="360" width="430.0" height="90" fill="#777" opacity="0.12" rx="10"/>
+    <text x="705.0" y="395" font-family="Arial" font-size="24" fill="#111">Th_A4</text>
+    <line x1="1035.0" y1="375" x2="1035.0" y2="435" stroke="#111" stroke-width="3"/>
+    <polygon points="1035.0,375 1029.0,387 1041.0,387" fill="#111"/>
+    <polygon points="1035.0,435 1029.0,423 1041.0,423" fill="#111"/>
+    <text x="1025.0" y="413" font-family="Arial" font-size="22" fill="#111" text-anchor="end">Hys</text>
+    <text x="1030.0" y="315" font-family="Arial" font-size="26" fill="#111">A4</text>
+    <text x="1030.0" y="345" font-family="Arial" font-size="22" fill="#111">triggered</text>
+    
+      
+    <path d="M 705.0,575.0 Q 745.0,555.0 785.0,535.0 Q 820.0,495.0 855.0,455.0 Q 895.0,432.5 935.0,410.0 Q 970.0,392.5 1005.0,375.0 Q 1040.0,362.5 1075.0,350.0 Q 1087.5,317.5 1100.0,285.0" fill="none" stroke="#E59B4D" stroke-width="7" stroke-dasharray="14,12" stroke-linecap="round"/>
+    <path d="M 705.0,335.0 Q 740.0,352.5 775.0,370.0 Q 810.0,407.5 845.0,445.0 Q 880.0,467.5 915.0,490.0 Q 950.0,517.5 985.0,545.0 Q 1020.0,562.5 1055.0,580.0 Q 1080.0,665.0 1105.0,750.0" fill="none" stroke="#3B6EA8" stroke-width="8" stroke-linecap="round"/>
+    
+      
+    <text x="735.0" y="535" font-family="Arial" font-size="26" fill="#E59B4D">Neighbor/</text>
+    <text x="735.0" y="565" font-family="Arial" font-size="26" fill="#E59B4D">Target beam</text>
+    <text x="845.0" y="625" font-family="Arial" font-size="26" fill="#111">Serving beam</text>
+    
+      
+    <circle cx="1005.0" cy="305" r="16" fill="#fff" stroke="#C73D2A" stroke-width="8"/>
+    
+    </g>
+    
+
+    <g>
+      
+    <text x="1245.0" y="150" font-family="Arial" font-size="34" font-weight="700" fill="#111">A5 Event</text>
+    <text x="1245.0" y="185" font-family="Arial" font-size="22" fill="#111">A5: Serving falls below Th1 while neighbor rises above Th2 for TTT</text>
+    
+      <rect x="1385.0" y="225" width="200.0" height="560" fill="#CFC7E8" opacity="0.35" rx="12"/>
+      
+    <line x1="1275.0" y1="785" x2="1705.0" y2="785" stroke="#111" stroke-width="4"/>
+    <line x1="1275.0" y1="785" x2="1275.0" y2="195" stroke="#111" stroke-width="4"/>
+    <polygon points="1705.0,785 1691.0,777 1691.0,793" fill="#111"/>
+    <polygon points="1275.0,195 1267.0,209 1283.0,209" fill="#111"/>
+    
+      
+    <line x1="1385.0" y1="785" x2="1385.0" y2="215" stroke="#111" stroke-width="3" stroke-dasharray="8,8"/>
+    <line x1="1585.0" y1="785" x2="1585.0" y2="215" stroke="#111" stroke-width="3" stroke-dasharray="8,8"/>
+    
+      
+    <line x1="1385.0" y1="205" x2="1585.0" y2="205" stroke="#111" stroke-width="3"/>
+    <polygon points="1385.0,205 1395.0,199 1395.0,211" fill="#111"/>
+    <polygon points="1585.0,205 1575.0,199 1575.0,211" fill="#111"/>
+    <text x="1485.0" y="195" font-family="Arial" font-size="26" text-anchor="middle" fill="#111">TTT</text>
+    
+      
+    <text x="1235.0" y="500.0" font-family="Arial" font-size="22" fill="#111"
+          transform="rotate(-90 1235.0,500.0)" text-anchor="middle">
+      Measured signal level (e.g., RSRP/RSRQ/SINR)
+    </text>
+    
+      
+    <text x="1490.0" y="828" font-family="Arial" font-size="24" fill="#111" text-anchor="middle">Time (t)</text>
+    <text x="1385.0" y="825" font-family="Arial" font-size="22" fill="#111" text-anchor="middle">t_start</text>
+    <text x="1585.0" y="825" font-family="Arial" font-size="22" fill="#111" text-anchor="middle">t_trigger</text>
+    
+      
+    <text x="1305.0" y="767" font-family="Arial" font-size="20" fill="#111">Condition</text>
+    <text x="1305.0" y="791" font-family="Arial" font-size="20" fill="#111">first met</text>
+    
+    <text x="1695.0" y="767" font-family="Arial" font-size="20" fill="#111" text-anchor="end">Report sent /</text>
+    <text x="1695.0" y="791" font-family="Arial" font-size="20" fill="#111" text-anchor="end">Event triggered</text>
+    
+      
+    <line x1="1275.0" y1="325" x2="1705.0" y2="325" stroke="#777" stroke-width="4" stroke-dasharray="10,10"/>
+    <line x1="1275.0" y1="465" x2="1705.0" y2="465" stroke="#777" stroke-width="4" stroke-dasharray="10,10"/>
+    <text x="1285.0" y="315" font-family="Arial" font-size="24" fill="#111">Th2_A5</text>
+    <text x="1285.0" y="455" font-family="Arial" font-size="24" fill="#111">Th1_A5</text>
+    <text x="1485.0" y="395.0" font-family="Arial" font-size="30" fill="#111" text-anchor="middle">Both</text>
+    <text x="1485.0" y="431.0" font-family="Arial" font-size="30" fill="#111" text-anchor="middle">conditions</text>
+    <text x="1485.0" y="467.0" font-family="Arial" font-size="30" fill="#111" text-anchor="middle">satisfied</text>
+    <text x="1610.0" y="315" font-family="Arial" font-size="26" fill="#111">A5</text>
+    <text x="1610.0" y="345" font-family="Arial" font-size="22" fill="#111">triggered</text>
+    
+      
+    <path d="M 1285.0,575.0 Q 1325.0,555.0 1365.0,535.0 Q 1400.0,495.0 1435.0,455.0 Q 1475.0,432.5 1515.0,410.0 Q 1550.0,392.5 1585.0,375.0 Q 1620.0,362.5 1655.0,350.0 Q 1667.5,317.5 1680.0,285.0" fill="none" stroke="#E59B4D" stroke-width="7" stroke-dasharray="14,12" stroke-linecap="round"/>
+    <path d="M 1285.0,335.0 Q 1320.0,352.5 1355.0,370.0 Q 1390.0,407.5 1425.0,445.0 Q 1460.0,467.5 1495.0,490.0 Q 1530.0,517.5 1565.0,545.0 Q 1600.0,562.5 1635.0,580.0 Q 1660.0,665.0 1685.0,750.0" fill="none" stroke="#3B6EA8" stroke-width="8" stroke-linecap="round"/>
+    
+      
+    <text x="1315.0" y="535" font-family="Arial" font-size="26" fill="#E59B4D">Neighbor/</text>
+    <text x="1315.0" y="565" font-family="Arial" font-size="26" fill="#E59B4D">Target beam</text>
+    <text x="1425.0" y="625" font-family="Arial" font-size="26" fill="#111">Serving beam</text>
+    
+      
+    <circle cx="1585.0" cy="305" r="16" fill="#fff" stroke="#C73D2A" stroke-width="8"/>
+    
+    </g>
+    
+</svg>

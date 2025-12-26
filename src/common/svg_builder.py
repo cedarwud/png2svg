@@ -48,30 +48,47 @@ class SvgBuilder:
             height=int(height),
         )
 
-    def add_title(self, title: str, x: int = 10, y: int = 20) -> None:
+    def add_title(
+        self,
+        title: str,
+        x: int = 10,
+        y: int = 20,
+        font_size: int | float | None = None,
+        font_weight: str | None = None,
+        anchor: str | None = None,
+    ) -> None:
         text_group = self.groups["g_text"]
         lines = [line.strip() for line in str(title).splitlines() if line.strip()]
+        text_anchor = anchor or DEFAULT_TEXT_ANCHOR
         if len(lines) <= 1:
+            kwargs = {
+                "insert": (x, y),
+                "id": "txt_title",
+                "font_family": DEFAULT_FONT_FAMILY,
+                "text_anchor": text_anchor,
+                "fill": "#000000",
+            }
+            if font_size is not None:
+                kwargs["font_size"] = float(font_size)
+            if font_weight:
+                kwargs["font_weight"] = font_weight
             text_group.add(
-                self.drawing.text(
-                    title,
-                    insert=(x, y),
-                    id="txt_title",
-                    font_family=DEFAULT_FONT_FAMILY,
-                    text_anchor=DEFAULT_TEXT_ANCHOR,
-                    fill="#000000",
-                )
+                self.drawing.text(title, **kwargs)
             )
             return
-        text = self.drawing.text(
-            "",
-            insert=(x, y),
-            id="txt_title",
-            font_family=DEFAULT_FONT_FAMILY,
-            text_anchor=DEFAULT_TEXT_ANCHOR,
-            fill="#000000",
-        )
-        line_height = 14
+        text_kwargs = {
+            "insert": (x, y),
+            "id": "txt_title",
+            "font_family": DEFAULT_FONT_FAMILY,
+            "text_anchor": text_anchor,
+            "fill": "#000000",
+        }
+        if font_size is not None:
+            text_kwargs["font_size"] = float(font_size)
+        if font_weight:
+            text_kwargs["font_weight"] = font_weight
+        text = self.drawing.text("", **text_kwargs)
+        line_height = float(font_size) * 1.3 if font_size is not None else 14
         for idx, line in enumerate(lines):
             if idx == 0:
                 tspan = self.drawing.tspan(line, x=[x], y=[y], id=f"txt_title_line{idx}")

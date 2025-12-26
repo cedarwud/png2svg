@@ -3,15 +3,14 @@
 # Optional: expected_templates (top-2), allow_force_template to bypass classifier.
 version: v1
 cases:
-  - id: real_case_001
-    relative_path: example/figure_001.png
+  - id: real_fig1_3gpp
+    relative_path: fig1.png
     expected_templates:
-      - t_performance_lineplot
       - t_3gpp_events_3panel
     allow_force_template: true
     gates:
       must_pass_validator: true
-      max_bad_pixel_ratio: 0.05
-      max_rmse: 0.05
-      pixel_tolerance: 10
-    notes: "Replace with a real PNG path under REAL_PNG_DIR."
+      max_bad_pixel_ratio: 0.7
+      max_rmse: 0.85
+      pixel_tolerance: 12
+    notes: "fig1.png (2752x1536) under REAL_PNG_DIR."

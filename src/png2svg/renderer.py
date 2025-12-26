@@ -147,10 +147,30 @@ def _add_text_items(builder: SvgBuilder, items: list[dict[str, Any]]) -> None:
             "text_anchor": anchor,
             "fill": str(item.get("fill", "#000000")),
         }
+        font_weight = item.get("font_weight")
+        if isinstance(font_weight, str) and font_weight:
+            text_kwargs["font_weight"] = font_weight
         dominant = item.get("dominant_baseline")
         if isinstance(dominant, str) and dominant:
             text_kwargs["dominant_baseline"] = dominant
-        builder.groups["g_text"].add(builder.drawing.text(str(content), **text_kwargs))
+        content_str = str(content)
+        if "\n" in content_str:
+            lines = [line.strip() for line in content_str.splitlines() if line.strip()]
+            text = builder.drawing.text("", **text_kwargs)
+            line_height = float(text_kwargs.get("font_size", 10)) * 1.3
+            for line_idx, line in enumerate(lines):
+                if line_idx == 0:
+                    tspan = builder.drawing.tspan(
+                        line, x=[x], y=[y], id=f"{text_id}_line{line_idx}"
+                    )
+                else:
+                    tspan = builder.drawing.tspan(
+                        line, x=[x], dy=[line_height], id=f"{text_id}_line{line_idx}"
+                    )
+                text.add(tspan)
+            builder.groups["g_text"].add(text)
+        else:
+            builder.groups["g_text"].add(builder.drawing.text(content_str, **text_kwargs))
 
 
 def _add_geometry(builder: SvgBuilder, params: dict[str, Any]) -> None:

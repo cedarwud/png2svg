@@ -76,7 +76,8 @@ Geometry primitives (params):
 Optional OCR (tesseract):
 - Ubuntu/Debian: `sudo apt-get install tesseract-ocr`
 - RHEL/CentOS: `sudo yum install tesseract`
-- Disable OCR: `PNG2SVG_OCR_BACKEND=none`
+- Optional Python wrapper: `pip install pytesseract`
+- Backend selection: `PNG2SVG_OCR_BACKEND=auto|pytesseract|tesseract|none`
 
 Adaptive extractor settings are defined in `config/extract_adaptive.v1.yaml`.
 

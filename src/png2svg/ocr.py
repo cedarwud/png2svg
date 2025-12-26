@@ -14,6 +14,22 @@ def has_tesseract() -> bool:
     return shutil.which("tesseract") is not None
 
 
+def has_pytesseract() -> bool:
+    try:
+        import pytesseract  # noqa: F401
+    except ImportError:
+        return False
+    return has_tesseract()
+
+
+def _pytesseract_module():
+    try:
+        import pytesseract
+    except ImportError:
+        return None
+    return pytesseract
+
+
 def _run_tesseract(
     image: Image.Image,
     lang: str = "eng",
@@ -86,6 +102,64 @@ def _run_tesseract(
         return rows
 
 
+def _run_pytesseract(
+    image: Image.Image,
+    lang: str = "eng",
+    psm: int = 6,
+    config: str | None = None,
+) -> list[dict[str, Any]]:
+    pytesseract = _pytesseract_module()
+    if pytesseract is None:
+        return []
+    if not has_tesseract():
+        return []
+    config_args = f"--psm {psm}"
+    if config:
+        config_args = f"{config_args} {config}"
+    try:
+        data = pytesseract.image_to_data(
+            image,
+            lang=lang,
+            config=config_args,
+            output_type=pytesseract.Output.DICT,
+        )
+    except Exception:
+        return []
+    rows: list[dict[str, Any]] = []
+    texts = data.get("text", [])
+    for idx, text in enumerate(texts):
+        text = str(text).strip()
+        if not text:
+            continue
+        try:
+            conf = float(data.get("conf", [])[idx])
+        except (IndexError, ValueError, TypeError):
+            conf = -1.0
+        if conf < 0:
+            continue
+        try:
+            left = int(data.get("left", [])[idx])
+            top = int(data.get("top", [])[idx])
+            width = int(data.get("width", [])[idx])
+            height = int(data.get("height", [])[idx])
+        except (IndexError, ValueError, TypeError):
+            continue
+        rows.append(
+            {
+                "text": text,
+                "conf": conf / 100.0,
+                "bbox": {
+                    "x": left,
+                    "y": top,
+                    "width": width,
+                    "height": height,
+                },
+            }
+        )
+    rows.sort(key=lambda item: (item["bbox"]["y"], item["bbox"]["x"], item["text"]))
+    return rows
+
+
 def ocr_image(
     image: Image.Image,
     backend: str = "auto",
@@ -93,14 +167,20 @@ def ocr_image(
 ) -> list[dict[str, Any]]:
     backend_value = backend.lower()
     if backend_value == "auto":
-        backend_value = "tesseract" if has_tesseract() else "none"
+        backend_value = "pytesseract" if has_pytesseract() else "tesseract"
+        if backend_value == "tesseract" and not has_tesseract():
+            backend_value = "none"
     if backend_value == "none":
         return []
-    if backend_value != "tesseract":
+    if backend_value == "pytesseract" and not has_pytesseract():
+        raise ValueError("pytesseract requested but not available")
+    if backend_value not in {"tesseract", "pytesseract"}:
         raise ValueError(f"Unsupported OCR backend: {backend}")
 
     results: list[dict[str, Any]] = []
     if not rois:
+        if backend_value == "pytesseract":
+            return _run_pytesseract(image)
         return _run_tesseract(image)
     for roi in rois:
         try:
@@ -113,7 +193,10 @@ def ocr_image(
         if width <= 0 or height <= 0:
             continue
         crop = image.crop((x, y, x + width, y + height))
-        roi_results = _run_tesseract(crop)
+        if backend_value == "pytesseract":
+            roi_results = _run_pytesseract(crop)
+        else:
+            roi_results = _run_tesseract(crop)
         for item in roi_results:
             bbox = item.get("bbox", {})
             try:

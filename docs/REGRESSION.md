@@ -80,14 +80,36 @@ python tools/check_dataset_sanity.py datasets/regression_v0
 ## Convert Regression Variants
 FAST (full run):
 ```
-python tools/regress.py datasets/regression_v0 --pipeline convert --input-variant fast
+python tools/regress.py datasets/regression_v0 --pipeline convert --tier fast --input-variant fast
 ```
 
 HARD (sampled):
 ```
-python tools/regress.py datasets/regression_v0 --pipeline convert --input-variant hard --limit 3
+python tools/regress.py datasets/regression_v0 --pipeline convert --tier fast --input-variant hard --limit 3
 ```
 
 Input naming:
 - `input.png` (fast)
 - `input_hard.png` (hard)
+
+## Hard Regression Tier
+Hard cases live under `datasets/regression_hard_v1/` and use `input.png` as the
+fig1-like input (expected assets are generated from params).
+
+Rebuild expected/input assets:
+```
+python tools/build_hard_case_assets.py datasets/regression_hard_v1 --overwrite
+```
+
+Run hard tier:
+```
+python tools/regress.py datasets/regression_hard_v1 --pipeline convert --tier hard
+```
+Artifacts are written under `output/regress_hard/`.
+If OCR (tesseract) is unavailable, hard-tier text guarantees may be skipped; install
+`tesseract-ocr` to enable full coverage.
+
+Run both tiers:
+```
+python tools/regress.py datasets/regression_v0 --pipeline convert --tier all
+```

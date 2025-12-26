@@ -16,13 +16,13 @@
   "confidence": 0.935483870967742,
   "decision": "known",
   "features_summary": {
-    "axis_aligned_ratio": 0.7386302835741038,
-    "ink_ratio": 0.25748809523809524,
+    "axis_aligned_ratio": 0.806157354618016,
+    "ink_ratio": 0.24254365079365078,
     "long_horizontal_lines": 0,
     "long_vertical_lines": 6,
-    "saturated_ratio": 0.1183904325982092,
-    "short_horizontal_segments": 1502,
-    "short_vertical_segments": 1775
+    "saturated_ratio": 0.10449763583711,
+    "short_horizontal_segments": 1736,
+    "short_vertical_segments": 1807
   },
   "image_meta": {
     "height": 280,

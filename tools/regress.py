@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import json
 import os
+import shutil
 import sys
 from pathlib import Path
 from typing import Any
@@ -217,23 +218,158 @@ def _case_gate_overrides(entry: Any) -> dict[str, Any]:
 def _variant_gate_overrides(thresholds_path: Path, input_variant: str) -> dict[str, Any]:
     if input_variant != "hard":
         return {}
+    return _gate_section_overrides(thresholds_path, "quality_gate_hard")
+
+
+def _gate_section_overrides(thresholds_path: Path, section_name: str) -> dict[str, Any]:
     try:
         data = yaml.safe_load(thresholds_path.read_text())
     except Exception:
         return {}
     if not isinstance(data, dict):
         return {}
-    hard = data.get("quality_gate_hard")
-    if not isinstance(hard, dict):
+    section = data.get(section_name)
+    if not isinstance(section, dict):
         return {}
     overrides: dict[str, Any] = {}
-    if "rmse_max" in hard:
-        overrides["rmse_max"] = hard.get("rmse_max")
-    if "bad_pixel_ratio_max" in hard:
-        overrides["bad_pixel_ratio_max"] = hard.get("bad_pixel_ratio_max")
-    if "pixel_tolerance" in hard:
-        overrides["pixel_tolerance"] = hard.get("pixel_tolerance")
+    if "rmse_max" in section:
+        overrides["rmse_max"] = section.get("rmse_max")
+    if "bad_pixel_ratio_max" in section:
+        overrides["bad_pixel_ratio_max"] = section.get("bad_pixel_ratio_max")
+    if "pixel_tolerance" in section:
+        overrides["pixel_tolerance"] = section.get("pixel_tolerance")
     return overrides
+
+
+def _tier_gate_overrides(thresholds_path: Path, tier: str) -> dict[str, Any]:
+    if tier != "hard":
+        return {}
+    return _gate_section_overrides(thresholds_path, "quality_gate_hard")
+
+
+def _has_rasterizer() -> bool:
+    if shutil.which("resvg"):
+        return True
+    try:
+        import cairosvg  # noqa: F401
+    except ImportError:
+        return False
+    return True
+
+
+def _run_dataset(
+    dataset: Path,
+    contract: Path,
+    thresholds: Path,
+    output_root: Path,
+    pipeline: str,
+    input_variant: str,
+    limit: int | None,
+    only: str | None,
+    tier: str,
+) -> dict[str, Any]:
+    manifest_path, base_dir = _resolve_manifest(dataset)
+    if base_dir is None:
+        case_dir = manifest_path
+        if not case_dir.is_dir():
+            typer.echo("ERROR E1300_MANIFEST_MISSING: manifest.yaml not found.", err=True)
+            typer.echo("HINT: Provide a dataset directory with manifest.yaml.", err=True)
+            raise typer.Exit(code=1)
+        entries = [{"dir": case_dir.name, "id": case_dir.name}]
+        base_dir = case_dir.parent
+    else:
+        try:
+            manifest = _load_manifest(manifest_path)
+        except Exception as exc:  # noqa: BLE001
+            typer.echo(f"ERROR E1301_MANIFEST_INVALID: {exc}", err=True)
+            typer.echo("HINT: Ensure manifest.yaml has a cases list.", err=True)
+            raise typer.Exit(code=1)
+        entries = manifest["cases"]
+
+    variant_gate_overrides = _variant_gate_overrides(thresholds, input_variant)
+    tier_gate_overrides = _tier_gate_overrides(thresholds, tier)
+
+    results: list[dict[str, Any]] = []
+    passed = 0
+    failed = 0
+    template_counts: dict[str, int] = {}
+    tag_counts: dict[str, int] = {}
+    processed = 0
+    for entry in entries:
+        case_dir = _case_entry_dir(base_dir, entry)
+        case_id = _case_entry_id(entry, case_dir)
+        if only and case_id != only:
+            continue
+        if limit is not None and processed >= limit:
+            break
+        params_path = case_dir / "params.json"
+        template = "unknown"
+        if params_path.exists():
+            try:
+                params = json.loads(params_path.read_text())
+                template = str(params.get("template") or "unknown")
+            except json.JSONDecodeError:
+                template = "unknown"
+        template_counts[template] = template_counts.get(template, 0) + 1
+        if isinstance(entry, dict):
+            tags = entry.get("tags", [])
+            if isinstance(tags, list):
+                for tag in tags:
+                    tag_counts[str(tag)] = tag_counts.get(str(tag), 0) + 1
+        case_result = _run_case(
+            case_dir,
+            case_id,
+            contract,
+            thresholds,
+            output_root,
+            pipeline,
+            gate_overrides={
+                **variant_gate_overrides,
+                **tier_gate_overrides,
+                **_case_gate_overrides(entry),
+            },
+            input_variant=input_variant,
+        )
+        case_result["id"] = case_id
+        case_result["dir"] = str(case_dir)
+        if case_result["status"] == "pass":
+            passed += 1
+        else:
+            failed += 1
+        results.append(case_result)
+        processed += 1
+        status_line = f"{case_id}: {case_result['status']} (report: {case_result['report_path']})"
+        if case_result["diff_path"]:
+            status_line += f" diff: {case_result['diff_path']}"
+        typer.echo(status_line)
+
+    return {
+        "summary": {"total": len(results), "passed": passed, "failed": failed},
+        "cases": results,
+        "template_counts": template_counts,
+        "tag_counts": tag_counts,
+        "failed": failed,
+    }
+
+
+def _print_summary(
+    label: str,
+    summary: dict[str, int],
+    template_counts: dict[str, int],
+    tag_counts: dict[str, int],
+    input_variant: str,
+    pipeline: str,
+) -> None:
+    typer.echo(
+        f"Summary ({label}): total={summary['total']} passed={summary['passed']} failed={summary['failed']} "
+        f"variant={input_variant} pipeline={pipeline}"
+    )
+    typer.echo("Template summary:")
+    for template, count in sorted(template_counts.items()):
+        typer.echo(f"  {template}: {count}")
+    typer.echo("Tag summary:")
+    for tag, count in sorted(tag_counts.items(), key=lambda item: (-item[1], item[0])):
+        typer.echo(f"  {tag}: {count}")
 
 
 def _issue_payload(
@@ -771,6 +907,11 @@ def main(
         "--pipeline",
         help="Pipeline to run: render or convert.",
     ),
+    tier: str = typer.Option(
+        "fast",
+        "--tier",
+        help="Regression tier: fast, hard, or all.",
+    ),
     input_variant: str = typer.Option(
         "fast",
         "--input-variant",
@@ -795,92 +936,117 @@ def main(
 ) -> None:
     """Run regression cases listed in manifest.yaml."""
     dataset = dataset.resolve()
-    manifest_path, base_dir = _resolve_manifest(dataset)
-    if base_dir is None:
-        case_dir = manifest_path
-        if not case_dir.is_dir():
-            typer.echo("ERROR E1300_MANIFEST_MISSING: manifest.yaml not found.", err=True)
-            typer.echo("HINT: Provide a dataset directory with manifest.yaml.", err=True)
-            raise typer.Exit(code=1)
-        entries = [{"dir": case_dir.name, "id": case_dir.name}]
-        base_dir = case_dir.parent
-    else:
-        try:
-            manifest = _load_manifest(manifest_path)
-        except Exception as exc:  # noqa: BLE001
-            typer.echo(f"ERROR E1301_MANIFEST_INVALID: {exc}", err=True)
-            typer.echo("HINT: Ensure manifest.yaml has a cases list.", err=True)
-            raise typer.Exit(code=1)
-        entries = manifest["cases"]
 
     if pipeline not in {"render", "convert"}:
         typer.echo("ERROR E1302_PIPELINE_INVALID: pipeline must be 'render' or 'convert'.", err=True)
         typer.echo("HINT: Use --pipeline render (default) or --pipeline convert.", err=True)
+        raise typer.Exit(code=1)
+    if tier not in {"fast", "hard", "all"}:
+        typer.echo("ERROR E1304_TIER_INVALID: tier must be fast, hard, or all.", err=True)
+        typer.echo("HINT: Use --tier fast, --tier hard, or --tier all.", err=True)
         raise typer.Exit(code=1)
     if input_variant not in {"fast", "hard"}:
         typer.echo("ERROR E1303_INPUT_VARIANT_INVALID: input variant must be fast or hard.", err=True)
         typer.echo("HINT: Use --input-variant fast or --input-variant hard.", err=True)
         raise typer.Exit(code=1)
 
-    variant_gate_overrides = _variant_gate_overrides(thresholds, input_variant)
+    output_root = REPO_ROOT / "output"
+    fast_dataset = dataset
+    hard_dataset = REPO_ROOT / "datasets" / "regression_hard_v1"
+    if tier == "hard":
+        hard_dataset = dataset
 
-    results: list[dict[str, Any]] = []
-    passed = 0
+    tier_payload: dict[str, Any] = {}
     failed = 0
-    template_counts: dict[str, int] = {}
-    tag_counts: dict[str, int] = {}
-    processed = 0
-    for entry in entries:
-        case_dir = _case_entry_dir(base_dir, entry)
-        case_id = _case_entry_id(entry, case_dir)
-        if only and case_id != only:
-            continue
-        if limit is not None and processed >= limit:
-            break
-        params_path = case_dir / "params.json"
-        template = "unknown"
-        if params_path.exists():
-            try:
-                params = json.loads(params_path.read_text())
-                template = str(params.get("template") or "unknown")
-            except json.JSONDecodeError:
-                template = "unknown"
-        template_counts[template] = template_counts.get(template, 0) + 1
-        if isinstance(entry, dict):
-            tags = entry.get("tags", [])
-            if isinstance(tags, list):
-                for tag in tags:
-                    tag_counts[str(tag)] = tag_counts.get(str(tag), 0) + 1
-        case_result = _run_case(
-            case_dir,
-            case_id,
+
+    if tier in {"fast", "all"}:
+        fast_results = _run_dataset(
+            fast_dataset,
             contract,
             thresholds,
-            REPO_ROOT / "output" / "regress",
+            output_root / "regress",
             pipeline,
-            gate_overrides={**variant_gate_overrides, **_case_gate_overrides(entry)},
-            input_variant=input_variant,
+            input_variant,
+            limit,
+            only,
+            "fast",
         )
-        case_result["id"] = case_id
-        case_result["dir"] = str(case_dir)
-        if case_result["status"] == "pass":
-            passed += 1
-        else:
-            failed += 1
-        results.append(case_result)
-        processed += 1
-        status_line = f"{case_id}: {case_result['status']} (report: {case_result['report_path']})"
-        if case_result["diff_path"]:
-            status_line += f" diff: {case_result['diff_path']}"
-        typer.echo(status_line)
+        tier_payload["fast"] = {
+            "dataset": str(fast_dataset),
+            "summary": fast_results["summary"],
+            "cases": fast_results["cases"],
+            "input_variant": input_variant,
+        }
+        failed += int(fast_results["failed"])
+        _print_summary(
+            "fast",
+            fast_results["summary"],
+            fast_results["template_counts"],
+            fast_results["tag_counts"],
+            input_variant,
+            pipeline,
+        )
 
-    summary = {"total": len(results), "passed": passed, "failed": failed}
+    if tier in {"hard", "all"}:
+        if tier == "all" and input_variant != "fast":
+            typer.echo("Hard regression: using input.png (fast) for hard tier.")
+        hard_input_variant = "fast" if tier == "all" else input_variant
+        hard_manifest = hard_dataset if hard_dataset.is_file() else hard_dataset / "manifest.yaml"
+        if not hard_manifest.exists():
+            typer.echo("Hard regression: skipped (manifest missing).")
+            tier_payload["hard"] = {
+                "dataset": str(hard_dataset),
+                "summary": {"skipped": True, "reason": "manifest missing"},
+                "cases": [],
+                "input_variant": hard_input_variant,
+            }
+        elif not _has_rasterizer():
+            typer.echo("Hard regression: skipped (no rasterizer available).")
+            tier_payload["hard"] = {
+                "dataset": str(hard_dataset),
+                "summary": {"skipped": True, "reason": "no rasterizer"},
+                "cases": [],
+                "input_variant": hard_input_variant,
+            }
+        else:
+            hard_results = _run_dataset(
+                hard_dataset,
+                contract,
+                thresholds,
+                output_root / "regress_hard",
+                pipeline,
+                hard_input_variant,
+                limit,
+                only,
+                "hard",
+            )
+            tier_payload["hard"] = {
+                "dataset": str(hard_dataset),
+                "summary": hard_results["summary"],
+                "cases": hard_results["cases"],
+                "input_variant": hard_input_variant,
+            }
+            failed += int(hard_results["failed"])
+            _print_summary(
+                "hard",
+                hard_results["summary"],
+                hard_results["template_counts"],
+                hard_results["tag_counts"],
+                hard_input_variant,
+                pipeline,
+            )
+
     payload_dict: dict[str, Any] = {
-        "summary": summary,
-        "cases": results,
+        "tier": tier,
         "pipeline": pipeline,
         "input_variant": input_variant,
     }
+    if tier == "all":
+        payload_dict.update(tier_payload)
+    elif tier == "fast":
+        payload_dict.update(tier_payload.get("fast", {}))
+    else:
+        payload_dict.update(tier_payload.get("hard", {}))
 
     real_results: list[dict[str, Any]] = []
     real_summary: dict[str, Any] | None = None
@@ -935,16 +1101,22 @@ def main(
     if report is not None:
         report.write_text(payload)
     typer.echo(payload)
-    typer.echo(
-        f"Summary: total={summary['total']} passed={summary['passed']} failed={summary['failed']} "
-        f"variant={input_variant} pipeline={pipeline}"
-    )
-    typer.echo("Template summary:")
-    for template, count in sorted(template_counts.items()):
-        typer.echo(f"  {template}: {count}")
-    typer.echo("Tag summary:")
-    for tag, count in sorted(tag_counts.items(), key=lambda item: (-item[1], item[0])):
-        typer.echo(f"  {tag}: {count}")
+    if tier == "all":
+        combined_total = 0
+        combined_passed = 0
+        combined_failed = 0
+        for label in ("fast", "hard"):
+            entry = tier_payload.get(label, {})
+            summary = entry.get("summary", {})
+            if summary.get("skipped"):
+                continue
+            combined_total += int(summary.get("total", 0))
+            combined_passed += int(summary.get("passed", 0))
+            combined_failed += int(summary.get("failed", 0))
+        typer.echo(
+            f"Combined summary: total={combined_total} passed={combined_passed} failed={combined_failed} "
+            f"pipeline={pipeline}"
+        )
     if real_summary is not None and real_summary.get("failed"):
         failed += int(real_summary["failed"])
     raise typer.Exit(code=0 if failed == 0 else 1)

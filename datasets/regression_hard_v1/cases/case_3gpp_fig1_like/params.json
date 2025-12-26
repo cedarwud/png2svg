@@ -1,0 +1,24 @@
+{
+  "template": "t_3gpp_events_3panel",
+  "title": "3GPP Event A3/A4/A5 Trigger\nTimeline Overview",
+  "canvas": {"width": 1200, "height": 360},
+  "panels": [
+    {"id": "A3", "label": "A3", "x": 80, "y": 90, "width": 300, "height": 220},
+    {"id": "A4", "label": "A4", "x": 450, "y": 90, "width": 300, "height": 220},
+    {"id": "A5", "label": "A5", "x": 820, "y": 90, "width": 300, "height": 220}
+  ],
+  "t_start_ratio": 0.1,
+  "t_trigger_ratio": 0.7,
+  "curves": {
+    "serving": [
+      {"x": 0.05, "y": 0.2},
+      {"x": 0.5, "y": 0.8},
+      {"x": 0.92, "y": 0.55}
+    ],
+    "neighbor": [
+      {"x": 0.05, "y": 0.6},
+      {"x": 0.5, "y": 0.35},
+      {"x": 0.92, "y": 0.9}
+    ]
+  }
+}

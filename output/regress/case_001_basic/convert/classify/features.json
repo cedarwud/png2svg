@@ -1,23 +1,23 @@
 {
   "features": {
-    "axis_aligned_ratio": 0.7386302835741038,
-    "ink_ratio": 0.25748809523809524,
+    "axis_aligned_ratio": 0.806157354618016,
+    "ink_ratio": 0.24254365079365078,
     "line_positions": {
       "horizontal": [],
       "vertical": [
-        46,
-        140,
-        302,
+        40,
+        136,
+        300,
         396,
-        558,
-        652
+        560,
+        656
       ]
     },
     "long_horizontal_lines": 0,
     "long_vertical_lines": 6,
-    "saturated_ratio": 0.1183904325982092,
-    "short_horizontal_segments": 1502,
-    "short_vertical_segments": 1775,
+    "saturated_ratio": 0.10449763583711,
+    "short_horizontal_segments": 1736,
+    "short_vertical_segments": 1807,
     "thresholds": {
       "long_h_min": 405,
       "long_v_min": 126

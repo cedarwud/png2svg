@@ -21,9 +21,14 @@ lines:
   long_line_ratio: 0.5
 
 dashes:
-  min_len_ratio: 0.03
-  max_len_ratio: 0.12
+  min_len_ratio: 0.006
+  max_len_ratio: 0.08
   min_count: 6
+  min_span_ratio: 0.6
+  min_coverage: 0.02
+  max_coverage: 0.35
+  min_gap_ratio: 0.5
+  max_lines_per_panel: 2
 
 text_boxes:
   min_area_ratio: 0.00005
@@ -36,7 +41,30 @@ ocr:
   roi_pad_ratio: 0.02
   roi_pad_min: 2
   roi_pad_max: 24
+  min_conf: 0.5
+  min_chars: 2
+  min_bbox_height: 6
+  min_bbox_width: 6
+  max_bbox_height_ratio: 2.2
+  min_alnum_ratio: 0.35
+  min_alpha_ratio: 0.2
+  min_digit_ratio: 0.15
+  min_ascii_ratio: 0.7
+
+text_layout:
+  grid_px: 5
+  baseline_tolerance_px: 2.0
+  font_scale_ref_height: 360
+  font_scale_min: 0.8
+  font_scale_max: 3.0
+  ocr_font_size_ratio: 0.6
 
 curves:
   sample_spacing_px: 120
   max_points: 8
+  min_segments: 4
+  max_segments: 8
+  smooth_window: 7
+  hue_tolerance_deg: 22
+  saturation_min: 0.2
+  value_min: 0.15

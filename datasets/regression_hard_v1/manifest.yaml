@@ -1,0 +1,7 @@
+# Regression manifest v1 (hard tier).
+# Each case contains input.png (fig1-like), params.json, and expected.svg/png.
+version: v1
+cases:
+  - id: case_3gpp_fig1_like
+    dir: cases/case_3gpp_fig1_like
+    tags: [hard, realistic, fig1_like]
