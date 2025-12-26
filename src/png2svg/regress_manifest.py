@@ -65,6 +65,15 @@ def _case_gate_overrides(entry: Any) -> dict[str, Any]:
     return overrides
 
 
+def _case_force_template(entry: Any) -> str | None:
+    if not isinstance(entry, dict):
+        return None
+    value = entry.get("force_template")
+    if not value:
+        return None
+    return str(value)
+
+
 def _real_expected_templates(entry: dict[str, Any]) -> list[str]:
     if "expected_template" in entry:
         return [str(entry["expected_template"])]

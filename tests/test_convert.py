@@ -38,6 +38,15 @@ def _input_hard_png(case_dir: Path) -> Path:
     return png_path
 
 
+def _force_template(entry: dict[str, str]) -> str | None:
+    if not isinstance(entry, dict):
+        return None
+    value = entry.get("force_template")
+    if value:
+        return str(value)
+    return None
+
+
 def _gate_thresholds(variant: str) -> dict[str, float | int]:
     thresholds = load_thresholds(THRESHOLDS)
     if variant == "hard":
@@ -56,10 +65,12 @@ def test_convert_e2e_regression_cases(tmp_path: Path) -> None:
         case_dir = _case_dir(entry)
         input_png = _input_png(case_dir)
         output_svg = tmp_path / f"{case_dir.name}.svg"
+        force_template = _force_template(entry)
         result = convert_png(
             input_png,
             output_svg,
-            topk=2,
+            topk=1 if force_template else 2,
+            force_template=force_template,
             contract_path=CONTRACT,
             thresholds_path=THRESHOLDS,
         )

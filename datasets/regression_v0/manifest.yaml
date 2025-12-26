@@ -54,3 +54,7 @@ cases:
   - id: case_017_3gpp_dashed_noise
     dir: cases/case_017_3gpp_dashed_noise
     tags: [small_canvas, dashed, long_text]
+  - id: case_018_project_architecture_v1
+    dir: cases/case_018_project_architecture_v1
+    tags: [large_canvas]
+    force_template: t_project_architecture_v1

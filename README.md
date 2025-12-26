@@ -8,13 +8,13 @@ Template-based PNG-to-editable-SVG pipeline (MVP v0).
 
 ## Quickstart
 Minimal path: render → validate → regress.
-1) Render: `python tools/png2svg.py path/to/input.png path/to/params.json output/output.svg`
+1) Render: `python tools/png2svg.py render path/to/input.png path/to/params.json output/output.svg`
 2) Validate: `python tools/validate_svg.py output/output.svg --expected path/to/expected.png --report output/report.json`
 3) Regress: `python tools/regress.py datasets/regression_v0/manifest.yaml --report output/regress_report.json`
 
 ## CLI
 Top-level commands:
-- Render: `python tools/png2svg.py path/to/input.png path/to/params.json path/to/output.svg`
+- Render: `python tools/png2svg.py render path/to/input.png path/to/params.json path/to/output.svg`
 - Classify: `python tools/png2svg.py classify path/to/input.png --out output/classification.json --debug-dir output/debug`
 - Extract: `python tools/png2svg.py extract path/to/input.png --template auto --out output/params.json --debug-dir output/extract_debug`
 - Convert: `python tools/png2svg.py convert path/to/input.png -o output/output.svg --debug-dir output/convert_debug --topk 2`
@@ -23,6 +23,19 @@ Top-level commands:
 - Rebuild case inputs: `python tools/rebuild_case_inputs.py datasets/regression_v0 --variants fast,hard --overwrite`
 - Build hard case assets: `python tools/build_hard_case_assets.py datasets/regression_hard_v1 --overwrite`
 - Dataset sanity check: `python tools/check_dataset_sanity.py datasets/regression_v0`
+
+Recommended commands (Makefile shortcuts):
+- `make pytest`
+- `make regress-fast-render`
+- `make regress-fast-convert`
+- `make regress-fast-hard-sample`
+- `make regress-hard`
+- `REAL_PNG_DIR=/path/to/pngs make regress-real`
+- `make rebuild-inputs`
+- `make build-hard-assets`
+- `make dataset-sanity`
+- `make check-png`
+Note: set `PYTHON=python` when you are not using the `venv/` virtualenv.
 
 Debug artifacts:
 - `--debug-dir` stores classification/extraction/validation outputs for troubleshooting.
@@ -40,9 +53,10 @@ Classifier schema: see `docs/CLASSIFIER.md`.
 Extractor schema: see `docs/EXTRACTOR.md`.
 
 Template examples (using `samples/`):
-- 3GPP events: `python tools/png2svg.py samples/input.png samples/t_3gpp_events_3panel.json output/3gpp.svg`
-- Procedure flow: `python tools/png2svg.py samples/input.png samples/t_procedure_flow.json output/flow.svg`
-- Performance line plot: `python tools/png2svg.py samples/input.png samples/t_performance_lineplot.json output/lineplot.svg`
+- 3GPP events: `python tools/png2svg.py render samples/input.png samples/t_3gpp_events_3panel.json output/3gpp.svg`
+- Procedure flow: `python tools/png2svg.py render samples/input.png samples/t_procedure_flow.json output/flow.svg`
+- Performance line plot: `python tools/png2svg.py render samples/input.png samples/t_performance_lineplot.json output/lineplot.svg`
+- Project architecture: `python tools/png2svg.py render samples/input.png samples/t_project_architecture_v1.json output/project_architecture.svg`
 
 ## Tests
 - `pytest`

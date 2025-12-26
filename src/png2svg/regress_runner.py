@@ -22,6 +22,7 @@ from png2svg.regress_gates import _tier_gate_overrides, _variant_gate_overrides
 from png2svg.regress_manifest import (
     _case_entry_dir,
     _case_entry_id,
+    _case_force_template,
     _case_gate_overrides,
     _load_manifest,
     _real_allow_force_template,
@@ -95,6 +96,7 @@ def _run_dataset(
             if isinstance(tags, list):
                 for tag in tags:
                     tag_counts[str(tag)] = tag_counts.get(str(tag), 0) + 1
+        force_template = _case_force_template(entry)
         case_result = _run_case(
             case_dir,
             case_id,
@@ -108,6 +110,7 @@ def _run_dataset(
                 **_case_gate_overrides(entry),
             },
             input_variant=input_variant,
+            force_template=force_template,
         )
         case_result["id"] = case_id
         case_result["dir"] = str(case_dir)
@@ -160,6 +163,7 @@ def _run_case(
     pipeline: str,
     gate_overrides: dict[str, Any] | None = None,
     input_variant: str = "fast",
+    force_template: str | None = None,
 ) -> dict[str, Any]:
     input_name = "input_hard.png" if input_variant == "hard" else "input.png"
     input_png = case_dir / input_name
@@ -304,7 +308,8 @@ def _run_case(
                 input_png,
                 output_svg,
                 debug_dir=output_dir / "convert",
-                topk=2,
+                topk=1 if force_template else 2,
+                force_template=force_template,
                 contract_path=contract,
                 thresholds_path=thresholds,
                 quality_gate=bool(gate_enabled) if gate_enabled is not None else True,

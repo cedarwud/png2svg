@@ -109,6 +109,17 @@ Artifacts are written under `output/regress_hard/`.
 If OCR (tesseract) is unavailable, hard-tier text guarantees may be skipped; install
 `tesseract-ocr` to enable full coverage.
 
+## Makefile Shortcuts
+```
+make regress-fast-render
+make regress-fast-convert
+make regress-fast-hard-sample
+make regress-hard
+REAL_PNG_DIR=/path/to/pngs make regress-real
+make rebuild-inputs
+make dataset-sanity
+```
+
 Run both tiers:
 ```
 python tools/regress.py datasets/regression_v0 --pipeline convert --tier all

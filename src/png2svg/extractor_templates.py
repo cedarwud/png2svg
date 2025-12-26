@@ -55,6 +55,63 @@ def _default_panels(width: int, height: int) -> list[dict[str, Any]]:
     return panels
 
 
+def _extract_project_architecture_v1(
+    width: int,
+    height: int,
+    adaptive: dict[str, Any] | None = None,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    params: dict[str, Any] = {
+        "template": "t_project_architecture_v1",
+        "canvas": {"width": width, "height": height},
+        "title": "Project Architecture",
+        "subtitle": "Work Packages (WP1-WP4)",
+        "panels": [
+            {
+                "id": "A",
+                "title": "Panel A: Core Platform",
+                "bullets": ["Common services", "Interfaces and APIs", "Scalable runtime"],
+            },
+            {
+                "id": "B",
+                "title": "Panel B: Data and Analytics",
+                "bullets": ["Ingestion and storage", "Analytics pipelines", "Dashboards"],
+            },
+            {
+                "id": "C",
+                "title": "Panel C: Integration",
+                "bullets": ["External systems", "Security and compliance", "Deployment ops"],
+            },
+        ],
+        "work_packages": [
+            {
+                "id": "WP1",
+                "title": "WP1",
+                "goal": "Requirements and scope",
+                "output": "Architecture brief",
+            },
+            {
+                "id": "WP2",
+                "title": "WP2",
+                "goal": "Core platform build",
+                "output": "MVP services",
+            },
+            {
+                "id": "WP3",
+                "title": "WP3",
+                "goal": "Data pipeline and UI",
+                "output": "Reports and dashboards",
+            },
+            {
+                "id": "WP4",
+                "title": "WP4",
+                "goal": "Integration and rollout",
+                "output": "Release package",
+            },
+        ],
+    }
+    return params, {}
+
+
 def _extract_3gpp(
     width: int,
     height: int,

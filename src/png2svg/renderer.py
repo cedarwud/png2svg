@@ -11,6 +11,7 @@ from png2svg.errors import Png2SvgError
 from templates.t_3gpp_events_3panel import render as render_3gpp_events_3panel
 from templates.t_procedure_flow import render as render_procedure_flow
 from templates.t_performance_lineplot import render as render_performance_lineplot
+from templates.t_project_architecture_v1 import render as render_project_architecture_v1
 
 
 def _load_params(params_path: Path) -> dict[str, Any]:
@@ -89,6 +90,9 @@ def _dispatch_template(
         return
     if template == "t_performance_lineplot":
         render_performance_lineplot(builder, params, canvas)
+        return
+    if template in {"t_project_architecture_v1", "project_architecture_v1"}:
+        render_project_architecture_v1(builder, params, canvas)
         return
     raise Png2SvgError(
         code="E1105_TEMPLATE_UNKNOWN",

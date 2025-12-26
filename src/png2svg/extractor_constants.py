@@ -10,6 +10,8 @@ TEMPLATE_ALIASES = {
     "t_procedure_flow": "t_procedure_flow",
     "performance_lineplot": "t_performance_lineplot",
     "t_performance_lineplot": "t_performance_lineplot",
+    "project_architecture_v1": "t_project_architecture_v1",
+    "t_project_architecture_v1": "t_project_architecture_v1",
 }
 
 DEFAULT_SERIES_COLORS = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728"]

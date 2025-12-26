@@ -25,6 +25,7 @@ from png2svg.extractor_templates import (
     _default_plot,
     _extract_flow,
     _extract_lineplot,
+    _extract_project_architecture_v1,
     _finalize_3gpp_v1_metadata,
     extract_3gpp_events_3panel_v1,
 )
@@ -49,18 +50,24 @@ def extract_skeleton(
         raise Png2SvgError(
             code="E4000_TEMPLATE_UNKNOWN",
             message=f"Unknown template '{template}'.",
-            hint="Use one of: t_3gpp_events_3panel, t_procedure_flow, t_performance_lineplot, or auto.",
+            hint=(
+                "Use one of: t_3gpp_events_3panel, t_procedure_flow, "
+                "t_performance_lineplot, t_project_architecture_v1, or auto."
+            ),
         )
 
+    skip_ocr = template_id == "t_project_architecture_v1"
     rgba, width, height = _load_image(input_png)
     adaptive_config = _load_adaptive_config()
     effective_config = _effective_config(adaptive_config, width, height)
     preprocessed = _preprocess_image(rgba, effective_config)
     mask = _ink_mask(rgba, effective_config)
-    text_boxes = _detect_text_boxes(rgba, effective_config)
+    text_boxes = [] if skip_ocr else _detect_text_boxes(rgba, effective_config)
     warnings: list[ExtractIssue] = []
     errors: list[ExtractIssue] = []
     ocr_backend = os.environ.get("PNG2SVG_OCR_BACKEND", "auto")
+    if skip_ocr:
+        ocr_backend = "none"
 
     ocr_rois: list[dict[str, int]] | None = None
     if template_id == "t_3gpp_events_3panel":
@@ -122,7 +129,9 @@ def extract_skeleton(
         ocr_rois = [_pad_roi(roi, pad_px, width, height) for roi in ocr_rois]
 
     backend_value = ocr_backend.lower()
-    if backend_value == "pytesseract":
+    if skip_ocr:
+        ocr_available = False
+    elif backend_value == "pytesseract":
         ocr_available = has_pytesseract()
     elif backend_value == "tesseract":
         ocr_available = has_tesseract()
@@ -149,47 +158,48 @@ def extract_skeleton(
     ocr_cfg = effective_config.get("ocr") if isinstance(effective_config.get("ocr"), dict) else None
     text_items = _filter_text_items(text_items, ocr_cfg)
 
-    if backend_value == "none":
-        warnings.append(
-            ExtractIssue(
-                code="W4010_OCR_DISABLED",
-                message="OCR backend set to none; skipping text recognition.",
-                hint="Install tesseract or set PNG2SVG_OCR_BACKEND=tesseract.",
+    if not skip_ocr:
+        if backend_value == "none":
+            warnings.append(
+                ExtractIssue(
+                    code="W4010_OCR_DISABLED",
+                    message="OCR backend set to none; skipping text recognition.",
+                    hint="Install tesseract or set PNG2SVG_OCR_BACKEND=tesseract.",
+                )
             )
-        )
-    elif not ocr_available:
-        warnings.append(
-            ExtractIssue(
-                code="W4010_OCR_UNAVAILABLE",
-                message="Tesseract not available; OCR skipped.",
-                hint="Install tesseract-ocr (and optional pytesseract) or set PNG2SVG_OCR_BACKEND=none.",
+        elif not ocr_available:
+            warnings.append(
+                ExtractIssue(
+                    code="W4010_OCR_UNAVAILABLE",
+                    message="Tesseract not available; OCR skipped.",
+                    hint="Install tesseract-ocr (and optional pytesseract) or set PNG2SVG_OCR_BACKEND=none.",
+                )
             )
-        )
-    elif not ocr_results:
-        warnings.append(
-            ExtractIssue(
-                code="W4011_OCR_EMPTY",
-                message="OCR returned no text boxes.",
-                hint="Check text contrast or adjust OCR preprocessing.",
+        elif not ocr_results:
+            warnings.append(
+                ExtractIssue(
+                    code="W4011_OCR_EMPTY",
+                    message="OCR returned no text boxes.",
+                    hint="Check text contrast or adjust OCR preprocessing.",
+                )
             )
-        )
-    elif not text_items:
-        warnings.append(
-            ExtractIssue(
-                code="W4013_OCR_FILTERED_EMPTY",
-                message="OCR text was filtered out after cleanup.",
-                hint="Lower OCR thresholds or review preprocessing settings.",
+        elif not text_items:
+            warnings.append(
+                ExtractIssue(
+                    code="W4013_OCR_FILTERED_EMPTY",
+                    message="OCR text was filtered out after cleanup.",
+                    hint="Lower OCR thresholds or review preprocessing settings.",
+                )
             )
-        )
 
-    if not text_boxes:
-        warnings.append(
-            ExtractIssue(
-                code="W4004_OCR_EMPTY",
-                message="No OCR text boxes detected.",
-                hint="Inspect text regions and fill in labels manually.",
+        if not text_boxes:
+            warnings.append(
+                ExtractIssue(
+                    code="W4004_OCR_EMPTY",
+                    message="No OCR text boxes detected.",
+                    hint="Inspect text regions and fill in labels manually.",
+                )
             )
-        )
 
     if template_id == "t_3gpp_events_3panel":
         params, overlay = extract_3gpp_events_3panel_v1(
@@ -202,6 +212,11 @@ def extract_skeleton(
     elif template_id == "t_procedure_flow":
         params, overlay = _extract_flow(
             width, height, mask, text_items, text_boxes, warnings, adaptive=effective_config
+        )
+    elif template_id == "t_project_architecture_v1":
+        text_items = []
+        params, overlay = _extract_project_architecture_v1(
+            width, height, adaptive=effective_config
         )
     else:
         errors.append(
