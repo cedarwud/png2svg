@@ -18,6 +18,7 @@ Common fields:
   "template": "t_3gpp_events_3panel" | "t_procedure_flow" | "t_performance_lineplot" | "t_project_architecture_v1" | "t_rl_agent_loop_v1" | "t_performance_grid_v1",
   "canvas": {"width": int, "height": int},
   "title": string | null,
+  "text_mode": "template_text" | "ocr_text" | "hybrid",
   "texts": [ ... ],
   "geometry": { ... },
   "extracted": { ... }   // debug-only fields
@@ -30,6 +31,7 @@ Text extraction fields (debug):
   "extracted": {
     "texts_detected": int,
     "ocr_backend": "auto" | "tesseract" | "none",
+    "ocr_stats": {"blocks_total": int, "text_items": int, "avg_conf": number, "corrected_tokens": int},
     "text_items": [
       {
         "content": string,
@@ -85,6 +87,17 @@ Optional OCR (tesseract):
   in `config/extract_adaptive.v1.yaml`.
 - When `--debug-dir` is used, OCR results are cached in `ocr_cache.json` to avoid re-running OCR
   across candidate templates.
+
+Text strategy modes (use `--text-mode` with `png2svg extract/convert`):
+- `template_text`: skip OCR and use canonical template strings.
+- `ocr_text`: use OCR outputs only (no template fallback).
+- `hybrid`: default; use OCR only when confidence is high and text passes sanity checks,
+  otherwise fall back to template text.
+
+OCR normalization:
+- Domain lexicons are used to correct common OCR mistakes for known templates
+  (e.g., 3GPP terms like `TTT`, `Hys`, `triggered`).
+- Corrections are counted under `extracted.ocr_stats.corrected_tokens` in params.
 
 Adaptive extractor settings are defined in `config/extract_adaptive.v1.yaml`.
 OCR cleanup knobs include `max_bbox_height_ratio`, `max_line_height_ratio`,

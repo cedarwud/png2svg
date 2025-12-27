@@ -17,7 +17,7 @@ Top-level commands:
 - Render: `python tools/png2svg.py render path/to/input.png path/to/params.json path/to/output.svg`
 - Classify: `python tools/png2svg.py classify path/to/input.png --out output/classification.json --debug-dir output/debug`
 - Extract: `python tools/png2svg.py extract path/to/input.png --template auto --out output/params.json --debug-dir output/extract_debug`
-- Convert: `python tools/png2svg.py convert path/to/input.png -o output/output.svg --debug-dir output/convert_debug --topk 2`
+- Convert: `python tools/png2svg.py convert path/to/input.png -o output/output.svg --debug-dir output/convert_debug --topk 2 --text-mode hybrid`
 - Validate: `python tools/validate_svg.py path/to/output.svg --expected path/to/expected.png --report report.json`
 - Regress (fast tier): `python tools/regress.py datasets/regression_v0 --tier fast --report report.json`
 - Rebuild case inputs: `python tools/rebuild_case_inputs.py datasets/regression_v0 --variants fast,hard --overwrite`
@@ -41,6 +41,8 @@ Debug artifacts:
 - `--debug-dir` stores classification/extraction/validation outputs for troubleshooting.
 - `convert` debug dirs include `snap_preview.svg/png` for quick inspection of snapped geometry.
 - `convert` runs a quality gate against the input PNG; override with `--gate-*` or disable with `--quality-gate off`.
+- `--allow-failed-gate` writes an SVG even when the quality gate fails (report still marks failure).
+- `--emit-report-json` writes a convert_report.json summary to the debug directory.
 
 Regression assets:
 - `expected.svg` is the golden source; regress rasterizes it to compare with generated output.

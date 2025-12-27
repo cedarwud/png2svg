@@ -279,6 +279,9 @@ def convert_png(
     gate_bad_pixel_max: float | None = None,
     gate_pixel_tolerance: int | None = None,
     candidate_timeout_sec: float | None = None,
+    text_mode: str = "hybrid",
+    allow_failed_gate: bool = False,
+    emit_report_json: bool = False,
 ) -> dict[str, Any]:
     if topk <= 0:
         raise Png2SvgError(
@@ -305,12 +308,16 @@ def convert_png(
         thresholds_path, gate_rmse_max, gate_bad_pixel_max, gate_pixel_tolerance
     )
 
+    report_requested = emit_report_json or debug_dir is not None
+    if emit_report_json and debug_dir is None:
+        debug_dir = output_svg.parent / "debug"
     if debug_dir is not None:
         debug_dir.mkdir(parents=True, exist_ok=True)
     ocr_cache_path = debug_dir / "ocr_cache.json" if debug_dir is not None else None
     timeout_sec = _resolve_candidate_timeout(candidate_timeout_sec)
 
     classify_debug = debug_dir / "classify" if debug_dir is not None else None
+    classification_error: dict[str, Any] | None = None
     try:
         classification = classify_png(
             input_png,
@@ -318,22 +325,31 @@ def convert_png(
             thresholds_path=classifier_thresholds_path,
         )
     except Exception as exc:  # noqa: BLE001
-        raise Png2SvgError(
-            code="E5106_CLASSIFY_FAILED",
-            message=f"Classification failed: {exc}",
-            hint="Ensure the input PNG can be decoded by Pillow.",
-        ) from exc
+        classification = {
+            "template_id": "unknown",
+            "decision": "unknown",
+            "reason_codes": ["CLASSIFY_FAILED"],
+            "confidence": 0.0,
+            "candidate_templates": [],
+            "image_meta": {},
+            "features_summary": {},
+        }
+        classification_error = _issue(
+            "E5106_CLASSIFY_FAILED",
+            f"Classification failed: {exc}",
+            "Ensure the input PNG can be decoded by Pillow.",
+        )
+        if not force_template:
+            raise Png2SvgError(
+                code="E5106_CLASSIFY_FAILED",
+                message=f"Classification failed: {exc}",
+                hint="Ensure the input PNG can be decoded by Pillow.",
+            ) from exc
     if debug_dir is not None:
         _write_json(debug_dir / "classification.json", classification)
 
     candidates = classification.get("candidate_templates", [])
     candidate_list = candidates[: min(topk, len(candidates))]
-    if not candidate_list:
-        raise Png2SvgError(
-            code="E5104_NO_CANDIDATES",
-            message="Classifier returned no candidates.",
-            hint="Check input PNG and classifier rules.",
-        )
 
     results: list[dict[str, Any]] = []
 
@@ -345,9 +361,10 @@ def convert_png(
             "status": "fail",
             "output_svg": str(output_svg),
             "classification": classification,
+            "classification_error": classification_error,
             "candidates": [],
         }
-        if debug_dir is not None:
+        if debug_dir is not None and report_requested:
             _write_json(debug_dir / "convert_report.json", report)
         raise Png2SvgError(
             code="E5107_CLASSIFY_UNKNOWN",
@@ -357,6 +374,12 @@ def convert_png(
 
     if force_template:
         candidate_list = [{"template_id": force_template, "score": 0.0}]
+    elif not candidate_list:
+        raise Png2SvgError(
+            code="E5104_NO_CANDIDATES",
+            message="Classifier returned no candidates.",
+            hint="Check input PNG and classifier rules.",
+        )
 
     with tempfile.TemporaryDirectory() as temp_dir:
         temp_root = Path(temp_dir)
@@ -416,6 +439,7 @@ def convert_png(
                         template_id,
                         extract_debug,
                         ocr_cache_path=ocr_cache_path,
+                        text_mode=text_mode,
                     )
             except CandidateTimeoutError as exc:
                 attempt["error"] = _issue(
@@ -441,6 +465,10 @@ def convert_png(
                 results.append(attempt)
                 continue
             params_path.write_text(json.dumps(params, indent=2, sort_keys=True))
+            extracted = params.get("extracted") if isinstance(params, dict) else None
+            if isinstance(extracted, dict):
+                attempt["ocr_stats"] = extracted.get("ocr_stats")
+                attempt["text_mode"] = extracted.get("text_mode")
 
             try:
                 with _candidate_timeout(timeout_sec):
@@ -576,19 +604,23 @@ def convert_png(
             "status": "pass" if passing else "fail",
             "output_svg": str(output_svg),
             "classification": classification,
+            "classification_error": classification_error,
             "candidates": results,
+            "quality_gate": "on" if quality_gate else "off",
+            "allow_failed_gate": allow_failed_gate,
+            "text_mode": text_mode,
         }
 
         if not validation_passing:
-            if debug_dir is not None:
+            if debug_dir is not None and report_requested:
                 _write_json(debug_dir / "convert_report.json", report)
             raise Png2SvgError(
                 code="E5105_CONVERT_FAILED",
                 message="No candidate templates passed validation.",
                 hint="Use --debug-dir to inspect candidate outputs and warnings.",
             )
-        if quality_gate and not passing:
-            if debug_dir is not None:
+        if quality_gate and not passing and not allow_failed_gate:
+            if debug_dir is not None and report_requested:
                 _write_json(debug_dir / "convert_report.json", report)
             raise Png2SvgError(
                 code="E5108_QUALITY_GATE_FAILED",
@@ -612,9 +644,19 @@ def convert_png(
                 return (rmse, bad_ratio, warnings, score)
             return (warnings, rmse, bad_ratio, score)
 
-        selected = sorted(passing if quality_gate else validation_passing, key=_sort_key)[0]
+        if quality_gate and passing:
+            selected_pool = passing
+        else:
+            selected_pool = validation_passing
+        selected = sorted(selected_pool, key=_sort_key)[0]
         report["selected_template"] = selected.get("template_id")
         report["selected"] = selected
+        report["ocr_stats"] = selected.get("ocr_stats")
+        if quality_gate and not passing:
+            report["status"] = "fail"
+            report["quality_gate_status"] = "fail"
+        elif quality_gate:
+            report["quality_gate_status"] = "pass"
 
         output_svg.parent.mkdir(parents=True, exist_ok=True)
         src_svg = Path(selected["paths"]["svg"])
@@ -639,7 +681,7 @@ def convert_png(
             for item in report["candidates"]:
                 item["paths"] = None
 
-        if debug_dir is not None:
+        if debug_dir is not None and report_requested:
             _write_json(debug_dir / "convert_report.json", report)
 
         return report

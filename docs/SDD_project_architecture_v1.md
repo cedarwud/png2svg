@@ -82,9 +82,17 @@ Style rules:
 - Text anchors: start (left aligned)
 - Multiline text uses `<tspan id="...">` per line
 
-## 7) Optional Extraction (Minimal)
-- No OCR. No template inference.
-- Extractor only validates canvas size and returns default params for conversion.
+## 7) Optional Extraction (OCR + Text Strategy)
+- OCR is optional and ROI-based; it extracts text for title/panels/WP blocks when available.
+- Text strategy modes:
+  - `template_text`: skip OCR and use template defaults.
+  - `ocr_text`: use OCR outputs only.
+  - `hybrid` (default): use OCR when confidence is high; otherwise fall back to defaults.
+- Extractor always returns valid params (fallbacks are recorded as warnings).
+
+Text correction rules:
+- OCR tokens are normalized with a small domain lexicon (Project, Architecture, WP1-4).
+- Low-confidence tokens are corrected when close to known lexicon entries.
 
 ## 8) Error Handling
 All validation errors use `Png2SvgError` with stable codes:

@@ -29,6 +29,13 @@ from png2svg.extractor_text import (
     _text_bbox_width,
 )
 from png2svg.extractor_types import ExtractIssue
+from png2svg.text_normalize import (
+    canonical_text_for_template,
+    lexicon_for_template,
+    normalize_lines,
+    normalize_text_items,
+    text_sanity,
+)
 
 
 def _default_panels(width: int, height: int) -> list[dict[str, Any]]:
@@ -62,6 +69,7 @@ def _extract_project_architecture_v1(
     text_items: list[dict[str, Any]],
     warnings: list[ExtractIssue],
     adaptive: dict[str, Any] | None = None,
+    text_mode: str = "hybrid",
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     layout = _project_architecture_layout(width, height)
     defaults = _project_architecture_defaults()
@@ -70,6 +78,12 @@ def _extract_project_architecture_v1(
     panels = defaults["panels"]
     work_packages = defaults["work_packages"]
 
+    text_mode_value = str(text_mode or "hybrid").lower()
+    lexicon = lexicon_for_template("t_project_architecture_v1")
+    ocr_cfg = adaptive.get("ocr") if adaptive else None
+    min_conf = float(ocr_cfg.get("min_conf", 0.6)) if isinstance(ocr_cfg, dict) else 0.6
+    corrections = 0
+
     by_roi: dict[str, list[dict[str, Any]]] = {}
     for item in text_items:
         roi_id = item.get("roi_id")
@@ -77,10 +91,11 @@ def _extract_project_architecture_v1(
             continue
         by_roi.setdefault(roi_id, []).append(item)
 
-    def _roi_lines(roi_id: str) -> list[str]:
+    def _roi_lines(roi_id: str) -> tuple[list[str], float]:
+        nonlocal corrections
         items = by_roi.get(roi_id, [])
         if not items:
-            return []
+            return [], 0.0
         items.sort(
             key=lambda entry: (
                 float(entry.get("bbox", {}).get("y", 0.0)),
@@ -88,11 +103,24 @@ def _extract_project_architecture_v1(
             )
         )
         lines: list[str] = []
+        conf_values: list[float] = []
         for entry in items:
             text = _clean_text(str(entry.get("content") or entry.get("text") or ""))
             if text:
                 lines.append(text)
-        return lines
+            try:
+                conf_values.append(float(entry.get("conf", 0.0)))
+            except (TypeError, ValueError):
+                conf_values.append(0.0)
+        avg_conf = sum(conf_values) / len(conf_values) if conf_values else 0.0
+        if lexicon and lines:
+            normalized, corrected = normalize_lines(
+                lines, lexicon, avg_conf, min_conf=min_conf
+            )
+            if normalized:
+                lines = normalized
+            corrections += corrected
+        return lines, avg_conf
 
     def _join_lines(lines: list[str]) -> str:
         return _clean_text(" ".join(lines))
@@ -124,48 +152,81 @@ def _extract_project_architecture_v1(
         return goal, output
 
     fields_from_ocr: list[str] = []
-    title_lines = _roi_lines("title")
-    if title_lines:
-        title = _join_lines(title_lines)
-        fields_from_ocr.append("title")
-    subtitle_lines = _roi_lines("subtitle")
-    if subtitle_lines:
-        subtitle = _join_lines(subtitle_lines)
-        fields_from_ocr.append("subtitle")
+    fallback_fields: list[str] = []
+    if text_mode_value != "template_text":
+        title_lines, title_conf = _roi_lines("title")
+        if title_lines and (text_mode_value == "ocr_text" or title_conf >= min_conf):
+            title = _join_lines(title_lines)
+            if text_mode_value == "ocr_text" or text_sanity(title):
+                fields_from_ocr.append("title")
+            else:
+                fallback_fields.append("title")
+        subtitle_lines, subtitle_conf = _roi_lines("subtitle")
+        if subtitle_lines and (text_mode_value == "ocr_text" or subtitle_conf >= min_conf):
+            subtitle = _join_lines(subtitle_lines)
+            if text_mode_value == "ocr_text" or text_sanity(subtitle):
+                fields_from_ocr.append("subtitle")
+            else:
+                fallback_fields.append("subtitle")
 
-    for panel in panels:
-        panel_id = str(panel.get("id") or "")
-        title_lines = _roi_lines(f"panel_{panel_id}_title")
-        if title_lines:
-            panel["title"] = _join_lines(title_lines)
-            fields_from_ocr.append(f"panel_{panel_id}_title")
-        bullet_lines = _roi_lines(f"panel_{panel_id}_bullets")
-        bullet_items = _parse_bullets(bullet_lines)
-        if bullet_items:
-            panel["bullets"] = bullet_items
-            fields_from_ocr.append(f"panel_{panel_id}_bullets")
+    if text_mode_value != "template_text":
+        for panel in panels:
+            panel_id = str(panel.get("id") or "")
+            title_lines, title_conf = _roi_lines(f"panel_{panel_id}_title")
+            if title_lines and (text_mode_value == "ocr_text" or title_conf >= min_conf):
+                candidate = _join_lines(title_lines)
+                if text_mode_value == "ocr_text" or text_sanity(candidate):
+                    panel["title"] = candidate
+                    fields_from_ocr.append(f"panel_{panel_id}_title")
+                else:
+                    fallback_fields.append(f"panel_{panel_id}_title")
+            bullet_lines, bullet_conf = _roi_lines(f"panel_{panel_id}_bullets")
+            if bullet_lines and (text_mode_value == "ocr_text" or bullet_conf >= min_conf):
+                bullet_items = _parse_bullets(bullet_lines)
+                if bullet_items:
+                    panel["bullets"] = bullet_items
+                    fields_from_ocr.append(f"panel_{panel_id}_bullets")
+                else:
+                    fallback_fields.append(f"panel_{panel_id}_bullets")
 
-    for wp in work_packages:
-        wp_id = str(wp.get("id") or "")
-        title_lines = _roi_lines(f"wp_{wp_id}_title")
-        if title_lines:
-            wp["title"] = _join_lines(title_lines)
-            fields_from_ocr.append(f"wp_{wp_id}_title")
-        body_lines = _roi_lines(f"wp_{wp_id}_body")
-        goal, output = _parse_goal_output(body_lines)
-        if goal:
-            wp["goal"] = goal
-            fields_from_ocr.append(f"wp_{wp_id}_goal")
-        if output:
-            wp["output"] = output
-            fields_from_ocr.append(f"wp_{wp_id}_output")
+    if text_mode_value != "template_text":
+        for wp in work_packages:
+            wp_id = str(wp.get("id") or "")
+            title_lines, title_conf = _roi_lines(f"wp_{wp_id}_title")
+            if title_lines and (text_mode_value == "ocr_text" or title_conf >= min_conf):
+                candidate = _join_lines(title_lines)
+                if text_mode_value == "ocr_text" or text_sanity(candidate):
+                    wp["title"] = candidate
+                    fields_from_ocr.append(f"wp_{wp_id}_title")
+                else:
+                    fallback_fields.append(f"wp_{wp_id}_title")
+            body_lines, body_conf = _roi_lines(f"wp_{wp_id}_body")
+            if body_lines and (text_mode_value == "ocr_text" or body_conf >= min_conf):
+                goal, output = _parse_goal_output(body_lines)
+                if goal:
+                    wp["goal"] = goal
+                    fields_from_ocr.append(f"wp_{wp_id}_goal")
+                if output:
+                    wp["output"] = output
+                    fields_from_ocr.append(f"wp_{wp_id}_output")
+                if not (goal or output):
+                    fallback_fields.append(f"wp_{wp_id}_body")
 
-    if not fields_from_ocr:
+    if text_mode_value != "template_text" and not fields_from_ocr:
         warnings.append(
             ExtractIssue(
                 code="W4500_PROJECT_ARCH_FALLBACK",
                 message="Project architecture OCR yielded no usable text; using defaults.",
                 hint="Ensure OCR is available or edit params.json manually.",
+            )
+        )
+    if fallback_fields:
+        warnings.append(
+            ExtractIssue(
+                code="W4501_PROJECT_ARCH_TEXT_FALLBACK",
+                message="Some OCR fields were low confidence; template defaults were used.",
+                hint="Increase OCR confidence or edit params.json text fields manually.",
+                context={"fields": sorted(set(fallback_fields))},
             )
         )
 
@@ -183,6 +244,16 @@ def _extract_project_architecture_v1(
             }
         },
     }
+    extracted = params.get("extracted")
+    if isinstance(extracted, dict):
+        extracted.setdefault("ocr_stats", {})
+        if isinstance(extracted["ocr_stats"], dict):
+            extracted["ocr_stats"].update(
+                {
+                    "corrected_tokens": corrections,
+                    "text_mode": text_mode_value,
+                }
+            )
     overlay = {
         "panels": list(layout["panel_rects"].values()),
         "text_boxes": [
@@ -822,6 +893,7 @@ def _extract_3gpp(
     text_boxes: list[dict[str, Any]],
     warnings: list[ExtractIssue],
     adaptive: dict[str, Any] | None = None,
+    text_mode: str = "hybrid",
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     min_len = max(int(height * 0.5), 1)
     if adaptive and adaptive.get("lines"):
@@ -857,7 +929,26 @@ def _extract_3gpp(
         for line in dashed_lines:
             line["stroke"] = "#000000"
     markers = _detect_markers(rgba)
+    text_mode_value = str(text_mode or "hybrid").lower()
+    ocr_cfg = adaptive.get("ocr") if adaptive else None
+    min_conf = float(ocr_cfg.get("min_conf", 0.6)) if isinstance(ocr_cfg, dict) else 0.6
+    corrections = 0
+    if text_mode_value != "template_text":
+        corrections = normalize_text_items(text_items, lexicon_for_template("t_3gpp_events_3panel"), min_conf=min_conf)
+
     title, title_style, text_items = _assign_roles_3gpp(text_items, panels, width, height)
+    canonical = canonical_text_for_template("t_3gpp_events_3panel")
+    canonical_title = canonical.get("title")
+    if not title and canonical_title:
+        title = canonical_title
+        if text_mode_value != "template_text":
+            warnings.append(
+                ExtractIssue(
+                    code="W4006_TITLE_FALLBACK",
+                    message="3GPP title missing; using canonical template title.",
+                    hint="Provide a clearer title region or edit params.json manually.",
+                )
+            )
     text_items = _merge_stacked_text_items(text_items, "panel_mid_")
     _normalize_panel_mid_text(text_items)
     for panel in panels:
@@ -925,10 +1016,6 @@ def _extract_3gpp(
                 item["content"] = "Serving beam"
                 item["text"] = item["content"]
                 curve_label_panels.setdefault(panel_id, set()).add("serving")
-        elif "neighbor" in normalized or "target" in normalized:
-            item["role"] = "curve_label_neighbor"
-            item["anchor"] = "start"
-            curve_label_panels.setdefault(panel_id, set()).add("neighbor")
 
     if curve_label_panels:
         for panel in panels:
@@ -966,6 +1053,82 @@ def _extract_3gpp(
     _apply_text_layout(text_items, "t_3gpp_events_3panel", width, height, adaptive)
     _assign_text_colors_3gpp(text_items, rgba)
     _enforce_curve_label_colors_3gpp(text_items)
+
+    annotations: list[dict[str, Any]] = []
+    seen_annotations: set[tuple[str, str]] = set()
+
+    def _panel_for_item(item: dict[str, Any]) -> str | None:
+        cx, cy = _text_bbox_center(item)
+        for panel in panels:
+            if (
+                panel["x"] <= cx <= panel["x"] + panel["width"]
+                and panel["y"] <= cy <= panel["y"] + panel["height"]
+            ):
+                return str(panel.get("id") or "")
+        return None
+
+    def _maybe_add_annotation(item: dict[str, Any], label: str, slug: str) -> None:
+        panel_id = _panel_for_item(item) or "global"
+        key = (panel_id, slug)
+        if key in seen_annotations:
+            return
+        try:
+            x = float(item.get("x", 0.0))
+            y = float(item.get("y", 0.0))
+        except (TypeError, ValueError):
+            return
+        if x <= 0 or y <= 0:
+            return
+        font_size = item.get("font_size")
+        try:
+            font_size_value = int(float(font_size)) if font_size is not None else 10
+        except (TypeError, ValueError):
+            font_size_value = 10
+        anchor = str(item.get("anchor") or "start")
+        fill = str(item.get("fill") or "#000000")
+        annotations.append(
+            {
+                "id": f"txt_ann_{slug}_{panel_id}",
+                "text": label,
+                "x": x,
+                "y": y,
+                "anchor": anchor,
+                "font_size": font_size_value,
+                "fill": fill,
+            }
+        )
+        seen_annotations.add(key)
+
+    if text_mode_value != "template_text":
+        for item in text_items:
+            if item.get("render") is False:
+                continue
+            text_value = str(item.get("content") or item.get("text") or "")
+            if not text_value:
+                continue
+            try:
+                conf = float(item.get("conf", 0.0))
+            except (TypeError, ValueError):
+                conf = 0.0
+            if text_mode_value == "hybrid" and conf < min_conf and not text_sanity(text_value):
+                continue
+            normalized = text_value.strip()
+            lowered = normalized.lower()
+            if item.get("role") == "curve_label_serving":
+                _maybe_add_annotation(item, normalized, "serving")
+                continue
+            if item.get("role") == "curve_label_neighbor":
+                _maybe_add_annotation(item, normalized, "neighbor")
+                continue
+            if "ttt" in lowered:
+                _maybe_add_annotation(item, "TTT", "ttt")
+                continue
+            if "hys" in lowered:
+                _maybe_add_annotation(item, "Hys", "hys")
+                continue
+            if "trigger" in lowered:
+                _maybe_add_annotation(item, "triggered", "triggered")
+                continue
 
     t_start_ratio = 0.2
     t_trigger_ratio = 0.6
@@ -1024,6 +1187,7 @@ def _extract_3gpp(
         "panels": panels,
         "curves_by_panel": curves_by_panel,
         "texts": text_items,
+        "annotations": annotations,
         "axes": {"lines": axes_lines},
         "dashed_lines": dashed_lines,
         "markers": markers,
@@ -1039,6 +1203,23 @@ def _extract_3gpp(
             "ttt_fill": None,
         },
     }
+    if text_mode_value == "template_text":
+        serving_label = canonical.get("curve_label_serving")
+        neighbor_label = canonical.get("curve_label_neighbor")
+        if serving_label:
+            params["style"]["curve_label_serving"] = serving_label
+        if neighbor_label:
+            params["style"]["curve_label_neighbor"] = neighbor_label
+    extracted = params.get("extracted")
+    if isinstance(extracted, dict):
+        extracted.setdefault("ocr_stats", {})
+        if isinstance(extracted["ocr_stats"], dict):
+            extracted["ocr_stats"].update(
+                {
+                    "corrected_tokens": corrections,
+                    "text_mode": text_mode_value,
+                }
+            )
 
     ttt_fill = None
     if panels:
@@ -1245,6 +1426,7 @@ def extract_3gpp_events_3panel_v1(
     text_boxes: list[dict[str, Any]],
     warnings: list[ExtractIssue],
     adaptive: dict[str, Any] | None = None,
+    text_mode: str = "hybrid",
 ) -> tuple[dict[str, Any], dict[str, Any]]:
     params, overlay = _extract_3gpp(
         width,
@@ -1255,6 +1437,7 @@ def extract_3gpp_events_3panel_v1(
         text_boxes,
         warnings,
         adaptive=adaptive,
+        text_mode=text_mode,
     )
     return params, overlay
 

@@ -272,6 +272,42 @@ def _add_text(
     builder.groups["g_text"].add(builder.drawing.text(text, **kwargs))
 
 
+def _draw_annotations(builder: SvgBuilder, annotations: list[dict[str, Any]] | None) -> None:
+    if not annotations:
+        return
+    for idx, entry in enumerate(annotations):
+        if not isinstance(entry, dict):
+            continue
+        raw_text = entry.get("text")
+        if not raw_text:
+            continue
+        text = " ".join(str(raw_text).splitlines())
+        try:
+            x = float(entry.get("x", 0.0))
+            y = float(entry.get("y", 0.0))
+        except (TypeError, ValueError):
+            continue
+        if x <= 0 or y <= 0:
+            continue
+        text_id = str(entry.get("id") or f"txt_ann_{idx}")
+        try:
+            font_size = int(float(entry.get("font_size", 10)))
+        except (TypeError, ValueError):
+            font_size = 10
+        anchor = str(entry.get("anchor") or DEFAULT_TEXT_ANCHOR)
+        fill = str(entry.get("fill") or "#000000")
+        _add_text(
+            builder,
+            text,
+            x,
+            y,
+            text_id,
+            font_size=font_size,
+            fill=fill,
+            text_anchor=anchor,
+        )
+
+
 def _draw_panel_guides(
     builder: SvgBuilder,
     panel: Panel,
@@ -488,9 +524,11 @@ def render(builder: SvgBuilder, params: dict[str, Any], canvas: tuple[int, int])
 
         show_default_labels = bool(_style_value(style, "show_curve_labels", panel.show_curve_labels))
         if show_default_labels:
+            serving_label = _style_value(style, "curve_label_serving", "Serving")
+            neighbor_label = _style_value(style, "curve_label_neighbor", "Neighbor")
             _add_text(
                 builder,
-                "Serving",
+                str(serving_label),
                 panel.x + panel.width * 0.05,
                 panel.y + panel.height * 0.35,
                 f"txt_serving_{panel.panel_id}",
@@ -499,10 +537,14 @@ def render(builder: SvgBuilder, params: dict[str, Any], canvas: tuple[int, int])
             )
             _add_text(
                 builder,
-                "Neighbor",
+                str(neighbor_label),
                 panel.x + panel.width * 0.05,
                 panel.y + panel.height * 0.55,
                 f"txt_neighbor_{panel.panel_id}",
                 font_size=10,
                 fill="#dd6b20",
             )
+
+    annotations = params.get("annotations")
+    if isinstance(annotations, list):
+        _draw_annotations(builder, annotations)

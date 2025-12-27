@@ -121,10 +121,15 @@ def extract(
         "--debug-dir",
         help="Optional directory to write debug artifacts.",
     ),
+    text_mode: str = typer.Option(
+        "hybrid",
+        "--text-mode",
+        help="Text strategy: template_text, ocr_text, or hybrid.",
+    ),
 ) -> None:
     """Extract params.json skeleton from a PNG."""
     try:
-        params = extract_skeleton(input_png, template, debug_dir)
+        params = extract_skeleton(input_png, template, debug_dir, text_mode=text_mode)
     except Png2SvgError as exc:
         typer.echo(f"ERROR {exc.code}: {exc.message}", err=True)
         typer.echo(f"HINT: {exc.hint}", err=True)
@@ -191,6 +196,21 @@ def convert(
         "--gate-pixel-tolerance",
         help="Override quality gate pixel tolerance.",
     ),
+    text_mode: str = typer.Option(
+        "hybrid",
+        "--text-mode",
+        help="Text strategy: template_text, ocr_text, or hybrid.",
+    ),
+    allow_failed_gate: bool = typer.Option(
+        False,
+        "--allow-failed-gate",
+        help="Write output SVG even if quality gate fails.",
+    ),
+    emit_report_json: bool = typer.Option(
+        False,
+        "--emit-report-json",
+        help="Write convert_report.json into the debug directory.",
+    ),
 ) -> None:
     """Classify, extract, render, and validate in one step."""
     gate_value = quality_gate.strip().lower()
@@ -214,6 +234,9 @@ def convert(
             gate_rmse_max=gate_rmse_max,
             gate_bad_pixel_max=gate_bad_pixel_max,
             gate_pixel_tolerance=gate_pixel_tolerance,
+            text_mode=text_mode,
+            allow_failed_gate=allow_failed_gate,
+            emit_report_json=emit_report_json,
         )
     except Png2SvgError as exc:
         typer.echo(f"ERROR {exc.code}: {exc.message}", err=True)

@@ -50,6 +50,7 @@ def extract_skeleton(
     template: str,
     debug_dir: Path | None = None,
     ocr_cache_path: Path | None = None,
+    text_mode: str = "hybrid",
 ) -> dict[str, Any]:
     if template == "auto":
         template = classify_png(input_png)["template_id"]
@@ -65,7 +66,15 @@ def extract_skeleton(
             ),
         )
 
-    skip_ocr = False
+    text_mode_value = str(text_mode or "hybrid").lower()
+    if text_mode_value not in {"template_text", "ocr_text", "hybrid"}:
+        raise Png2SvgError(
+            code="E4003_TEXT_MODE_INVALID",
+            message=f"Unsupported text_mode '{text_mode}'.",
+            hint="Use text_mode=template_text, ocr_text, or hybrid.",
+        )
+
+    skip_ocr = text_mode_value == "template_text"
     rgba, width, height = _load_image(input_png)
     adaptive_config = _load_adaptive_config()
     effective_config = _effective_config(adaptive_config, width, height)
@@ -286,7 +295,15 @@ def extract_skeleton(
 
     if template_id == "t_3gpp_events_3panel":
         params, overlay = extract_3gpp_events_3panel_v1(
-            width, height, mask, rgba, text_items, text_boxes, warnings, adaptive=effective_config
+            width,
+            height,
+            mask,
+            rgba,
+            text_items,
+            text_boxes,
+            warnings,
+            adaptive=effective_config,
+            text_mode=text_mode_value,
         )
     elif template_id == "t_performance_lineplot":
         params, overlay = _extract_lineplot(
@@ -298,7 +315,12 @@ def extract_skeleton(
         )
     elif template_id == "t_project_architecture_v1":
         params, overlay = _extract_project_architecture_v1(
-            width, height, text_items, warnings, adaptive=effective_config
+            width,
+            height,
+            text_items,
+            warnings,
+            adaptive=effective_config,
+            text_mode=text_mode_value,
         )
     elif template_id == "t_rl_agent_loop_v1":
         params, overlay = _extract_rl_agent_loop_v1(
@@ -333,6 +355,21 @@ def extract_skeleton(
     if not isinstance(extracted, dict):
         extracted = {}
         params["extracted"] = extracted
+    ocr_stats = extracted.get("ocr_stats")
+    if not isinstance(ocr_stats, dict):
+        ocr_stats = {}
+        extracted["ocr_stats"] = ocr_stats
+    conf_values = []
+    for item in text_items:
+        try:
+            conf_values.append(float(item.get("conf", 0.0)))
+        except (TypeError, ValueError):
+            continue
+    avg_conf = sum(conf_values) / len(conf_values) if conf_values else 0.0
+    ocr_stats.setdefault("blocks_total", len(ocr_results))
+    ocr_stats.setdefault("text_items", len(text_items))
+    ocr_stats.setdefault("avg_conf", round(avg_conf, 3))
+    ocr_stats.setdefault("corrected_tokens", 0)
     if template_id in {"t_project_architecture_v1", "t_rl_agent_loop_v1", "t_performance_grid_v1"}:
         for item in text_items:
             item["render"] = False
@@ -344,6 +381,8 @@ def extract_skeleton(
         extracted["texts_detected"] = 0
     extracted["ocr_backend"] = ocr_backend
     extracted["effective_config"] = effective_config
+    extracted["text_mode"] = text_mode_value
+    params["text_mode"] = text_mode_value
 
     params = normalize_params(template_id, params)
     if template_id == "t_3gpp_events_3panel":
