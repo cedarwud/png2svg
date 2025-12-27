@@ -9,6 +9,21 @@ from typing import Any
 
 from PIL import Image
 
+DEFAULT_OCR_MAX_DIM = 1200
+DEFAULT_OCR_TIMEOUT_SEC = 6.0
+
+
+class OcrTimeoutError(RuntimeError):
+    def __init__(
+        self,
+        message: str,
+        timeouts: list[str],
+        partial_results: list[dict[str, Any]],
+    ) -> None:
+        super().__init__(message)
+        self.timeouts = timeouts
+        self.partial_results = partial_results
+
 
 def has_tesseract() -> bool:
     return shutil.which("tesseract") is not None
@@ -35,6 +50,7 @@ def _run_tesseract(
     lang: str = "eng",
     psm: int = 6,
     config: str | None = None,
+    timeout_sec: float | None = None,
 ) -> list[dict[str, Any]]:
     with tempfile.TemporaryDirectory() as tmp_dir:
         tmp_path = Path(tmp_dir)
@@ -52,12 +68,20 @@ def _run_tesseract(
         ]
         if config:
             cmd.extend(config.split())
-        result = subprocess.run(  # noqa: S603
-            cmd,
-            check=False,
-            capture_output=True,
-            text=True,
-        )
+        try:
+            result = subprocess.run(  # noqa: S603
+                cmd,
+                check=False,
+                capture_output=True,
+                text=True,
+                timeout=timeout_sec,
+            )
+        except subprocess.TimeoutExpired as exc:
+            raise OcrTimeoutError(
+                f"Tesseract timed out after {timeout_sec}s.",
+                timeouts=["tesseract"],
+                partial_results=[],
+            ) from exc
         if result.returncode != 0:
             return []
         lines = result.stdout.strip().splitlines()
@@ -107,6 +131,7 @@ def _run_pytesseract(
     lang: str = "eng",
     psm: int = 6,
     config: str | None = None,
+    timeout_sec: float | None = None,
 ) -> list[dict[str, Any]]:
     pytesseract = _pytesseract_module()
     if pytesseract is None:
@@ -122,7 +147,17 @@ def _run_pytesseract(
             lang=lang,
             config=config_args,
             output_type=pytesseract.Output.DICT,
+            timeout=timeout_sec or 0,
         )
+    except RuntimeError as exc:
+        message = str(exc).lower()
+        if "timeout" in message or "timed out" in message:
+            raise OcrTimeoutError(
+                f"Tesseract timed out after {timeout_sec}s.",
+                timeouts=["pytesseract"],
+                partial_results=[],
+            ) from exc
+        return []
     except Exception:
         return []
     rows: list[dict[str, Any]] = []
@@ -164,6 +199,10 @@ def ocr_image(
     image: Image.Image,
     backend: str = "auto",
     rois: list[dict[str, int]] | None = None,
+    timeout_sec: float | None = None,
+    max_dim: int | None = None,
+    cache_path: Path | None = None,
+    cache_key_prefix: str | None = None,
 ) -> list[dict[str, Any]]:
     backend_value = backend.lower()
     if backend_value == "auto":
@@ -177,11 +216,27 @@ def ocr_image(
     if backend_value not in {"tesseract", "pytesseract"}:
         raise ValueError(f"Unsupported OCR backend: {backend}")
 
-    results: list[dict[str, Any]] = []
+    if rois is None:
+        raise ValueError("OCR requires explicit ROI list; full-image OCR is disabled.")
     if not rois:
-        if backend_value == "pytesseract":
-            return _run_pytesseract(image)
-        return _run_tesseract(image)
+        return []
+
+    if timeout_sec is None:
+        timeout_sec = DEFAULT_OCR_TIMEOUT_SEC
+    if max_dim is None:
+        max_dim = DEFAULT_OCR_MAX_DIM
+
+    cache_entries: dict[str, Any] = {}
+    if cache_path is not None and cache_path.exists():
+        try:
+            cached = json.loads(cache_path.read_text())
+            if isinstance(cached, dict):
+                cache_entries = cached.get("entries", {}) if isinstance(cached.get("entries"), dict) else {}
+        except Exception:
+            cache_entries = {}
+
+    results: list[dict[str, Any]] = []
+    timeouts: list[str] = []
     for roi in rois:
         try:
             x = int(roi["x"])
@@ -194,10 +249,36 @@ def ocr_image(
             continue
         roi_id = roi.get("id") if isinstance(roi, dict) else None
         crop = image.crop((x, y, x + width, y + height))
-        if backend_value == "pytesseract":
-            roi_results = _run_pytesseract(crop)
-        else:
-            roi_results = _run_tesseract(crop)
+        key_payload = {
+            "roi": {"x": x, "y": y, "width": width, "height": height, "id": roi_id},
+            "lang": "eng",
+            "psm": 6,
+            "config": None,
+            "max_dim": max_dim,
+            "prefix": cache_key_prefix or "",
+        }
+        cache_key = json.dumps(key_payload, sort_keys=True)
+        if cache_key in cache_entries and isinstance(cache_entries[cache_key], list):
+            cached_results = cache_entries[cache_key]
+            results.extend(cached_results)
+            continue
+
+        scale = 1.0
+        if max_dim and max(crop.size) > max_dim:
+            scale = max_dim / float(max(crop.size))
+            new_w = max(1, int(round(crop.size[0] * scale)))
+            new_h = max(1, int(round(crop.size[1] * scale)))
+            crop = crop.resize((new_w, new_h), resample=Image.LANCZOS)
+
+        try:
+            if backend_value == "pytesseract":
+                roi_results = _run_pytesseract(crop, timeout_sec=timeout_sec)
+            else:
+                roi_results = _run_tesseract(crop, timeout_sec=timeout_sec)
+        except OcrTimeoutError:
+            timeouts.append(str(roi_id or "roi"))
+            continue
+        adjusted_results: list[dict[str, Any]] = []
         for item in roi_results:
             bbox = item.get("bbox", {})
             try:
@@ -207,6 +288,12 @@ def ocr_image(
                 bh = int(bbox.get("height", 0))
             except (TypeError, ValueError):
                 continue
+            if scale != 1.0:
+                inv = 1.0 / scale
+                bx = int(round(bx * inv))
+                by = int(round(by * inv))
+                bw = int(round(bw * inv))
+                bh = int(round(bh * inv))
             item["bbox"] = {
                 "x": bx + x,
                 "y": by + y,
@@ -217,6 +304,19 @@ def ocr_image(
                 item["roi_id"] = roi_id
             item["roi"] = {"x": x, "y": y, "width": width, "height": height}
             results.append(item)
+            adjusted_results.append(item)
+        cache_entries[cache_key] = adjusted_results
+
+    if cache_path is not None:
+        payload = {"version": 1, "entries": cache_entries}
+        cache_path.write_text(json.dumps(payload, indent=2, sort_keys=True))
+
+    if timeouts:
+        raise OcrTimeoutError(
+            "OCR timed out on one or more ROIs.",
+            timeouts=timeouts,
+            partial_results=results,
+        )
     results.sort(key=lambda item: (item["bbox"]["y"], item["bbox"]["x"], item["text"]))
     return results
 

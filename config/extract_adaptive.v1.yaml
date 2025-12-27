@@ -41,6 +41,9 @@ ocr:
   roi_pad_ratio: 0.02
   roi_pad_min: 2
   roi_pad_max: 24
+  max_rois: 40
+  timeout_sec: 6
+  max_dim: 1200
   min_conf: 0.5
   min_chars: 2
   min_bbox_height: 6

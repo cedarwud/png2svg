@@ -34,6 +34,7 @@ def test_ocr_detects_keyword(tmp_path: Path) -> None:
     font = _load_font()
     draw.text((10, 20), "HELLO 123", fill="black", font=font)
     image = image.resize((960, 360), resample=Image.NEAREST)
-    results = ocr_image(image, backend="tesseract")
+    rois = [{"id": "full", "x": 0, "y": 0, "width": image.width, "height": image.height}]
+    results = ocr_image(image, backend="tesseract", rois=rois)
     text = " ".join(item["text"] for item in results).upper()
     assert "HELLO" in text

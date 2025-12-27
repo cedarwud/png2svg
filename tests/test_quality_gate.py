@@ -81,7 +81,9 @@ def test_quality_gate_selects_best_candidate(tmp_path: Path, monkeypatch: pytest
             "features_summary": {},
         }
 
-    def fake_extract(_: Path, template_id: str, debug_dir: Path | None = None) -> dict:
+    def fake_extract(
+        _path: Path, template_id: str, debug_dir: Path | None = None, **kwargs: object
+    ) -> dict:
         return {
             "template": template_id,
             "canvas": {"width": 10, "height": 10},

@@ -9,7 +9,14 @@ import numpy as np
 from PIL import Image, ImageDraw
 import yaml
 
-from png2svg.ocr import has_pytesseract, has_tesseract, ocr_image
+from png2svg.ocr import (
+    DEFAULT_OCR_MAX_DIM,
+    DEFAULT_OCR_TIMEOUT_SEC,
+    OcrTimeoutError,
+    has_pytesseract,
+    has_tesseract,
+    ocr_image,
+)
 from png2svg.extractor_preprocess import _prepare_ocr_image
 
 @dataclass(frozen=True)
@@ -83,19 +90,35 @@ def _ink_mask(rgba: np.ndarray) -> np.ndarray:
     return (alpha > 10) & (luminance < 245)
 
 
-def _color_count(rgba: np.ndarray, mask: np.ndarray | None = None, step: int = 32) -> int:
+def _color_count(rgba: np.ndarray, mask: np.ndarray | None = None, colors: int = 16) -> int:
     rgb = rgba[:, :, :3]
     if mask is not None:
-        rgb = rgb[mask]
+        if not np.any(mask):
+            return 0
+        ys, xs = np.where(mask)
+        y0, y1 = int(ys.min()), int(ys.max()) + 1
+        x0, x1 = int(xs.min()), int(xs.max()) + 1
+        rgb = rgb[y0:y1, x0:x1].copy()
+        sub_mask = mask[y0:y1, x0:x1]
+        rgb[~sub_mask] = 255
     if rgb.size == 0:
         return 0
-    quant = (rgb // step).astype(np.uint8)
-    packed = (
-        (quant[:, 0].astype(np.int32) << 16)
-        | (quant[:, 1].astype(np.int32) << 8)
-        | quant[:, 2].astype(np.int32)
-    )
-    return int(np.unique(packed).size)
+    try:
+        image = Image.fromarray(rgb, mode="RGB")
+        quant = image.quantize(colors=colors, method=Image.MEDIANCUT)
+        indices = np.asarray(quant)
+        if mask is not None:
+            indices = indices[sub_mask]
+        return int(np.unique(indices).size)
+    except Exception:
+        flat = rgb.reshape(-1, 3)
+        quantized = (flat // 32).astype(np.uint8)
+        packed = (
+            (quantized[:, 0].astype(np.int32) << 16)
+            | (quantized[:, 1].astype(np.int32) << 8)
+            | quantized[:, 2].astype(np.int32)
+        )
+        return int(np.unique(packed).size)
 
 
 def _ocr_tokens(rgba: np.ndarray, width: int, height: int) -> list[str]:
@@ -120,8 +143,14 @@ def _ocr_tokens(rgba: np.ndarray, width: int, height: int) -> list[str]:
         },
     ]
     try:
-        results = ocr_image(ocr_image_input, backend="auto", rois=rois)
-    except ValueError:
+        results = ocr_image(
+            ocr_image_input,
+            backend="auto",
+            rois=rois,
+            timeout_sec=DEFAULT_OCR_TIMEOUT_SEC,
+            max_dim=DEFAULT_OCR_MAX_DIM,
+        )
+    except (ValueError, OcrTimeoutError):
         return []
     tokens: list[str] = []
     for item in results:
@@ -169,6 +198,7 @@ def _project_architecture_score(
         score += 0.5
 
     token_set = set(tokens)
+    token_count = len(tokens)
     joined = " ".join(tokens)
     if "project" in token_set and "architecture" in token_set:
         score += 1.6
@@ -180,6 +210,8 @@ def _project_architecture_score(
     for panel in ("panel", "panela", "panelb", "panelc"):
         if panel in token_set:
             score += 0.2
+    if token_count >= 30:
+        score += 1.0
     if ink_ratio < 0.18:
         score *= 0.5
     return max(score, 0.0)
@@ -336,6 +368,7 @@ def _score_templates(features: dict[str, Any]) -> dict[str, float]:
         ocr_tokens = []
     rl_hits = _keyword_hits(ocr_tokens, RL_KEYWORDS)
     grid_hits = _keyword_hits(ocr_tokens, GRID_KEYWORDS)
+    ocr_token_count = len(ocr_tokens)
 
     score_3gpp = 0.0
     score_3gpp += min(long_v, 8) * 0.4
@@ -343,6 +376,10 @@ def _score_templates(features: dict[str, Any]) -> dict[str, float]:
         score_3gpp += 1.0
     if saturated >= 0.02:
         score_3gpp += 0.2
+    if long_v >= 4 and ocr_token_count >= 6:
+        score_3gpp += 0.6
+    elif ocr_token_count >= 12:
+        score_3gpp += 0.4
 
     score_lineplot = 0.0
     if long_v >= 1:
@@ -379,6 +416,10 @@ def _score_templates(features: dict[str, Any]) -> dict[str, float]:
         score_flow -= 0.6
     if long_h >= 2 and features["ink_ratio"] >= 0.3:
         score_flow += 0.4
+    if long_h >= 3 and axis_ratio >= 0.8 and saturated < 0.05:
+        score_flow += 1.0
+    if long_v == 0 and long_h == 0 and axis_ratio >= 0.75 and color_count > 10:
+        score_flow += 0.6
 
     score_project = _project_architecture_score(
         width, height, color_count, ocr_tokens, features["ink_ratio"]
@@ -468,6 +509,12 @@ def _evidence_scale(features: dict[str, Any], top_id: str) -> float:
             scale *= 0.6
         if features["saturated_ratio"] > 0.4:
             scale *= 0.6
+        if (
+            features["long_vertical_lines"] >= 4
+            and features.get("ocr_token_count", 0) >= 6
+            and features["axis_aligned_ratio"] >= 0.7
+        ):
+            scale *= 1.2
     elif top_id == "t_procedure_flow":
         if features["axis_aligned_ratio"] < 0.7:
             scale *= 0.6
@@ -490,6 +537,15 @@ def _evidence_scale(features: dict[str, Any], top_id: str) -> float:
             and features["long_horizontal_lines"] >= 3
         ):
             scale *= 1.6
+        if features["long_horizontal_lines"] >= 3 and features["ink_ratio"] >= 0.3:
+            scale *= 1.3
+        if (
+            features["long_vertical_lines"] == 0
+            and features["long_horizontal_lines"] == 0
+            and features.get("color_count", 0) > 10
+            and features["axis_aligned_ratio"] >= 0.75
+        ):
+            scale *= 1.2
     elif top_id == "t_project_architecture_v1":
         color_count = int(features.get("color_count", 0))
         width = int(features.get("width", 0))

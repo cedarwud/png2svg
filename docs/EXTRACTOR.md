@@ -80,6 +80,11 @@ Optional OCR (tesseract):
 - RHEL/CentOS: `sudo yum install tesseract`
 - Optional Python wrapper: `pip install pytesseract`
 - Backend selection: `PNG2SVG_OCR_BACKEND=auto|pytesseract|tesseract|none`
+- OCR runs on explicit ROIs only (full-image OCR is disabled).
+- Per-ROI timeout and max OCR dimension are controlled by `ocr.timeout_sec` and `ocr.max_dim`
+  in `config/extract_adaptive.v1.yaml`.
+- When `--debug-dir` is used, OCR results are cached in `ocr_cache.json` to avoid re-running OCR
+  across candidate templates.
 
 Adaptive extractor settings are defined in `config/extract_adaptive.v1.yaml`.
 OCR cleanup knobs include `max_bbox_height_ratio`, `max_line_height_ratio`,

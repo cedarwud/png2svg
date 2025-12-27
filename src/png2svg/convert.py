@@ -1,7 +1,10 @@
 from __future__ import annotations
 
 import json
+import os
+import signal
 import tempfile
+from contextlib import contextmanager
 from pathlib import Path
 from typing import Any
 
@@ -24,6 +27,11 @@ DEFAULT_CONTRACT = Path(__file__).resolve().parents[2] / "config" / "figure_cont
 DEFAULT_THRESHOLDS = (
     Path(__file__).resolve().parents[2] / "config" / "validator_thresholds.v1.yaml"
 )
+DEFAULT_CANDIDATE_TIMEOUT_SEC = 60.0
+
+
+class CandidateTimeoutError(TimeoutError):
+    pass
 
 
 def _issue(
@@ -51,6 +59,36 @@ def _resolve_config(path: Path | None, default: Path, label: str) -> Path:
 
 def _write_json(path: Path, payload: dict[str, Any]) -> None:
     path.write_text(json.dumps(payload, indent=2, sort_keys=True))
+
+
+def _resolve_candidate_timeout(candidate_timeout_sec: float | None) -> float | None:
+    if candidate_timeout_sec is not None:
+        return candidate_timeout_sec
+    env_value = os.environ.get("PNG2SVG_CONVERT_TIMEOUT_SEC")
+    if not env_value:
+        return DEFAULT_CANDIDATE_TIMEOUT_SEC
+    try:
+        return float(env_value)
+    except ValueError:
+        return DEFAULT_CANDIDATE_TIMEOUT_SEC
+
+
+@contextmanager
+def _candidate_timeout(seconds: float | None):
+    if seconds is None or seconds <= 0 or not hasattr(signal, "setitimer"):
+        yield
+        return
+
+    def _handler(_signum, _frame):
+        raise CandidateTimeoutError(f"Candidate timed out after {seconds}s.")
+
+    previous = signal.signal(signal.SIGALRM, _handler)
+    signal.setitimer(signal.ITIMER_REAL, seconds)
+    try:
+        yield
+    finally:
+        signal.setitimer(signal.ITIMER_REAL, 0)
+        signal.signal(signal.SIGALRM, previous)
 
 
 def _candidate_dir(debug_dir: Path | None, template_id: str) -> Path | None:
@@ -240,6 +278,7 @@ def convert_png(
     gate_rmse_max: float | None = None,
     gate_bad_pixel_max: float | None = None,
     gate_pixel_tolerance: int | None = None,
+    candidate_timeout_sec: float | None = None,
 ) -> dict[str, Any]:
     if topk <= 0:
         raise Png2SvgError(
@@ -268,6 +307,8 @@ def convert_png(
 
     if debug_dir is not None:
         debug_dir.mkdir(parents=True, exist_ok=True)
+    ocr_cache_path = debug_dir / "ocr_cache.json" if debug_dir is not None else None
+    timeout_sec = _resolve_candidate_timeout(candidate_timeout_sec)
 
     classify_debug = debug_dir / "classify" if debug_dir is not None else None
     try:
@@ -369,7 +410,27 @@ def convert_png(
 
             extract_debug = candidate_dir / "extract" if candidate_dir else None
             try:
-                params = extract_skeleton(input_png, template_id, extract_debug)
+                with _candidate_timeout(timeout_sec):
+                    params = extract_skeleton(
+                        input_png,
+                        template_id,
+                        extract_debug,
+                        ocr_cache_path=ocr_cache_path,
+                    )
+            except CandidateTimeoutError as exc:
+                attempt["error"] = _issue(
+                    "E5198_CANDIDATE_TIMEOUT",
+                    str(exc),
+                    "Increase PNG2SVG_CONVERT_TIMEOUT_SEC or reduce OCR workload.",
+                    {"stage": "extract"},
+                )
+                gate_payload = _gate_skipped_payload(
+                    "candidate_timeout", gate_thresholds, attempt["error"]
+                )
+                attempt["quality_gate"] = gate_payload
+                _write_json(gate_report_path, gate_payload)
+                results.append(attempt)
+                continue
             except Png2SvgError as exc:
                 attempt["error"] = _issue(exc.code, exc.message, exc.hint, {"stage": "extract"})
                 gate_payload = _gate_skipped_payload(
@@ -382,7 +443,22 @@ def convert_png(
             params_path.write_text(json.dumps(params, indent=2, sort_keys=True))
 
             try:
-                render_svg(input_png, params_path, svg_path)
+                with _candidate_timeout(timeout_sec):
+                    render_svg(input_png, params_path, svg_path)
+            except CandidateTimeoutError as exc:
+                attempt["error"] = _issue(
+                    "E5198_CANDIDATE_TIMEOUT",
+                    str(exc),
+                    "Increase PNG2SVG_CONVERT_TIMEOUT_SEC or simplify rendering.",
+                    {"stage": "render"},
+                )
+                gate_payload = _gate_skipped_payload(
+                    "candidate_timeout", gate_thresholds, attempt["error"]
+                )
+                attempt["quality_gate"] = gate_payload
+                _write_json(gate_report_path, gate_payload)
+                results.append(attempt)
+                continue
             except Png2SvgError as exc:
                 attempt["error"] = _issue(exc.code, exc.message, exc.hint, {"stage": "render"})
                 gate_payload = _gate_skipped_payload(
@@ -421,21 +497,49 @@ def convert_png(
                         {"stage": "snap_preview"},
                     )
 
-            report = validate_svg(
-                svg_path,
-                contract_path,
-                thresholds_path,
-                text_expectations=_text_expectations(params),
-            )
+            try:
+                with _candidate_timeout(timeout_sec):
+                    report = validate_svg(
+                        svg_path,
+                        contract_path,
+                        thresholds_path,
+                        text_expectations=_text_expectations(params),
+                    )
+            except CandidateTimeoutError as exc:
+                attempt["error"] = _issue(
+                    "E5198_CANDIDATE_TIMEOUT",
+                    str(exc),
+                    "Increase PNG2SVG_CONVERT_TIMEOUT_SEC for validation.",
+                    {"stage": "validate"},
+                )
+                gate_payload = _gate_skipped_payload(
+                    "candidate_timeout", gate_thresholds, attempt["error"]
+                )
+                attempt["quality_gate"] = gate_payload
+                _write_json(gate_report_path, gate_payload)
+                results.append(attempt)
+                continue
             report_payload = report.to_dict()
             _write_json(report_path, report_payload)
             attempt["validation"] = report_payload
             attempt["validation_warning_count"] = len(report.warnings)
             attempt["validation_error_count"] = len(report.errors)
             if quality_gate:
-                gate_payload = _run_quality_gate(
-                    svg_path, input_png, generated_png, diff_png, gate_thresholds
-                )
+                try:
+                    with _candidate_timeout(timeout_sec):
+                        gate_payload = _run_quality_gate(
+                            svg_path, input_png, generated_png, diff_png, gate_thresholds
+                        )
+                except CandidateTimeoutError as exc:
+                    attempt["error"] = _issue(
+                        "E5198_CANDIDATE_TIMEOUT",
+                        str(exc),
+                        "Increase PNG2SVG_CONVERT_TIMEOUT_SEC for quality gate.",
+                        {"stage": "quality_gate"},
+                    )
+                    gate_payload = _gate_skipped_payload(
+                        "candidate_timeout", gate_thresholds, attempt["error"]
+                    )
                 attempt["quality_gate"] = gate_payload
                 _write_json(gate_report_path, gate_payload)
             else:
