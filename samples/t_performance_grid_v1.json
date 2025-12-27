@@ -1,0 +1,116 @@
+{
+  "template": "t_performance_grid_v1",
+  "canvas": {"width": 1200, "height": 800},
+  "title": "Performance Grid",
+  "layout": "2x2",
+  "panels": [
+    {
+      "id": "P1",
+      "title": "Panel 1",
+      "series": [
+        {
+          "id": "series_0",
+          "stroke": "#1f77b4",
+          "points": [
+            {"x": 0.0, "y": 0.2},
+            {"x": 0.5, "y": 0.6},
+            {"x": 1.0, "y": 0.85}
+          ]
+        },
+        {
+          "id": "series_1",
+          "stroke": "#ff7f0e",
+          "dashed": true,
+          "dasharray": [6, 4],
+          "points": [
+            {"x": 0.0, "y": 0.75},
+            {"x": 0.5, "y": 0.5},
+            {"x": 1.0, "y": 0.25}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P2",
+      "title": "Panel 2",
+      "series": [
+        {
+          "id": "series_0",
+          "stroke": "#1f77b4",
+          "points": [
+            {"x": 0.0, "y": 0.15},
+            {"x": 0.5, "y": 0.55},
+            {"x": 1.0, "y": 0.8}
+          ]
+        },
+        {
+          "id": "series_1",
+          "stroke": "#ff7f0e",
+          "dashed": true,
+          "dasharray": [6, 4],
+          "points": [
+            {"x": 0.0, "y": 0.7},
+            {"x": 0.5, "y": 0.45},
+            {"x": 1.0, "y": 0.3}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P3",
+      "title": "Panel 3",
+      "series": [
+        {
+          "id": "series_0",
+          "stroke": "#1f77b4",
+          "points": [
+            {"x": 0.0, "y": 0.25},
+            {"x": 0.5, "y": 0.6},
+            {"x": 1.0, "y": 0.75}
+          ]
+        },
+        {
+          "id": "series_1",
+          "stroke": "#ff7f0e",
+          "dashed": true,
+          "dasharray": [6, 4],
+          "points": [
+            {"x": 0.0, "y": 0.8},
+            {"x": 0.5, "y": 0.55},
+            {"x": 1.0, "y": 0.35}
+          ]
+        }
+      ]
+    },
+    {
+      "id": "P4",
+      "title": "Panel 4",
+      "series": [
+        {
+          "id": "series_0",
+          "stroke": "#1f77b4",
+          "points": [
+            {"x": 0.0, "y": 0.2},
+            {"x": 0.5, "y": 0.5},
+            {"x": 1.0, "y": 0.7}
+          ]
+        },
+        {
+          "id": "series_1",
+          "stroke": "#ff7f0e",
+          "dashed": true,
+          "dasharray": [6, 4],
+          "points": [
+            {"x": 0.0, "y": 0.65},
+            {"x": 0.5, "y": 0.4},
+            {"x": 1.0, "y": 0.2}
+          ]
+        }
+      ]
+    }
+  ],
+  "legend": [
+    {"id": "series_0", "label": "Baseline", "stroke": "#1f77b4", "dashed": false},
+    {"id": "series_1", "label": "Proposed", "stroke": "#ff7f0e", "dashed": true}
+  ]
+}

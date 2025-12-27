@@ -25,8 +25,13 @@ from png2svg.extractor_templates import (
     _default_plot,
     _extract_flow,
     _extract_lineplot,
+    _extract_performance_grid_v1,
     _extract_project_architecture_v1,
+    _extract_rl_agent_loop_v1,
     _project_architecture_rois,
+    _rl_agent_loop_rois,
+    _detect_performance_grid_layout,
+    _performance_grid_rois,
     _finalize_3gpp_v1_metadata,
     extract_3gpp_events_3panel_v1,
 )
@@ -53,7 +58,8 @@ def extract_skeleton(
             message=f"Unknown template '{template}'.",
             hint=(
                 "Use one of: t_3gpp_events_3panel, t_procedure_flow, "
-                "t_performance_lineplot, t_project_architecture_v1, or auto."
+                "t_performance_lineplot, t_project_architecture_v1, "
+                "t_rl_agent_loop_v1, t_performance_grid_v1, or auto."
             ),
         )
 
@@ -126,6 +132,11 @@ def extract_skeleton(
         ]
     elif template_id == "t_project_architecture_v1":
         ocr_rois = _project_architecture_rois(width, height)
+    elif template_id == "t_rl_agent_loop_v1":
+        ocr_rois = _rl_agent_loop_rois(width, height)
+    elif template_id == "t_performance_grid_v1":
+        layout_id, layout = _detect_performance_grid_layout(mask, width, height)
+        ocr_rois = _performance_grid_rois(width, height, layout)
 
     if ocr_rois:
         pad_px = int(effective_config.get("ocr", {}).get("roi_pad_px", 0))
@@ -220,6 +231,21 @@ def extract_skeleton(
         params, overlay = _extract_project_architecture_v1(
             width, height, text_items, warnings, adaptive=effective_config
         )
+    elif template_id == "t_rl_agent_loop_v1":
+        params, overlay = _extract_rl_agent_loop_v1(
+            width, height, text_items, warnings, adaptive=effective_config
+        )
+    elif template_id == "t_performance_grid_v1":
+        params, overlay = _extract_performance_grid_v1(
+            width,
+            height,
+            mask,
+            rgba,
+            text_items,
+            text_boxes,
+            warnings,
+            adaptive=effective_config,
+        )
     else:
         errors.append(
             ExtractIssue(
@@ -238,11 +264,14 @@ def extract_skeleton(
     if not isinstance(extracted, dict):
         extracted = {}
         params["extracted"] = extracted
+    if template_id in {"t_project_architecture_v1", "t_rl_agent_loop_v1", "t_performance_grid_v1"}:
+        for item in text_items:
+            item["render"] = False
     extracted["text_items"] = text_items
-    if ocr_results:
+    if ocr_results and extracted.get("texts_detected") is None:
         renderable_count = _count_renderable_texts(text_items)
         extracted["texts_detected"] = renderable_count if renderable_count > 0 else 1
-    else:
+    elif not ocr_results and extracted.get("texts_detected") is None:
         extracted["texts_detected"] = 0
     extracted["ocr_backend"] = ocr_backend
     extracted["effective_config"] = effective_config

@@ -5,7 +5,7 @@ meaningful variation in layout, geometry, or constraints. Tag each case in
 `datasets/regression_v0/manifest.yaml` using relevant tags:
 
 `long_text`, `dashed`, `small_canvas`, `large_canvas`, `dense_ticks`,
-`multi_series`, `lane_layout`, `many_nodes`
+`multi_series`, `lane_layout`, `many_nodes`, `rl_loop`, `grid`
 
 Optional quality gate overrides (convert pipeline only) can be added per case:
 ```
@@ -39,6 +39,16 @@ gates:
 - Vary panel titles and bullet counts (`long_text`).
 - Vary work package goal/output lengths (`long_text`).
 - Include tighter canvas margins (`small_canvas`) or larger spacing (`large_canvas`).
+
+## t_rl_agent_loop_v1
+- Presence/absence of constraints or replay buffer (`rl_loop`).
+- Title length and multiline labels (`long_text`).
+- Wider vs taller canvas to stress layout (`large_canvas`, `small_canvas`).
+
+## t_performance_grid_v1
+- Grid layouts (2x2 vs 1x3) with shared or panel-specific legends (`grid`).
+- Vary series count and dashed series (`multi_series`, `dashed`).
+- Different canvas sizes to stress panel spacing (`large_canvas`, `small_canvas`).
 
 ## Real regression (external PNGs)
 For real PNG figures that cannot be committed, set `REAL_PNG_DIR` to a local

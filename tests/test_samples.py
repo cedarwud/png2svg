@@ -19,6 +19,8 @@ def test_sample_params_render_and_validate(tmp_path: Path) -> None:
         SAMPLES / "t_procedure_flow.json",
         SAMPLES / "t_performance_lineplot.json",
         SAMPLES / "t_project_architecture_v1.json",
+        SAMPLES / "t_rl_agent_loop_v1.json",
+        SAMPLES / "t_performance_grid_v1.json",
     ]
     for sample in sample_files:
         output_svg = tmp_path / f"{sample.stem}.svg"

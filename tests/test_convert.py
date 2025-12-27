@@ -115,9 +115,9 @@ def test_convert_debug_artifacts(tmp_path: Path) -> None:
 
 def test_convert_hard_inputs_sampled(tmp_path: Path) -> None:
     sample_ids = {
-        "t_3gpp_events_3panel": "case_013_3gpp_realistic",
-        "t_procedure_flow": "case_014_flow_realistic",
-        "t_performance_lineplot": "case_015_lineplot_realistic",
+        "t_3gpp_events_3panel": "case_019_3gpp_realistic",
+        "t_procedure_flow": "case_020_flow_realistic",
+        "t_performance_lineplot": "case_021_lineplot_realistic",
     }
     thresholds = _gate_thresholds("hard")
     for template_id, case_id in sample_ids.items():

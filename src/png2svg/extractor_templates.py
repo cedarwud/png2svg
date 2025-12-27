@@ -376,6 +376,443 @@ def _project_architecture_rois(width: int, height: int) -> list[dict[str, int]]:
     return rois
 
 
+def _rl_agent_loop_layout(width: int, height: int) -> dict[str, dict[str, float]]:
+    margin_x = max(int(width * 0.08), 40)
+    margin_y = max(int(height * 0.06), 30)
+    header_height = max(int(height * 0.14), 90)
+    box_width = width * 0.28
+    box_height = height * 0.2
+    gap_y = max(int(height * 0.08), 50)
+    main_y = margin_y + header_height
+    agent = {
+        "x": float(margin_x),
+        "y": float(main_y),
+        "width": float(box_width),
+        "height": float(box_height),
+    }
+    env = {
+        "x": float(width - margin_x - box_width),
+        "y": float(main_y),
+        "width": float(box_width),
+        "height": float(box_height),
+    }
+    constraint = {
+        "x": float((width - box_width * 0.7) / 2.0),
+        "y": float(max(margin_y + header_height * 0.4, main_y - box_height * 0.7)),
+        "width": float(box_width * 0.7),
+        "height": float(box_height * 0.45),
+    }
+    buffer = {
+        "x": float((width - box_width * 0.75) / 2.0),
+        "y": float(main_y + box_height + gap_y),
+        "width": float(box_width * 0.75),
+        "height": float(box_height * 0.45),
+    }
+    return {
+        "agent": agent,
+        "environment": env,
+        "constraint": constraint,
+        "buffer": buffer,
+        "margin_x": float(margin_x),
+        "margin_y": float(margin_y),
+        "header_height": float(header_height),
+    }
+
+
+def _rl_agent_loop_rois(width: int, height: int) -> list[dict[str, int]]:
+    layout = _rl_agent_loop_layout(width, height)
+    rois: list[dict[str, int]] = []
+
+    def _roi(roi_id: str, x: float, y: float, w: float, h: float) -> None:
+        ix = max(int(round(x)), 0)
+        iy = max(int(round(y)), 0)
+        iw = max(int(round(w)), 1)
+        ih = max(int(round(h)), 1)
+        if ix + iw > width:
+            iw = max(width - ix, 1)
+        if iy + ih > height:
+            ih = max(height - iy, 1)
+        rois.append({"id": roi_id, "x": ix, "y": iy, "width": iw, "height": ih})
+
+    header_height = layout["header_height"]
+    margin_x = layout["margin_x"]
+    margin_y = layout["margin_y"]
+    _roi("title", margin_x, margin_y, width - 2 * margin_x, header_height * 0.7)
+
+    for key in ("agent", "environment", "constraint", "buffer"):
+        rect = layout[key]
+        pad = max(int(rect["height"] * 0.15), 8)
+        _roi(
+            f"box_{key}",
+            rect["x"] + pad,
+            rect["y"] + pad,
+            rect["width"] - pad * 2,
+            rect["height"] - pad * 2,
+        )
+
+    agent = layout["agent"]
+    env = layout["environment"]
+    action_y = agent["y"] + agent["height"] * 0.7
+    feedback_y = agent["y"] + agent["height"] * 0.3
+    signal_width = env["x"] - (agent["x"] + agent["width"])
+    _roi(
+        "signal_action",
+        agent["x"] + agent["width"],
+        action_y - agent["height"] * 0.2,
+        signal_width,
+        agent["height"] * 0.4,
+    )
+    _roi(
+        "signal_feedback",
+        agent["x"] + agent["width"],
+        feedback_y - agent["height"] * 0.2,
+        signal_width,
+        agent["height"] * 0.4,
+    )
+    return rois
+
+
+def _performance_grid_layout(
+    width: int,
+    height: int,
+    rows: int,
+    cols: int,
+) -> dict[str, Any]:
+    margin_x = max(int(width * 0.06), 36)
+    margin_y = max(int(height * 0.06), 28)
+    header_height = max(int(height * 0.12), 70)
+    gap_x = max(int(width * 0.04), 18)
+    gap_y = max(int(height * 0.05), 20)
+    panel_width = (width - 2 * margin_x - gap_x * (cols - 1)) / cols
+    panel_height = (height - margin_y - header_height - gap_y * (rows - 1)) / rows
+    panels: list[dict[str, float]] = []
+    start_y = margin_y + header_height
+    for row in range(rows):
+        y = start_y + row * (panel_height + gap_y)
+        for col in range(cols):
+            x = margin_x + col * (panel_width + gap_x)
+            panels.append(
+                {
+                    "x": float(x),
+                    "y": float(y),
+                    "width": float(panel_width),
+                    "height": float(panel_height),
+                }
+            )
+    return {
+        "rows": rows,
+        "cols": cols,
+        "margin_x": float(margin_x),
+        "margin_y": float(margin_y),
+        "header_height": float(header_height),
+        "panels": panels,
+    }
+
+
+def _detect_performance_grid_layout(mask: np.ndarray, width: int, height: int) -> tuple[str, dict[str, Any]]:
+    min_v = max(int(height * 0.6), 1)
+    min_h = max(int(width * 0.6), 1)
+    v_lines = _long_line_positions(mask, axis=0, min_len=min_v)
+    h_lines = _long_line_positions(mask, axis=1, min_len=min_h)
+    v_lines = [x for x in v_lines if width * 0.15 < x < width * 0.85]
+    h_lines = [y for y in h_lines if height * 0.2 < y < height * 0.85]
+
+    layout_id = None
+    if len(v_lines) >= 2 and not h_lines:
+        layout_id = "1x3"
+        layout = _performance_grid_layout(width, height, rows=1, cols=3)
+    elif len(v_lines) >= 1 and len(h_lines) >= 1:
+        layout_id = "2x2"
+        layout = _performance_grid_layout(width, height, rows=2, cols=2)
+    else:
+        layout_id = "1x3" if width >= height * 1.5 else "2x2"
+        rows, cols = (1, 3) if layout_id == "1x3" else (2, 2)
+        layout = _performance_grid_layout(width, height, rows=rows, cols=cols)
+    layout["separators"] = {"vertical": v_lines, "horizontal": h_lines}
+    return layout_id, layout
+
+
+def _performance_grid_rois(width: int, height: int, layout: dict[str, Any]) -> list[dict[str, int]]:
+    rois: list[dict[str, int]] = []
+
+    def _roi(roi_id: str, x: float, y: float, w: float, h: float) -> None:
+        ix = max(int(round(x)), 0)
+        iy = max(int(round(y)), 0)
+        iw = max(int(round(w)), 1)
+        ih = max(int(round(h)), 1)
+        if ix + iw > width:
+            iw = max(width - ix, 1)
+        if iy + ih > height:
+            ih = max(height - iy, 1)
+        rois.append({"id": roi_id, "x": ix, "y": iy, "width": iw, "height": ih})
+
+    margin_x = layout["margin_x"]
+    margin_y = layout["margin_y"]
+    header_height = layout["header_height"]
+    _roi("title", margin_x, margin_y, width - 2 * margin_x, header_height * 0.7)
+
+    for idx, panel in enumerate(layout["panels"]):
+        pid = f"P{idx + 1}"
+        pad = max(int(panel["height"] * 0.08), 10)
+        _roi(
+            f"panel_{pid}_title",
+            panel["x"] + pad,
+            panel["y"] + pad,
+            panel["width"] - pad * 2,
+            panel["height"] * 0.25,
+        )
+    return rois
+
+
+def _extract_rl_agent_loop_v1(
+    width: int,
+    height: int,
+    text_items: list[dict[str, Any]],
+    warnings: list[ExtractIssue],
+    adaptive: dict[str, Any] | None = None,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    defaults = {
+        "title": "RL Agent Loop",
+        "agent": "Agent",
+        "environment": "Environment",
+        "constraint": "Constraints",
+        "buffer": "Replay Buffer",
+        "action": "Action",
+        "feedback": "State / Reward",
+    }
+    by_roi: dict[str, list[dict[str, Any]]] = {}
+    for item in text_items:
+        roi_id = item.get("roi_id")
+        if isinstance(roi_id, str) and roi_id:
+            by_roi.setdefault(roi_id, []).append(item)
+
+    def _roi_lines(roi_id: str) -> list[str]:
+        items = by_roi.get(roi_id, [])
+        if not items:
+            return []
+        items.sort(
+            key=lambda entry: (
+                float(entry.get("bbox", {}).get("y", 0.0)),
+                float(entry.get("bbox", {}).get("x", 0.0)),
+            )
+        )
+        lines: list[str] = []
+        for entry in items:
+            text = _clean_text(str(entry.get("content") or entry.get("text") or ""))
+            if text:
+                lines.append(text)
+        return lines
+
+    def _pick_text(roi_id: str, fallback: str) -> str:
+        lines = _roi_lines(roi_id)
+        if not lines:
+            return fallback
+        return _clean_text(" ".join(lines))
+
+    fields_from_ocr: list[str] = []
+    title = _pick_text("title", defaults["title"])
+    if title != defaults["title"]:
+        fields_from_ocr.append("title")
+    agent = _pick_text("box_agent", defaults["agent"])
+    if agent != defaults["agent"]:
+        fields_from_ocr.append("agent")
+    env = _pick_text("box_environment", defaults["environment"])
+    if env != defaults["environment"]:
+        fields_from_ocr.append("environment")
+    constraint = _pick_text("box_constraint", defaults["constraint"])
+    if constraint != defaults["constraint"]:
+        fields_from_ocr.append("constraint")
+    buffer = _pick_text("box_buffer", defaults["buffer"])
+    if buffer != defaults["buffer"]:
+        fields_from_ocr.append("buffer")
+    action = _pick_text("signal_action", defaults["action"])
+    if action != defaults["action"]:
+        fields_from_ocr.append("action")
+    feedback = _pick_text("signal_feedback", defaults["feedback"])
+    if feedback != defaults["feedback"]:
+        fields_from_ocr.append("feedback")
+
+    if not fields_from_ocr:
+        warnings.append(
+            ExtractIssue(
+                code="W4501_RL_FALLBACK",
+                message="RL agent loop OCR yielded no usable text; using defaults.",
+                hint="Ensure OCR is available or edit params.json manually.",
+            )
+        )
+
+    params: dict[str, Any] = {
+        "template": "t_rl_agent_loop_v1",
+        "canvas": {"width": width, "height": height},
+        "title": title,
+        "boxes": [
+            {"id": "agent", "role": "agent", "label": agent},
+            {"id": "environment", "role": "environment", "label": env},
+            {"id": "constraint", "role": "constraint", "label": constraint, "enabled": True},
+            {"id": "buffer", "role": "buffer", "label": buffer, "enabled": True},
+        ],
+        "signals": {"action": action, "feedback": feedback},
+        "extracted": {
+            "texts_detected": len(fields_from_ocr) if fields_from_ocr else 0,
+            "rl_agent_loop": {"ocr_used": bool(fields_from_ocr), "fields_from_ocr": fields_from_ocr},
+        },
+    }
+    overlay = {
+        "text_boxes": [{"bbox": roi} for roi in _rl_agent_loop_rois(width, height)],
+    }
+    return params, overlay
+
+
+def _grid_panel_plot(panel: dict[str, Any], title_font: float) -> dict[str, float]:
+    padding = max(int(panel["height"] * 0.08), 10)
+    title_height = title_font * 1.4
+    return {
+        "x": float(panel["x"] + padding),
+        "y": float(panel["y"] + padding + title_height),
+        "width": float(panel["width"] - padding * 2),
+        "height": float(panel["height"] - padding * 2 - title_height),
+    }
+
+
+def _extract_performance_grid_v1(
+    width: int,
+    height: int,
+    mask: np.ndarray,
+    rgba: np.ndarray,
+    text_items: list[dict[str, Any]],
+    text_boxes: list[dict[str, Any]],
+    warnings: list[ExtractIssue],
+    adaptive: dict[str, Any] | None = None,
+) -> tuple[dict[str, Any], dict[str, Any]]:
+    layout_id, layout = _detect_performance_grid_layout(mask, width, height)
+    panels_layout = layout["panels"]
+    panel_titles = [f"Panel {idx+1}" for idx in range(len(panels_layout))]
+    by_roi: dict[str, list[dict[str, Any]]] = {}
+    for item in text_items:
+        roi_id = item.get("roi_id")
+        if isinstance(roi_id, str) and roi_id:
+            by_roi.setdefault(roi_id, []).append(item)
+
+    def _roi_text(roi_id: str) -> str | None:
+        items = by_roi.get(roi_id, [])
+        if not items:
+            return None
+        items.sort(
+            key=lambda entry: (
+                float(entry.get("bbox", {}).get("y", 0.0)),
+                float(entry.get("bbox", {}).get("x", 0.0)),
+            )
+        )
+        lines: list[str] = []
+        for entry in items:
+            text = _clean_text(str(entry.get("content") or entry.get("text") or ""))
+            if text:
+                lines.append(text)
+        if not lines:
+            return None
+        return _clean_text(" ".join(lines))
+
+    title = _roi_text("title") or "Performance Grid"
+    panels: list[dict[str, Any]] = []
+    fields_from_ocr: list[str] = []
+    if title != "Performance Grid":
+        fields_from_ocr.append("title")
+
+    curve_cfg = adaptive.get("curves", {}) if adaptive else {}
+    series_colors = DEFAULT_SERIES_COLORS
+    curve_points: list[dict[str, Any]] = []
+    for idx, panel in enumerate(panels_layout):
+        panel_id = f"P{idx + 1}"
+        roi_title = _roi_text(f"panel_{panel_id}_title")
+        panel_title = roi_title or panel_titles[idx]
+        if roi_title:
+            fields_from_ocr.append(f"panel_{panel_id}_title")
+        title_font = max(int(height * 0.022), 12)
+        plot = _grid_panel_plot(panel, title_font)
+
+        series: list[dict[str, Any]] = []
+        x0 = int(panel["x"])
+        y0 = int(panel["y"])
+        x1 = int(panel["x"] + panel["width"])
+        y1 = int(panel["y"] + panel["height"])
+        sub = rgba[y0:y1, x0:x1]
+        for s_idx, color in enumerate(series_colors):
+            hue = [220.0, 30.0, 120.0, 0.0][s_idx % 4]
+            mask_color = _curve_color_mask(sub, hue, curve_cfg)
+            points = _curve_centerline_points(mask_color, curve_cfg)
+            if not points:
+                continue
+            full_points = [(x + x0, y + y0) for x, y in points]
+            curve_points.append(
+                {
+                    "panel_id": panel_id,
+                    "curve_id": f"series_{s_idx}",
+                    "points": [{"x": x, "y": y} for x, y in full_points],
+                }
+            )
+            series.append(
+                {
+                    "id": f"series_{s_idx}",
+                    "points": _points_to_ratio(full_points, plot),
+                    "stroke": color,
+                    "dashed": s_idx % 2 == 1,
+                    "dasharray": DEFAULT_DASHARRAY if s_idx % 2 == 1 else None,
+                }
+            )
+        if not series:
+            warnings.append(
+                ExtractIssue(
+                    code="W4503_GRID_CURVES_FALLBACK",
+                    message=f"No curve points detected for {panel_id}; using defaults.",
+                    hint="Increase line contrast or adjust curve detection settings.",
+                )
+            )
+            series = [
+                {
+                    "id": "series_0",
+                    "points": [{"x": 0.0, "y": 0.2}, {"x": 1.0, "y": 0.8}],
+                    "stroke": series_colors[0],
+                    "dashed": False,
+                }
+            ]
+        panels.append({"id": panel_id, "title": panel_title, "series": series})
+
+    if not fields_from_ocr:
+        warnings.append(
+            ExtractIssue(
+                code="W4502_GRID_FALLBACK",
+                message="Performance grid OCR yielded no usable text; using defaults.",
+                hint="Ensure OCR is available or edit params.json manually.",
+            )
+        )
+
+    params = {
+        "template": "t_performance_grid_v1",
+        "canvas": {"width": width, "height": height},
+        "title": title,
+        "layout": layout_id,
+        "panels": panels,
+        "legend": [
+            {"id": "series_0", "label": "Baseline", "stroke": "#1f77b4", "dashed": False},
+            {"id": "series_1", "label": "Proposed", "stroke": "#ff7f0e", "dashed": True},
+        ],
+        "geometry": {"lines": [], "rects": [], "markers": []},
+        "extracted": {
+            "texts_detected": len(fields_from_ocr) if fields_from_ocr else 0,
+            "panel_bounds": panels_layout,
+            "grid_layout": layout_id,
+            "curve_points": curve_points,
+            "text_blocks": text_boxes,
+            "grid_meta": {"ocr_used": bool(fields_from_ocr), "fields_from_ocr": fields_from_ocr},
+        },
+    }
+    overlay = {
+        "panels": panels_layout,
+        "text_boxes": text_boxes,
+    }
+    return params, overlay
+
+
 def _extract_3gpp(
     width: int,
     height: int,

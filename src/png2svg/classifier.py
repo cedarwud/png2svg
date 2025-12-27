@@ -27,7 +27,45 @@ TEMPLATES = [
     "t_procedure_flow",
     "t_performance_lineplot",
     "t_project_architecture_v1",
+    "t_rl_agent_loop_v1",
+    "t_performance_grid_v1",
 ]
+
+RL_KEYWORDS = {
+    "agent",
+    "environment",
+    "state",
+    "action",
+    "reward",
+    "policy",
+    "value",
+    "qnetwork",
+    "q-network",
+    "critic",
+    "actor",
+    "buffer",
+    "replay",
+    "constraint",
+    "lagrangian",
+    "multiobjective",
+    "morl",
+}
+
+GRID_KEYWORDS = {
+    "cdf",
+    "latency",
+    "throughput",
+    "rmse",
+    "packet",
+    "handover",
+    "rlf",
+    "pingpong",
+    "ping-pong",
+    "uho",
+    "energy",
+    "efficiency",
+    "kpi",
+}
 
 
 def _load_image(path: Path) -> tuple[np.ndarray, int, int]:
@@ -95,7 +133,24 @@ def _ocr_tokens(rgba: np.ndarray, width: int, height: int) -> list[str]:
     return tokens
 
 
-def _project_architecture_score(width: int, height: int, color_count: int, tokens: list[str]) -> float:
+def _keyword_hits(tokens: list[str], keywords: set[str]) -> int:
+    if not tokens:
+        return 0
+    joined = " ".join(tokens)
+    hits = 0
+    for keyword in keywords:
+        if keyword in joined:
+            hits += 1
+    return hits
+
+
+def _project_architecture_score(
+    width: int,
+    height: int,
+    color_count: int,
+    tokens: list[str],
+    ink_ratio: float,
+) -> float:
     if height <= 0:
         return 0.0
     aspect = width / height
@@ -116,15 +171,17 @@ def _project_architecture_score(width: int, height: int, color_count: int, token
     token_set = set(tokens)
     joined = " ".join(tokens)
     if "project" in token_set and "architecture" in token_set:
-        score += 0.8
+        score += 1.6
     if "work" in token_set and ("packages" in token_set or "package" in token_set):
-        score += 0.8
+        score += 1.2
     for wp in ("wp1", "wp2", "wp3", "wp4"):
         if wp in joined:
-            score += 0.3
+            score += 0.4
     for panel in ("panel", "panela", "panelb", "panelc"):
         if panel in token_set:
             score += 0.2
+    if ink_ratio < 0.18:
+        score *= 0.5
     return max(score, 0.0)
 
 
@@ -277,6 +334,8 @@ def _score_templates(features: dict[str, Any]) -> dict[str, float]:
     ocr_tokens = features.get("ocr_tokens") or []
     if not isinstance(ocr_tokens, list):
         ocr_tokens = []
+    rl_hits = _keyword_hits(ocr_tokens, RL_KEYWORDS)
+    grid_hits = _keyword_hits(ocr_tokens, GRID_KEYWORDS)
 
     score_3gpp = 0.0
     score_3gpp += min(long_v, 8) * 0.4
@@ -287,16 +346,22 @@ def _score_templates(features: dict[str, Any]) -> dict[str, float]:
 
     score_lineplot = 0.0
     if long_v >= 1:
-        score_lineplot += 0.8
+        score_lineplot += 1.0
     if long_h >= 1:
-        score_lineplot += 0.8
+        score_lineplot += 1.0
     if saturated >= 0.02:
-        score_lineplot += 0.3
+        score_lineplot += 0.4
     if short_total >= 8:
         score_lineplot += 0.2
     if long_v >= 4:
         score_lineplot -= 0.6
     if saturated < 0.1:
+        score_lineplot -= 0.6
+    if features["ink_ratio"] > 0.2:
+        score_lineplot -= 0.6
+    if long_v >= 1 and long_h >= 1 and short_total <= 5000:
+        score_lineplot += 0.4
+    if long_v >= 1 and long_h >= 1 and short_total >= 8000:
         score_lineplot -= 0.6
 
     score_flow = 0.0
@@ -308,14 +373,64 @@ def _score_templates(features: dict[str, Any]) -> dict[str, float]:
         score_flow += 0.3
     if long_h <= 1:
         score_flow += 0.2
+    if long_h >= 2 and features["ink_ratio"] < 0.2:
+        score_flow -= 0.4
+    if features["ink_ratio"] > 0.2 and color_count <= 5:
+        score_flow -= 0.6
+    if long_h >= 2 and features["ink_ratio"] >= 0.3:
+        score_flow += 0.4
 
-    score_project = _project_architecture_score(width, height, color_count, ocr_tokens)
+    score_project = _project_architecture_score(
+        width, height, color_count, ocr_tokens, features["ink_ratio"]
+    )
+
+    score_rl = 0.0
+    if rl_hits >= 2:
+        score_rl += 2.2
+    elif rl_hits == 1:
+        score_rl += 1.0
+    if axis_ratio >= 0.6:
+        score_rl += 0.3
+    if color_count <= 80:
+        score_rl += 0.2
+    if saturated >= 0.02:
+        score_rl += 0.4
+    if features["ink_ratio"] >= 0.08:
+        score_rl += 1.0
+    elif features["ink_ratio"] >= 0.05:
+        score_rl += 0.6
+    if long_h >= 2 and long_v == 0 and features["ink_ratio"] >= 0.08:
+        score_rl += 1.2
+    if long_v >= 1:
+        score_rl -= 0.4
+    if long_h < 1:
+        score_rl -= 0.6
+    if color_count <= 5:
+        score_rl -= 0.8
+
+    score_grid = 0.0
+    if long_v >= 1:
+        score_grid += 1.2
+        if long_v >= 2:
+            score_grid += 0.3
+        if long_h >= 1:
+            score_grid += 0.4
+    if axis_ratio >= 0.6:
+        score_grid += 0.2
+    if grid_hits >= 1:
+        score_grid += 0.8
+    if features["ink_ratio"] > 0.2:
+        score_grid -= 0.6
+    if long_v >= 1 and short_total >= 8000:
+        score_grid += 1.2
 
     return {
         "t_3gpp_events_3panel": score_3gpp,
         "t_performance_lineplot": score_lineplot,
         "t_procedure_flow": score_flow,
         "t_project_architecture_v1": score_project,
+        "t_rl_agent_loop_v1": score_rl,
+        "t_performance_grid_v1": score_grid,
     }
 
 
@@ -338,6 +453,14 @@ def _evidence_scale(features: dict[str, Any], top_id: str) -> float:
             scale *= 0.4
         if features["saturated_ratio"] < 0.2:
             scale *= 0.6
+        if (
+            features["long_vertical_lines"] >= 1
+            and features["long_horizontal_lines"] >= 1
+            and features["saturated_ratio"] >= 0.2
+            and features["axis_aligned_ratio"] >= 0.7
+            and (features["short_vertical_segments"] + features["short_horizontal_segments"]) <= 7000
+        ):
+            scale *= 1.1
     elif top_id == "t_3gpp_events_3panel":
         if features["long_vertical_lines"] < 4:
             scale *= 0.4
@@ -352,6 +475,21 @@ def _evidence_scale(features: dict[str, Any], top_id: str) -> float:
             scale *= 0.6
         if features["saturated_ratio"] > 0.35:
             scale *= 0.4
+        if features["ink_ratio"] > 0.2 and features.get("color_count", 0) <= 5:
+            scale *= 0.4
+        if (
+            features.get("color_count", 0) > 20
+            and features["ink_ratio"] < 0.1
+            and features["long_vertical_lines"] == 0
+            and features["long_horizontal_lines"] == 0
+        ):
+            scale *= 1.3
+        if (
+            features.get("color_count", 0) > 20
+            and features["ink_ratio"] >= 0.3
+            and features["long_horizontal_lines"] >= 3
+        ):
+            scale *= 1.6
     elif top_id == "t_project_architecture_v1":
         color_count = int(features.get("color_count", 0))
         width = int(features.get("width", 0))
@@ -362,6 +500,14 @@ def _evidence_scale(features: dict[str, Any], top_id: str) -> float:
         if aspect < 1.5 or aspect > 2.1:
             scale *= 0.6
         if color_count > 220:
+            scale *= 0.6
+    elif top_id == "t_rl_agent_loop_v1":
+        if features.get("ocr_tokens"):
+            scale *= 1.0
+        elif features["axis_aligned_ratio"] < 0.6:
+            scale *= 0.6
+    elif top_id == "t_performance_grid_v1":
+        if features["long_vertical_lines"] < 1 and features["long_horizontal_lines"] < 1:
             scale *= 0.6
     return scale
 
@@ -412,7 +558,7 @@ def classify_png(
     rgba, width, height = _load_image(input_png)
     features = _compute_features(rgba, width, height)
     ocr_tokens: list[str] = []
-    if 1.5 <= (width / height if height else 0.0) <= 2.1 and width >= 1200:
+    if width >= 600 and height >= 300:
         ocr_tokens = _ocr_tokens(rgba, width, height)
     features["ocr_tokens"] = ocr_tokens
     scores = _score_templates(features)

@@ -1,0 +1,15 @@
+{
+  "template": "t_rl_agent_loop_v1",
+  "canvas": {"width": 1300, "height": 760},
+  "title": "MORL Constraints Loop",
+  "boxes": [
+    {"id": "agent", "role": "agent", "label": "Agent"},
+    {"id": "environment", "role": "environment", "label": "Environment"},
+    {"id": "constraint", "role": "constraint", "label": "Constraints", "enabled": true},
+    {"id": "buffer", "role": "buffer", "label": "Replay Buffer", "enabled": true}
+  ],
+  "signals": {
+    "action": "Action",
+    "feedback": "State / Reward"
+  }
+}

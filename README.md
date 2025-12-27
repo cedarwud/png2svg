@@ -57,15 +57,21 @@ Template examples (using `samples/`):
 - Procedure flow: `python tools/png2svg.py render samples/input.png samples/t_procedure_flow.json output/flow.svg`
 - Performance line plot: `python tools/png2svg.py render samples/input.png samples/t_performance_lineplot.json output/lineplot.svg`
 - Project architecture: `python tools/png2svg.py render samples/input.png samples/t_project_architecture_v1.json output/project_architecture.svg`
+- RL agent loop: `python tools/png2svg.py render samples/input.png samples/t_rl_agent_loop_v1.json output/rl_loop.svg`
+- Performance grid: `python tools/png2svg.py render samples/input.png samples/t_performance_grid_v1.json output/perf_grid.svg`
 
 ## Tests
 - `pytest`
 
 ## CHANGELOG
 MVP v0:
-- Template-based SVG renderers for 3GPP events, procedure flow, performance line plots, and project architecture.
+- Template-based SVG renderers for 3GPP events, procedure flow, performance line plots, project architecture, RL agent loops, and performance grids.
 - Contract validator with visual diff and regression runner with per-case artifacts.
 - Sample params for all templates and manifest-driven regression dataset.
+
+Phase 9 (Template expansion):
+Added `t_rl_agent_loop_v1` and `t_performance_grid_v1` with classifier scoring, extractors, renderers, and four new regression cases.
+Run: `python tools/regress.py datasets/regression_v0 --report output/regress_report.json`.
 
 Known limitations:
 - No automatic params extraction from PNGs (manual params.json required).

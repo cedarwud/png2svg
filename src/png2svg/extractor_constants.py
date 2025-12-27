@@ -12,6 +12,10 @@ TEMPLATE_ALIASES = {
     "t_performance_lineplot": "t_performance_lineplot",
     "project_architecture_v1": "t_project_architecture_v1",
     "t_project_architecture_v1": "t_project_architecture_v1",
+    "rl_agent_loop_v1": "t_rl_agent_loop_v1",
+    "t_rl_agent_loop_v1": "t_rl_agent_loop_v1",
+    "performance_grid_v1": "t_performance_grid_v1",
+    "t_performance_grid_v1": "t_performance_grid_v1",
 }
 
 DEFAULT_SERIES_COLORS = ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728"]

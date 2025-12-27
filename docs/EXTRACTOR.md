@@ -15,7 +15,7 @@ uncertain. Debug artifacts are written to `--debug-dir`:
 Common fields:
 ```
 {
-  "template": "t_3gpp_events_3panel" | "t_procedure_flow" | "t_performance_lineplot",
+  "template": "t_3gpp_events_3panel" | "t_procedure_flow" | "t_performance_lineplot" | "t_project_architecture_v1" | "t_rl_agent_loop_v1" | "t_performance_grid_v1",
   "canvas": {"width": int, "height": int},
   "title": string | null,
   "texts": [ ... ],
@@ -115,5 +115,23 @@ Template-specific fields (minimum):
   "lanes": [],
   "nodes": [{"id","x","y","width","height","rx","ry","text"}...],
   "edges": [{"from","to","label","dashed","dasharray","points"?}...]
+}
+```
+
+4) t_rl_agent_loop_v1
+```
+{
+  "title": string,
+  "boxes": [{"id","role","label","enabled"}...],
+  "signals": {"action": string, "feedback": string}
+}
+```
+
+5) t_performance_grid_v1
+```
+{
+  "layout": "2x2" | "1x3",
+  "panels": [{"id","title","series":[{"id","points","stroke","dashed","dasharray"}...]}...],
+  "legend": [{"id","label","stroke","dashed"}...]
 }
 ```

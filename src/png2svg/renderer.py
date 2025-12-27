@@ -9,9 +9,11 @@ from PIL import Image
 from common.svg_builder import DEFAULT_FONT_FAMILY, DEFAULT_TEXT_ANCHOR, SvgBuilder
 from png2svg.errors import Png2SvgError
 from templates.t_3gpp_events_3panel import render as render_3gpp_events_3panel
+from templates.t_performance_grid_v1 import render as render_performance_grid_v1
 from templates.t_procedure_flow import render as render_procedure_flow
 from templates.t_performance_lineplot import render as render_performance_lineplot
 from templates.t_project_architecture_v1 import render as render_project_architecture_v1
+from templates.t_rl_agent_loop_v1 import render as render_rl_agent_loop_v1
 
 
 def _load_params(params_path: Path) -> dict[str, Any]:
@@ -76,23 +78,32 @@ def _render_dummy(builder: SvgBuilder, params: dict[str, Any]) -> None:
     builder.add_title(str(title))
 
 
+_RENDER_DISPATCH: dict[str, Any] = {
+    "t_3gpp_events_3panel": render_3gpp_events_3panel,
+    "t_procedure_flow": render_procedure_flow,
+    "t_performance_lineplot": render_performance_lineplot,
+    "t_project_architecture_v1": render_project_architecture_v1,
+    "t_rl_agent_loop_v1": render_rl_agent_loop_v1,
+    "t_performance_grid_v1": render_performance_grid_v1,
+}
+
+_TEMPLATE_ALIASES = {
+    "project_architecture_v1": "t_project_architecture_v1",
+    "rl_agent_loop_v1": "t_rl_agent_loop_v1",
+    "performance_grid_v1": "t_performance_grid_v1",
+}
+
+
 def _dispatch_template(
     template: str, builder: SvgBuilder, params: dict[str, Any], canvas: tuple[int, int]
 ) -> None:
     if template in {"dummy", "t_dummy"}:
         _render_dummy(builder, params)
         return
-    if template == "t_3gpp_events_3panel":
-        render_3gpp_events_3panel(builder, params, canvas)
-        return
-    if template == "t_procedure_flow":
-        render_procedure_flow(builder, params, canvas)
-        return
-    if template == "t_performance_lineplot":
-        render_performance_lineplot(builder, params, canvas)
-        return
-    if template in {"t_project_architecture_v1", "project_architecture_v1"}:
-        render_project_architecture_v1(builder, params, canvas)
+    resolved = _TEMPLATE_ALIASES.get(template, template)
+    render_fn = _RENDER_DISPATCH.get(resolved)
+    if render_fn is not None:
+        render_fn(builder, params, canvas)
         return
     raise Png2SvgError(
         code="E1105_TEMPLATE_UNKNOWN",

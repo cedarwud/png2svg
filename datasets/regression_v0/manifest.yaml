@@ -39,18 +39,18 @@ cases:
   - id: case_012_lineplot_dense
     dir: cases/case_012_lineplot_dense
     tags: [dense_ticks, multi_series, dashed, small_canvas]
-  - id: case_013_3gpp_realistic
-    dir: cases/case_013_3gpp_realistic
-    tags: [large_canvas, long_text]
-  - id: case_014_flow_realistic
-    dir: cases/case_014_flow_realistic
-    tags: [lane_layout, dashed, many_nodes, long_text]
-  - id: case_015_lineplot_realistic
-    dir: cases/case_015_lineplot_realistic
-    tags: [multi_series, dashed, dense_ticks, large_canvas, long_text]
-  - id: case_016_3gpp_dense_text
-    dir: cases/case_016_3gpp_dense_text
-    tags: [large_canvas, long_text, dashed]
+  - id: case_013_rl_loop_basic
+    dir: cases/case_013_rl_loop_basic
+    tags: [rl_loop, long_text]
+  - id: case_014_rl_loop_morl_constraints
+    dir: cases/case_014_rl_loop_morl_constraints
+    tags: [rl_loop, long_text]
+  - id: case_015_perf_grid_2x2
+    dir: cases/case_015_perf_grid_2x2
+    tags: [grid, multi_series]
+  - id: case_016_perf_grid_1x3_wide
+    dir: cases/case_016_perf_grid_1x3_wide
+    tags: [grid, multi_series, large_canvas]
   - id: case_017_3gpp_dashed_noise
     dir: cases/case_017_3gpp_dashed_noise
     tags: [small_canvas, dashed, long_text]
@@ -58,3 +58,15 @@ cases:
     dir: cases/case_018_project_architecture_v1
     tags: [large_canvas]
     force_template: t_project_architecture_v1
+  - id: case_019_3gpp_realistic
+    dir: cases/case_019_3gpp_realistic
+    tags: [large_canvas, long_text]
+  - id: case_020_flow_realistic
+    dir: cases/case_020_flow_realistic
+    tags: [lane_layout, dashed, many_nodes, long_text]
+  - id: case_021_lineplot_realistic
+    dir: cases/case_021_lineplot_realistic
+    tags: [multi_series, dashed, dense_ticks, large_canvas, long_text]
+  - id: case_022_3gpp_dense_text
+    dir: cases/case_022_3gpp_dense_text
+    tags: [large_canvas, long_text, dashed]
