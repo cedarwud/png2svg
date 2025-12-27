@@ -3,8 +3,10 @@ from __future__ import annotations
 from pathlib import Path
 
 import yaml
+import pytest
 
 from png2svg import convert_png
+from png2svg.ocr import has_pytesseract, has_tesseract
 from validators.validate import validate_svg
 from validators.config import load_thresholds
 
@@ -140,3 +142,22 @@ def test_convert_hard_inputs_sampled(tmp_path: Path) -> None:
         assert float(gate.get("bad_pixel_ratio", 1.0)) <= float(
             gate.get("bad_pixel_ratio_max", 1.0)
         )
+
+
+def test_convert_project_architecture_auto(tmp_path: Path) -> None:
+    if not (has_pytesseract() or has_tesseract()):
+        pytest.skip("OCR backend not available")
+    case_dir = ROOT / "datasets" / "regression_v0" / "cases" / "case_018_project_architecture_v1"
+    input_png = _input_png(case_dir)
+    output_svg = tmp_path / "case_018_auto.svg"
+    result = convert_png(
+        input_png,
+        output_svg,
+        topk=2,
+        contract_path=CONTRACT,
+        thresholds_path=THRESHOLDS,
+    )
+    assert result["status"] == "pass"
+    assert result.get("selected_template") == "t_project_architecture_v1"
+    report = validate_svg(output_svg, CONTRACT, THRESHOLDS)
+    assert report.status == "pass"

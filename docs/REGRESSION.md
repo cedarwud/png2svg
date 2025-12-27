@@ -35,6 +35,11 @@ gates:
 - Small vs large canvas sizes to stress layout (`small_canvas`, `large_canvas`).
 - Longer titles/axis labels to cover `long_text`.
 
+## t_project_architecture_v1
+- Vary panel titles and bullet counts (`long_text`).
+- Vary work package goal/output lengths (`long_text`).
+- Include tighter canvas margins (`small_canvas`) or larger spacing (`large_canvas`).
+
 ## Real regression (external PNGs)
 For real PNG figures that cannot be committed, set `REAL_PNG_DIR` to a local
 folder and edit `datasets/real_regression_v1/manifest.yaml` with relative paths.

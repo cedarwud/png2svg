@@ -19,6 +19,7 @@ from png2svg.extractor_text import (
     _assign_roles_flow,
     _assign_roles_lineplot,
     _assign_text_colors_3gpp,
+    _clean_text,
     _enforce_curve_label_colors_3gpp,
     _merge_stacked_text_items,
     _normalize_curve_labels_3gpp,
@@ -58,11 +59,141 @@ def _default_panels(width: int, height: int) -> list[dict[str, Any]]:
 def _extract_project_architecture_v1(
     width: int,
     height: int,
+    text_items: list[dict[str, Any]],
+    warnings: list[ExtractIssue],
     adaptive: dict[str, Any] | None = None,
 ) -> tuple[dict[str, Any], dict[str, Any]]:
+    layout = _project_architecture_layout(width, height)
+    defaults = _project_architecture_defaults()
+    title = defaults["title"]
+    subtitle = defaults["subtitle"]
+    panels = defaults["panels"]
+    work_packages = defaults["work_packages"]
+
+    by_roi: dict[str, list[dict[str, Any]]] = {}
+    for item in text_items:
+        roi_id = item.get("roi_id")
+        if not isinstance(roi_id, str) or not roi_id:
+            continue
+        by_roi.setdefault(roi_id, []).append(item)
+
+    def _roi_lines(roi_id: str) -> list[str]:
+        items = by_roi.get(roi_id, [])
+        if not items:
+            return []
+        items.sort(
+            key=lambda entry: (
+                float(entry.get("bbox", {}).get("y", 0.0)),
+                float(entry.get("bbox", {}).get("x", 0.0)),
+            )
+        )
+        lines: list[str] = []
+        for entry in items:
+            text = _clean_text(str(entry.get("content") or entry.get("text") or ""))
+            if text:
+                lines.append(text)
+        return lines
+
+    def _join_lines(lines: list[str]) -> str:
+        return _clean_text(" ".join(lines))
+
+    def _parse_bullets(lines: list[str]) -> list[str]:
+        bullets: list[str] = []
+        for line in lines:
+            trimmed = line.lstrip("•-–· ").strip()
+            if trimmed:
+                bullets.append(trimmed)
+        return bullets
+
+    def _parse_goal_output(lines: list[str]) -> tuple[str | None, str | None]:
+        goal = None
+        output = None
+        remaining: list[str] = []
+        for line in lines:
+            lower = line.lower()
+            if "goal" in lower:
+                goal = line.split(":", 1)[1].strip() if ":" in line else line.strip()
+            elif "output" in lower:
+                output = line.split(":", 1)[1].strip() if ":" in line else line.strip()
+            else:
+                remaining.append(line.strip())
+        if goal is None and remaining:
+            goal = remaining.pop(0)
+        if output is None and remaining:
+            output = remaining.pop(0)
+        return goal, output
+
+    fields_from_ocr: list[str] = []
+    title_lines = _roi_lines("title")
+    if title_lines:
+        title = _join_lines(title_lines)
+        fields_from_ocr.append("title")
+    subtitle_lines = _roi_lines("subtitle")
+    if subtitle_lines:
+        subtitle = _join_lines(subtitle_lines)
+        fields_from_ocr.append("subtitle")
+
+    for panel in panels:
+        panel_id = str(panel.get("id") or "")
+        title_lines = _roi_lines(f"panel_{panel_id}_title")
+        if title_lines:
+            panel["title"] = _join_lines(title_lines)
+            fields_from_ocr.append(f"panel_{panel_id}_title")
+        bullet_lines = _roi_lines(f"panel_{panel_id}_bullets")
+        bullet_items = _parse_bullets(bullet_lines)
+        if bullet_items:
+            panel["bullets"] = bullet_items
+            fields_from_ocr.append(f"panel_{panel_id}_bullets")
+
+    for wp in work_packages:
+        wp_id = str(wp.get("id") or "")
+        title_lines = _roi_lines(f"wp_{wp_id}_title")
+        if title_lines:
+            wp["title"] = _join_lines(title_lines)
+            fields_from_ocr.append(f"wp_{wp_id}_title")
+        body_lines = _roi_lines(f"wp_{wp_id}_body")
+        goal, output = _parse_goal_output(body_lines)
+        if goal:
+            wp["goal"] = goal
+            fields_from_ocr.append(f"wp_{wp_id}_goal")
+        if output:
+            wp["output"] = output
+            fields_from_ocr.append(f"wp_{wp_id}_output")
+
+    if not fields_from_ocr:
+        warnings.append(
+            ExtractIssue(
+                code="W4500_PROJECT_ARCH_FALLBACK",
+                message="Project architecture OCR yielded no usable text; using defaults.",
+                hint="Ensure OCR is available or edit params.json manually.",
+            )
+        )
+
     params: dict[str, Any] = {
         "template": "t_project_architecture_v1",
         "canvas": {"width": width, "height": height},
+        "title": title,
+        "subtitle": subtitle,
+        "panels": panels,
+        "work_packages": work_packages,
+        "extracted": {
+            "project_architecture": {
+                "ocr_used": bool(fields_from_ocr),
+                "fields_from_ocr": fields_from_ocr,
+            }
+        },
+    }
+    overlay = {
+        "panels": list(layout["panel_rects"].values()),
+        "text_boxes": [
+            {"bbox": roi} for roi in _project_architecture_rois(width, height)
+        ],
+    }
+    return params, overlay
+
+
+def _project_architecture_defaults() -> dict[str, Any]:
+    return {
         "title": "Project Architecture",
         "subtitle": "Work Packages (WP1-WP4)",
         "panels": [
@@ -109,7 +240,140 @@ def _extract_project_architecture_v1(
             },
         ],
     }
-    return params, {}
+
+
+def _project_architecture_layout(width: int, height: int) -> dict[str, Any]:
+    margin_x = max(int(width * 0.04), 40)
+    margin_y = max(int(height * 0.04), 32)
+    header_height = max(int(height * 0.16), 140)
+    top_height = max(int(height * 0.28), 260)
+    gap_y = max(int(height * 0.04), 32)
+    top_y = margin_y + header_height
+    bottom_y = top_y + top_height + gap_y
+    bottom_height = height - margin_y - bottom_y
+    min_bottom = int(height * 0.25)
+    if bottom_height < min_bottom:
+        bottom_height = max(height - margin_y - bottom_y, min_bottom)
+    gap_x = max(int(width * 0.02), 24)
+    panel_width = (width - 2 * margin_x - 2 * gap_x) / 3.0
+    panel_rects: dict[str, dict[str, float]] = {}
+    x = float(margin_x)
+    for panel_id in ("A", "B", "C"):
+        panel_rects[panel_id] = {
+            "x": x,
+            "y": float(top_y),
+            "width": float(panel_width),
+            "height": float(top_height),
+        }
+        x += panel_width + gap_x
+    container = {
+        "x": float(margin_x),
+        "y": float(bottom_y),
+        "width": float(width - 2 * margin_x),
+        "height": float(bottom_height),
+    }
+    padding = max(int(height * 0.02), 18)
+    label_height = max(int(height * 0.035), 28)
+    wp_y = container["y"] + padding + label_height
+    wp_height = max(container["height"] - padding * 2 - label_height, label_height)
+    wp_gap = max(int(width * 0.015), 18)
+    wp_width = (container["width"] - padding * 2 - wp_gap * 3) / 4.0
+    wp_rects: dict[str, dict[str, float]] = {}
+    x = container["x"] + padding
+    for wp_id in ("WP1", "WP2", "WP3", "WP4"):
+        wp_rects[wp_id] = {
+            "x": x,
+            "y": float(wp_y),
+            "width": float(wp_width),
+            "height": float(wp_height),
+        }
+        x += wp_width + wp_gap
+    return {
+        "margin_x": float(margin_x),
+        "margin_y": float(margin_y),
+        "header_height": float(header_height),
+        "panel_rects": panel_rects,
+        "container": container,
+        "wp_rects": wp_rects,
+        "container_padding": float(padding),
+        "container_label_height": float(label_height),
+    }
+
+
+def _project_architecture_rois(width: int, height: int) -> list[dict[str, int]]:
+    layout = _project_architecture_layout(width, height)
+    rois: list[dict[str, int]] = []
+
+    def _roi(roi_id: str, x: float, y: float, w: float, h: float) -> None:
+        ix = max(int(round(x)), 0)
+        iy = max(int(round(y)), 0)
+        iw = max(int(round(w)), 1)
+        ih = max(int(round(h)), 1)
+        if ix + iw > width:
+            iw = max(width - ix, 1)
+        if iy + ih > height:
+            ih = max(height - iy, 1)
+        rois.append({"id": roi_id, "x": ix, "y": iy, "width": iw, "height": ih})
+
+    header_height = layout["header_height"]
+    margin_x = layout["margin_x"]
+    margin_y = layout["margin_y"]
+    _roi("title", margin_x, margin_y, width - 2 * margin_x, header_height * 0.5)
+    _roi(
+        "subtitle",
+        margin_x,
+        margin_y + header_height * 0.45,
+        width - 2 * margin_x,
+        header_height * 0.5,
+    )
+
+    pad = max(int(height * 0.01), 10)
+    for panel_id, rect in layout["panel_rects"].items():
+        _roi(
+            f"panel_{panel_id}_title",
+            rect["x"] + pad,
+            rect["y"] + pad,
+            rect["width"] - pad * 2,
+            rect["height"] * 0.25,
+        )
+        _roi(
+            f"panel_{panel_id}_bullets",
+            rect["x"] + pad,
+            rect["y"] + rect["height"] * 0.25,
+            rect["width"] - pad * 2,
+            rect["height"] * 0.65,
+        )
+
+    container = layout["container"]
+    padding = layout["container_padding"]
+    label_height = layout["container_label_height"]
+    _roi(
+        "wp_container_label",
+        container["x"] + padding,
+        container["y"] + padding * 0.3,
+        container["width"] - padding * 2,
+        label_height * 1.2,
+    )
+
+    for wp_id, rect in layout["wp_rects"].items():
+        title_height = label_height * 1.2
+        _roi(
+            f"wp_{wp_id}_title",
+            rect["x"] + padding,
+            rect["y"] + padding * 0.4,
+            rect["width"] - padding * 2,
+            title_height,
+        )
+        body_y = rect["y"] + padding * 0.4 + title_height
+        _roi(
+            f"wp_{wp_id}_body",
+            rect["x"] + padding,
+            body_y,
+            rect["width"] - padding * 2,
+            rect["height"] - (body_y - rect["y"]) - padding,
+        )
+
+    return rois
 
 
 def _extract_3gpp(

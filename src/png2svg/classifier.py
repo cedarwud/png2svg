@@ -9,6 +9,8 @@ import numpy as np
 from PIL import Image, ImageDraw
 import yaml
 
+from png2svg.ocr import has_pytesseract, has_tesseract, ocr_image
+from png2svg.extractor_preprocess import _prepare_ocr_image
 
 @dataclass(frozen=True)
 class ClassifierThresholds:
@@ -24,6 +26,7 @@ TEMPLATES = [
     "t_3gpp_events_3panel",
     "t_procedure_flow",
     "t_performance_lineplot",
+    "t_project_architecture_v1",
 ]
 
 
@@ -40,6 +43,89 @@ def _ink_mask(rgba: np.ndarray) -> np.ndarray:
     alpha = rgba[:, :, 3]
     luminance = 0.2126 * rgb[:, :, 0] + 0.7152 * rgb[:, :, 1] + 0.0722 * rgb[:, :, 2]
     return (alpha > 10) & (luminance < 245)
+
+
+def _color_count(rgba: np.ndarray, mask: np.ndarray | None = None, step: int = 32) -> int:
+    rgb = rgba[:, :, :3]
+    if mask is not None:
+        rgb = rgb[mask]
+    if rgb.size == 0:
+        return 0
+    quant = (rgb // step).astype(np.uint8)
+    packed = (
+        (quant[:, 0].astype(np.int32) << 16)
+        | (quant[:, 1].astype(np.int32) << 8)
+        | quant[:, 2].astype(np.int32)
+    )
+    return int(np.unique(packed).size)
+
+
+def _ocr_tokens(rgba: np.ndarray, width: int, height: int) -> list[str]:
+    if not (has_pytesseract() or has_tesseract()):
+        return []
+    ocr_image_input = _prepare_ocr_image(rgba)
+    rois = [
+        {"id": "header", "x": 0, "y": 0, "width": width, "height": int(height * 0.2)},
+        {
+            "id": "middle",
+            "x": 0,
+            "y": int(height * 0.18),
+            "width": width,
+            "height": int(height * 0.35),
+        },
+        {
+            "id": "bottom",
+            "x": 0,
+            "y": int(height * 0.55),
+            "width": width,
+            "height": int(height * 0.4),
+        },
+    ]
+    try:
+        results = ocr_image(ocr_image_input, backend="auto", rois=rois)
+    except ValueError:
+        return []
+    tokens: list[str] = []
+    for item in results:
+        text = str(item.get("text") or "").strip().lower()
+        if not text:
+            continue
+        cleaned = "".join(ch if ch.isalnum() else " " for ch in text)
+        tokens.extend(token for token in cleaned.split() if token)
+    return tokens
+
+
+def _project_architecture_score(width: int, height: int, color_count: int, tokens: list[str]) -> float:
+    if height <= 0:
+        return 0.0
+    aspect = width / height
+    if not (1.55 <= aspect <= 2.05 and width >= 1200 and height >= 700):
+        return 0.0
+    score = 0.0
+    if 1.6 <= aspect <= 2.0:
+        score += 1.0
+    if width >= 1400 and height >= 800:
+        score += 1.0
+    if color_count <= 30:
+        score += 1.0
+    elif color_count <= 80:
+        score += 0.8
+    elif color_count <= 200:
+        score += 0.5
+
+    token_set = set(tokens)
+    joined = " ".join(tokens)
+    if "project" in token_set and "architecture" in token_set:
+        score += 0.8
+    if "work" in token_set and ("packages" in token_set or "package" in token_set):
+        score += 0.8
+    for wp in ("wp1", "wp2", "wp3", "wp4"):
+        if wp in joined:
+            score += 0.3
+    for panel in ("panel", "panela", "panelb", "panelc"):
+        if panel in token_set:
+            score += 0.2
+    return max(score, 0.0)
 
 
 def _saturation_ratio(rgba: np.ndarray, mask: np.ndarray) -> float:
@@ -142,6 +228,7 @@ def _compute_features(rgba: np.ndarray, width: int, height: int) -> dict[str, An
     saturated_ratio = _saturation_ratio(rgba, mask)
     gray = rgba[:, :, :3].mean(axis=2)
     axis_aligned_ratio = _axis_aligned_ratio(gray, mask)
+    color_count = _color_count(rgba, mask)
 
     long_v_min = max(int(height * 0.45), 1)
     long_h_min = max(int(width * 0.45), 1)
@@ -156,6 +243,8 @@ def _compute_features(rgba: np.ndarray, width: int, height: int) -> dict[str, An
     short_h = _count_segments(mask, axis=1, min_len=2, max_len=max(int(width * 0.08), 2))
 
     features: dict[str, Any] = {
+        "width": width,
+        "height": height,
         "ink_ratio": ink_ratio,
         "saturated_ratio": saturated_ratio,
         "axis_aligned_ratio": axis_aligned_ratio,
@@ -163,6 +252,7 @@ def _compute_features(rgba: np.ndarray, width: int, height: int) -> dict[str, An
         "long_horizontal_lines": len(long_h_lines),
         "short_vertical_segments": short_v,
         "short_horizontal_segments": short_h,
+        "color_count": color_count,
         "thresholds": {
             "long_v_min": long_v_min,
             "long_h_min": long_h_min,
@@ -181,6 +271,12 @@ def _score_templates(features: dict[str, Any]) -> dict[str, float]:
     saturated = features["saturated_ratio"]
     axis_ratio = features["axis_aligned_ratio"]
     short_total = features["short_vertical_segments"] + features["short_horizontal_segments"]
+    width = int(features.get("width", 0))
+    height = int(features.get("height", 0))
+    color_count = int(features.get("color_count", 0))
+    ocr_tokens = features.get("ocr_tokens") or []
+    if not isinstance(ocr_tokens, list):
+        ocr_tokens = []
 
     score_3gpp = 0.0
     score_3gpp += min(long_v, 8) * 0.4
@@ -213,16 +309,20 @@ def _score_templates(features: dict[str, Any]) -> dict[str, float]:
     if long_h <= 1:
         score_flow += 0.2
 
+    score_project = _project_architecture_score(width, height, color_count, ocr_tokens)
+
     return {
         "t_3gpp_events_3panel": score_3gpp,
         "t_performance_lineplot": score_lineplot,
         "t_procedure_flow": score_flow,
+        "t_project_architecture_v1": score_project,
     }
 
 
 def _confidence(scores: dict[str, float], top_id: str) -> float:
-    min_score = min(scores.values())
-    shifted = {key: value - min_score for key, value in scores.items()}
+    positive_scores = [value for value in scores.values() if value > 0]
+    min_score = min(positive_scores) if positive_scores else min(scores.values())
+    shifted = {key: max(value - min_score, 0.0) for key, value in scores.items()}
     total = sum(shifted.values())
     if total <= 0:
         return 1.0 / len(scores)
@@ -252,6 +352,17 @@ def _evidence_scale(features: dict[str, Any], top_id: str) -> float:
             scale *= 0.6
         if features["saturated_ratio"] > 0.35:
             scale *= 0.4
+    elif top_id == "t_project_architecture_v1":
+        color_count = int(features.get("color_count", 0))
+        width = int(features.get("width", 0))
+        height = int(features.get("height", 0))
+        if height <= 0 or width <= 0:
+            scale *= 0.6
+        aspect = width / height if height else 0.0
+        if aspect < 1.5 or aspect > 2.1:
+            scale *= 0.6
+        if color_count > 220:
+            scale *= 0.6
     return scale
 
 
@@ -300,6 +411,10 @@ def classify_png(
 ) -> dict[str, Any]:
     rgba, width, height = _load_image(input_png)
     features = _compute_features(rgba, width, height)
+    ocr_tokens: list[str] = []
+    if 1.5 <= (width / height if height else 0.0) <= 2.1 and width >= 1200:
+        ocr_tokens = _ocr_tokens(rgba, width, height)
+    features["ocr_tokens"] = ocr_tokens
     scores = _score_templates(features)
     candidates = sorted(
         (
@@ -337,6 +452,8 @@ def classify_png(
             "long_horizontal_lines": features["long_horizontal_lines"],
             "short_vertical_segments": features["short_vertical_segments"],
             "short_horizontal_segments": features["short_horizontal_segments"],
+            "color_count": features["color_count"],
+            "ocr_token_count": len(ocr_tokens),
         },
     }
     if debug_dir is not None:

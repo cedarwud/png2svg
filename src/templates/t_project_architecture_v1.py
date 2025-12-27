@@ -82,6 +82,12 @@ def _normalize_lines(value: Any) -> list[str]:
     return lines
 
 
+def _normalize_text_value(value: Any) -> str:
+    if isinstance(value, list):
+        return " ".join(str(item).strip() for item in value if str(item).strip())
+    return str(value).strip()
+
+
 def _wrap_words(text: str, max_chars: int) -> list[str]:
     words = text.split()
     if not words:
@@ -218,7 +224,9 @@ def _parse_panels(params: dict[str, Any]) -> list[PanelSpec]:
                 message=f"Unsupported panel id '{panel_id}'.",
                 hint="Use panel ids A, B, and C.",
             )
-        title = str(entry.get("title") or entry.get("label") or defaults[panel_id].title).strip()
+        title = _normalize_text_value(
+            entry.get("title") or entry.get("label") or defaults[panel_id].title
+        )
         bullets_raw = entry.get("bullets") if "bullets" in entry else entry.get("items")
         if bullets_raw is None:
             bullets = defaults[panel_id].bullets
@@ -262,9 +270,9 @@ def _parse_work_packages(params: dict[str, Any]) -> list[WorkPackageSpec]:
                 message=f"Unsupported work package id '{wp_id}'.",
                 hint="Use work package ids WP1, WP2, WP3, and WP4.",
             )
-        title = str(entry.get("title") or defaults[wp_id].title).strip()
-        goal = str(entry.get("goal") or defaults[wp_id].goal).strip()
-        output = str(entry.get("output") or defaults[wp_id].output).strip()
+        title = _normalize_text_value(entry.get("title") or defaults[wp_id].title)
+        goal = _normalize_text_value(entry.get("goal") or defaults[wp_id].goal)
+        output = _normalize_text_value(entry.get("output") or defaults[wp_id].output)
         packages[wp_id] = WorkPackageSpec(
             wp_id=wp_id,
             title=title,
@@ -409,8 +417,8 @@ def render(builder: SvgBuilder, params: dict[str, Any], canvas: tuple[int, int])
     work_packages = _parse_work_packages(params)
     layout = _layout(width, height)
 
-    title = str(params.get("title") or "Project Architecture").strip()
-    subtitle = str(params.get("subtitle") or "").strip()
+    title = _normalize_text_value(params.get("title") or "Project Architecture")
+    subtitle = _normalize_text_value(params.get("subtitle") or "")
 
     title_font = _clamp_font(height * 0.028, 22, 34)
     subtitle_font = _clamp_font(height * 0.018, 12, 20)

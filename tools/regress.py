@@ -84,6 +84,12 @@ def main(
         dir_okay=False,
         help="Optional manifest for real PNG regression (uses REAL_PNG_DIR).",
     ),
+    verbose: bool = typer.Option(
+        False,
+        "--verbose",
+        "-v",
+        help="Enable verbose output (alias; no behavioral change).",
+    ),
 ) -> None:
     """Run regression cases listed in manifest.yaml."""
     dataset = dataset.resolve()

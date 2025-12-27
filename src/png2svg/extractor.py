@@ -26,6 +26,7 @@ from png2svg.extractor_templates import (
     _extract_flow,
     _extract_lineplot,
     _extract_project_architecture_v1,
+    _project_architecture_rois,
     _finalize_3gpp_v1_metadata,
     extract_3gpp_events_3panel_v1,
 )
@@ -56,7 +57,7 @@ def extract_skeleton(
             ),
         )
 
-    skip_ocr = template_id == "t_project_architecture_v1"
+    skip_ocr = False
     rgba, width, height = _load_image(input_png)
     adaptive_config = _load_adaptive_config()
     effective_config = _effective_config(adaptive_config, width, height)
@@ -123,6 +124,8 @@ def extract_skeleton(
                 "height": int(plot["height"]),
             },
         ]
+    elif template_id == "t_project_architecture_v1":
+        ocr_rois = _project_architecture_rois(width, height)
 
     if ocr_rois:
         pad_px = int(effective_config.get("ocr", {}).get("roi_pad_px", 0))
@@ -214,9 +217,8 @@ def extract_skeleton(
             width, height, mask, text_items, text_boxes, warnings, adaptive=effective_config
         )
     elif template_id == "t_project_architecture_v1":
-        text_items = []
         params, overlay = _extract_project_architecture_v1(
-            width, height, adaptive=effective_config
+            width, height, text_items, warnings, adaptive=effective_config
         )
     else:
         errors.append(

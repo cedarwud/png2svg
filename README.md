@@ -63,7 +63,7 @@ Template examples (using `samples/`):
 
 ## CHANGELOG
 MVP v0:
-- Template-based SVG renderers for 3GPP events, procedure flow, and performance line plots.
+- Template-based SVG renderers for 3GPP events, procedure flow, performance line plots, and project architecture.
 - Contract validator with visual diff and regression runner with per-case artifacts.
 - Sample params for all templates and manifest-driven regression dataset.
 

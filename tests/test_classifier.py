@@ -3,10 +3,12 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
+import pytest
 import yaml
 
 from png2svg import classify_png
 from png2svg.classifier import TEMPLATES
+from png2svg.ocr import has_pytesseract, has_tesseract
 from validators.visual_diff import rasterize_svg_to_png
 
 
@@ -36,6 +38,10 @@ def _expected_png(case_dir: Path, tmp_path: Path) -> Path:
     out_path = tmp_path / f"{case_dir.name}_expected.png"
     rasterize_svg_to_png(svg_path, out_path)
     return out_path
+
+
+def _ocr_available() -> bool:
+    return has_pytesseract() or has_tesseract()
 
 
 def test_classifier_regression_cases(tmp_path: Path) -> None:
@@ -68,3 +74,16 @@ def test_classifier_debug_outputs(tmp_path: Path) -> None:
     classify_png(image_path, debug_dir=debug_dir)
     assert (debug_dir / "overlay.png").exists()
     assert (debug_dir / "features.json").exists()
+
+
+def test_classifier_project_architecture_input() -> None:
+    if not _ocr_available():
+        pytest.skip("OCR backend not available")
+    entry = next(
+        item for item in _load_manifest() if item["id"] == "case_018_project_architecture_v1"
+    )
+    case_dir = _case_dir(entry)
+    image_path = case_dir / "input.png"
+    result = classify_png(image_path)
+    assert result["decision"] == "known"
+    assert result["template_id"] == "t_project_architecture_v1"

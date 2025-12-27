@@ -6,7 +6,7 @@ When `--debug-dir` is provided, it writes `overlay.png` and `features.json`.
 Schema (informal):
 ```
 {
-  "template_id": "t_3gpp_events_3panel" | "t_procedure_flow" | "t_performance_lineplot" | "unknown",
+  "template_id": "t_3gpp_events_3panel" | "t_procedure_flow" | "t_performance_lineplot" | "t_project_architecture_v1" | "unknown",
   "decision": "known" | "unknown",
   "reason_codes": ["LOW_CONFIDENCE" | "AMBIGUOUS_MARGIN"],
   "confidence": 0.0-1.0,
@@ -21,7 +21,9 @@ Schema (informal):
     "long_vertical_lines": int,
     "long_horizontal_lines": int,
     "short_vertical_segments": int,
-    "short_horizontal_segments": int
+    "short_horizontal_segments": int,
+    "color_count": int,
+    "ocr_token_count": int
   }
 }
 ```
