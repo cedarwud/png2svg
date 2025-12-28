@@ -13,8 +13,13 @@ Template-based PNG-to-editable-SVG pipeline (MVP v0).
 
 ## Quickstart
 Minimal path: convert (auto) → inspect.
-1) Convert: `python tools/png2svg.py convert samples/realistic/fig1.png -o output/output.svg`
-2) Convert (Unknown layout): `python tools/png2svg.py convert input.png -o output.svg --force-template t_auto_layout --quality-gate off`
+1) **Using Makefile (Recommended)**:
+   - `make convert IN=samples/realistic/fig1.png` (Auto-detect template)
+   - `make convert-auto IN=samples/input.png` (Force Generalized V1 engine)
+2) **Using CLI**:
+   - `python tools/png2svg.py convert samples/realistic/fig1.png -o output/output.svg --quality-gate off`
+
+**Output**: All generated SVGs are saved to the `output/` directory by default when using `make`.
 
 ## CLI
 Top-level commands:
@@ -29,7 +34,9 @@ Top-level commands:
 - Dataset sanity check: `python tools/check_dataset_sanity.py datasets/regression_v0`
 
 Recommended commands (Makefile shortcuts):
-- `make pytest`
+- `make convert IN=path/to/image.png`: Convert image using classifier (output to `output/`).
+- `make convert-auto IN=path/to/image.png`: Convert image using Generalized Layout V1 (output to `output/`).
+- `make pytest`: Run unit tests.
 - `make regress-fast-render`
 - `make regress-fast-convert`
 - `make regress-fast-hard-sample`

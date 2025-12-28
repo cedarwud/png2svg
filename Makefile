@@ -19,6 +19,16 @@ help:
 	@echo "  dataset-sanity          Check dataset sanity"
 	@echo "  check-png               Validate PNG magic headers"
 
+# User-friendly conversion commands
+# Usage: make convert IN=samples/input.png
+convert:
+	$(PYTHON) tools/png2svg.py convert $(IN) -o output/$(notdir $(basename $(IN))).svg --quality-gate off
+
+# Usage: make convert-auto IN=samples/input.png
+convert-auto:
+	$(PYTHON) tools/png2svg.py convert $(IN) -o output/$(notdir $(basename $(IN))).svg --force-template t_auto_layout --quality-gate off
+
+.PHONY: pytest regress-fast-render
 pytest:
 	$(PYTHON) -m pytest
 
