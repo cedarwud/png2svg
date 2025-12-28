@@ -2005,6 +2005,7 @@ def _extract_flow(
     width: int,
     height: int,
     mask: np.ndarray,
+    rgba: np.ndarray,
     text_items: list[dict[str, Any]],
     text_boxes: list[dict[str, Any]],
     warnings: list[ExtractIssue],
@@ -2041,6 +2042,16 @@ def _extract_flow(
                 "role": "edge",
             }
         )
+
+    # Detect arrows on edges
+    # We use a lower confidence threshold since flow lines almost always have arrows
+    from png2svg.extractor_geometry import _detect_line_arrows
+    geometry_lines = _detect_line_arrows(rgba, geometry_lines, min_confidence=0.3)
+
+    # Transfer detected arrow info to edges so the renderer can use it
+    for edge, geom_line in zip(edges, geometry_lines):
+        if "arrow_end" in geom_line:
+            edge["arrow_end"] = geom_line["arrow_end"]
 
     params = {
         "template": "t_procedure_flow",

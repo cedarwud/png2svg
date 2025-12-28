@@ -3,6 +3,7 @@ from __future__ import annotations
 from typing import Any
 
 import numpy as np
+from numpy.lib.stride_tricks import sliding_window_view
 
 from png2svg.extractor_math import _smooth_series, _snap_flat_series
 
@@ -63,6 +64,77 @@ def _pick_hue_center(hue: np.ndarray, mask: np.ndarray, target: float, max_dista
     return best_bin * 10.0 + 5.0
 
 
+def _morph_dilation(mask: np.ndarray, kernel_size: int = 3) -> np.ndarray:
+    pad = kernel_size // 2
+    # Pad with False (0) for dilation
+    padded = np.pad(mask, pad, mode='constant', constant_values=0)
+    windows = sliding_window_view(padded, (kernel_size, kernel_size))
+    return np.max(windows, axis=(2, 3))
+
+
+def _morph_erosion(mask: np.ndarray, kernel_size: int = 3) -> np.ndarray:
+    pad = kernel_size // 2
+    # Pad with True (1) for erosion
+    padded = np.pad(mask, pad, mode='constant', constant_values=1)
+    windows = sliding_window_view(padded, (kernel_size, kernel_size))
+    return np.min(windows, axis=(2, 3))
+
+
+def _morph_close(mask: np.ndarray, kernel_size: int = 3) -> np.ndarray:
+    """Perform morphological closing (dilation -> erosion)."""
+    dilated = _morph_dilation(mask, kernel_size)
+    return _morph_erosion(dilated, kernel_size)
+
+
+def _remove_small_components(mask: np.ndarray, min_area: int) -> np.ndarray:
+    """Remove connected components smaller than min_area."""
+    if min_area <= 1:
+        return mask
+
+    height, width = mask.shape
+    visited = np.zeros_like(mask, dtype=bool)
+    output = np.zeros_like(mask, dtype=bool)
+    
+    # We only care about True pixels
+    # Optimization: Iterate only over True pixels using np.where
+    ys, xs = np.where(mask)
+    if len(ys) == 0:
+        return output
+
+    # Set of unvisited True pixels for O(1) lookup
+    unvisited = set(zip(ys, xs))
+    
+    while unvisited:
+        # Pick a random start node
+        y, x = unvisited.pop()
+        
+        # Flood fill
+        stack = [(y, x)]
+        component = [(y, x)]
+        visited[y, x] = True
+        
+        idx = 0
+        while idx < len(component):
+            cy, cx = component[idx]
+            idx += 1
+            
+            for dy, dx in ((-1, 0), (1, 0), (0, -1), (0, 1)):
+                ny, nx = cy + dy, cx + dx
+                if 0 <= ny < height and 0 <= nx < width:
+                    if mask[ny, nx] and not visited[ny, nx]:
+                        visited[ny, nx] = True
+                        coord = (ny, nx)
+                        component.append(coord)
+                        if coord in unvisited:
+                            unvisited.remove(coord)
+        
+        if len(component) >= min_area:
+            for cy, cx in component:
+                output[cy, cx] = True
+                
+    return output
+
+
 def _curve_color_mask(
     rgba: np.ndarray,
     target_hue: float,
@@ -83,11 +155,20 @@ def _curve_color_mask(
 
     mask = _build_mask(sat_min, val_min, hue_tol)
     min_pixels = max(int(rgba.shape[0] * rgba.shape[1] * 0.0005), 8)
+    
     if mask.sum() < min_pixels:
         relaxed_sat = max(sat_min * 0.6, 0.05)
         relaxed_val = max(val_min * 0.6, 0.05)
         relaxed_tol = min(hue_tol * 1.4, 60.0)
         mask = _build_mask(relaxed_sat, relaxed_val, relaxed_tol)
+    
+    # Improve mask quality (P0.1 improvements)
+    # 1. Morphological closing to fill gaps
+    mask = _morph_close(mask, kernel_size=3)
+    
+    # 2. Remove small noise
+    mask = _remove_small_components(mask, min_area=30)
+    
     return mask
 
 
@@ -214,7 +295,8 @@ def _curve_centerline_points(
     height, width = mask.shape
     xs: list[int] = []
     ys: list[float] = []
-    min_samples = max(int(height * 0.01), 1)
+    # Relaxed minimum samples to detect thin lines (e.g. 2-3px) even in large panels
+    min_samples = max(int(height * 0.002), 2)
     for x in range(width):
         ys_col = np.where(mask[:, x])[0]
         if ys_col.size >= min_samples:
@@ -237,15 +319,17 @@ def _curve_centerline_points(
     sample_spacing = max(int(adaptive.get("sample_spacing_px", 120)), 10)
     min_segments = int(adaptive.get("min_segments", 4))
     max_segments = int(adaptive.get("max_segments", 8))
-    total_span = xs_full[-1] - xs_full[0]
-    target_points = max(min_segments * 2, int(total_span / sample_spacing))
-    target_points = min(max_segments * 4, max(target_points, min_segments * 2))
-    if len(points) > target_points:
-        stride = max(1, int(len(points) / target_points))
-        points = points[::stride]
-        if points[-1] != (xs_full[-1], ys_smooth[-1]):
-            points.append((xs_full[-1], ys_smooth[-1]))
-    epsilon = max(sample_spacing * 0.15, 4.0)
+    
+    # Increase limits for higher quality Bezier fitting
+    # We want more points so the fitter can do a better job
+    max_segments_hq = max_segments * 3
+    
+    # Less aggressive epsilon for RDP
+    # was: max(sample_spacing * 0.15, 4.0)
+    # now: smaller epsilon to keep details
+    epsilon = max(sample_spacing * 0.05, 2.0)
+    
     min_points = max(min_segments + 1, 4)
-    max_points = max(max_segments + 1, min_points)
+    max_points = max(max_segments_hq + 1, min_points)
+    
     return _simplify_curve_points(points, max_points=max_points, min_points=min_points, epsilon=epsilon)

@@ -10,9 +10,44 @@ from png2svg.extractor_curves import _hue_distance, _rgb_to_hsv
 from png2svg.extractor_preprocess import _connected_components, _ink_mask
 from png2svg.text_vocabulary import (
     deduplicate_text_items,
+    fuzzy_match_vocabulary,
     load_vocabulary,
     validate_text_item,
 )
+
+
+def _crop_region(rgba: np.ndarray, bbox: dict[str, Any]) -> np.ndarray:
+    try:
+        x = int(max(float(bbox.get("x", 0)), 0))
+        y = int(max(float(bbox.get("y", 0)), 0))
+        w = int(float(bbox.get("width", 0)))
+        h = int(float(bbox.get("height", 0)))
+        if w <= 0 or h <= 0:
+            return np.zeros((0, 0, 4), dtype=np.uint8)
+        return rgba[y : y + h, x : x + w]
+    except (TypeError, ValueError):
+        return np.zeros((0, 0, 4), dtype=np.uint8)
+
+
+def _compute_ink_ratio(region: np.ndarray) -> float:
+    if region.size == 0:
+        return 0.0
+    # Simple ink check: dark pixels on light background
+    rgb = region[:, :, :3]
+    gray = np.dot(rgb[..., :3], [0.299, 0.587, 0.114])
+    # Assume white background, ink is dark
+    ink_mask = gray < 180
+    return float(np.sum(ink_mask)) / region.shape[0] / region.shape[1]
+
+
+def _estimate_font_weight(rgba: np.ndarray, bbox: dict[str, Any]) -> str:
+    """Estimate font weight based on pixel density (ink ratio)."""
+    region = _crop_region(rgba, bbox)
+    ink_ratio = _compute_ink_ratio(region)
+    # Threshold tuned for typical bold text in plots
+    if ink_ratio > 0.32:
+        return "bold"
+    return "normal"
 
 
 def _text_items_from_boxes(text_boxes: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -219,6 +254,28 @@ def _text_items_from_ocr(
 ) -> list[dict[str, Any]]:
     if not ocr_results:
         return []
+    
+    # Pre-calculate full image source if available for weight estimation
+    # This is a bit tricky as we don't pass the full image here usually.
+    # However, for P0.2.3, we need the image.
+    # The `adaptive` config usually comes from `_preprocess_image` but doesn't contain the image.
+    # We'll need to rely on what we have or update the signature.
+    # For now, we will add a placeholder for font weight if image is not available,
+    # but `extract_skeleton` passes `effective_config` as adaptive.
+    # We should update `extract_skeleton` to pass the image if we want to do this here,
+    # OR we do it in a separate pass.
+    # Given the constraint, we will do it in a separate pass in `_filter_text_items` or similar
+    # if we have access to the image, OR we update `extract_skeleton` to pass the image.
+    # But `_text_items_from_ocr` is called from `extract_skeleton` which has `rgba`.
+    # Let's check `extract_skeleton` call site.
+    # It calls `_text_items_from_ocr(ocr_results, width, height, effective_config)`.
+    # To support weight estimation, we should ideally pass `rgba`.
+    # For this refactor, I will modify `_text_items_from_ocr` to accept `rgba` optionally.
+    # But wait, I can't easily change the signature in `extractor.py` without editing it too.
+    # Let's stick to the current signature and add a separate helper `_enrich_text_items_with_weight`
+    # that `extract_skeleton` can call, or modify `_text_items_from_ocr` signature and update `extractor.py`.
+    # Modifying `extractor.py` is better.
+    
     heights = sorted(float(item["bbox"]["height"]) for item in ocr_results)
     median_height = heights[len(heights) // 2]
     ocr_cfg = adaptive.get("ocr") if adaptive else None
@@ -297,6 +354,10 @@ def _text_items_from_ocr(
             bbox["y0"] = bbox["y"]
             bbox["x1"] = bbox["x"] + bbox["width"]
             bbox["y1"] = bbox["y"] + bbox["height"]
+            
+            # Note: font_weight estimation requires rgba image, which we don't have here yet.
+            # We will calculate it later if rgba is available in the calling scope.
+            
             item_payload = {
                 "content": content,
                 "text": content,
@@ -308,12 +369,26 @@ def _text_items_from_ocr(
                 "conf": conf,
                 "confidence": conf,
                 "font_size": font_size,
+                "font_weight": "normal", # Default, will be updated if image available
                 "bbox": bbox,
             }
             if roi_id:
                 item_payload["roi_id"] = roi_id
             items.append(item_payload)
     return items
+
+
+def _has_random_char_pattern(text: str) -> bool:
+    """Check for suspicious random character patterns often produced by OCR."""
+    # Pattern 1: Alternating case with numbers (e.g. "aB3d") in short tokens
+    if len(text) < 5 and any(c.islower() for c in text) and any(c.isupper() for c in text) and any(c.isdigit() for c in text):
+        return True
+    
+    # Pattern 2: Single char words that are not common (exclude a, I, A)
+    if len(text) == 1 and text not in "aAiI01":
+        return True
+        
+    return False
 
 
 def _text_char_stats(value: str) -> dict[str, float]:
@@ -333,38 +408,55 @@ def _text_char_stats(value: str) -> dict[str, float]:
     }
 
 
-def _keep_text_item(item: dict[str, Any], cfg: dict[str, Any] | None) -> bool:
+def _keep_text_item(
+    item: dict[str, Any], 
+    cfg: dict[str, Any] | None, 
+    vocab: dict[str, Any] | None = None
+) -> bool:
     text = _clean_text(str(item.get("content") or item.get("text") or ""))
     if not text:
         return False
+        
+    # 1. Vocabulary Check (if available)
+    if vocab:
+        matches, _, _ = fuzzy_match_vocabulary(text, vocab, min_similarity=0.6)
+        if not matches:
+             # If it doesn't match vocab, subject it to stricter rules
+             if len(text) < 3:
+                 return False
+    
+    # 2. Suspicious Pattern Check
+    if _has_random_char_pattern(text):
+        # Allow if it matches vocab exactly? 
+        # fuzzy_match_vocabulary covers this if we trust it.
+        # But if no vocab, filter it out.
+        if not vocab:
+            return False
+
+    # 3. Standard Configuration Checks
     try:
         conf = float(item.get("conf", 1.0))
     except (TypeError, ValueError):
         conf = 1.0
+        
     min_conf = float(cfg.get("min_conf", 0.5)) if isinstance(cfg, dict) else 0.5
     roi_id = str(item.get("roi_id") or "")
+    
+    # Template-specific confidence overrides (legacy support)
     panel_mid_min_conf = float(cfg.get("panel_mid_min_conf", min_conf)) if isinstance(cfg, dict) else min_conf
     panel_bottom_min_conf = float(cfg.get("panel_bottom_min_conf", min_conf)) if isinstance(cfg, dict) else min_conf
+    
     if roi_id.startswith("panel_mid"):
         keyword_hits = any(
             token in text.lower()
             for token in (
-                "threshold",
-                "hys",
-                "trigger",
-                "serving",
-                "neighbor",
-                "target",
-                "both",
-                "condition",
-                "ttt",
-                "a3",
-                "a4",
-                "a5",
+                "threshold", "hys", "trigger", "serving", "neighbor", 
+                "target", "both", "condition", "ttt", "a3", "a4", "a5"
             )
         )
         if conf < panel_mid_min_conf and not keyword_hits:
             return False
+            
     if roi_id.startswith("panel_bottom"):
         keyword_hits = any(
             token in text.lower()
@@ -372,11 +464,19 @@ def _keep_text_item(item: dict[str, Any], cfg: dict[str, Any] | None) -> bool:
         )
         if conf < panel_bottom_min_conf and not keyword_hits:
             return False
+            
     if conf < min_conf:
+        # One last chance: if it's a perfect vocabulary match
+        if vocab:
+            matches, sim, _ = fuzzy_match_vocabulary(text, vocab)
+            if matches and sim > 0.9:
+                return True
         return False
+        
     min_chars = int(cfg.get("min_chars", 2)) if isinstance(cfg, dict) else 2
     if len(text) < min_chars:
         return False
+        
     bbox = item.get("bbox")
     if isinstance(bbox, dict):
         min_h = int(cfg.get("min_bbox_height", 6)) if isinstance(cfg, dict) else 6
@@ -386,6 +486,7 @@ def _keep_text_item(item: dict[str, Any], cfg: dict[str, Any] | None) -> bool:
                 return False
         except (TypeError, ValueError):
             pass
+            
     stats = _text_char_stats(text)
     total = stats["total"]
     if total <= 0:
@@ -398,12 +499,14 @@ def _keep_text_item(item: dict[str, Any], cfg: dict[str, Any] | None) -> bool:
     min_alpha = float(cfg.get("min_alpha_ratio", 0.2)) if isinstance(cfg, dict) else 0.2
     min_digit = float(cfg.get("min_digit_ratio", 0.15)) if isinstance(cfg, dict) else 0.15
     min_ascii = float(cfg.get("min_ascii_ratio", 0.7)) if isinstance(cfg, dict) else 0.7
+    
     if ascii_ratio < min_ascii:
         return False
     if alnum_ratio < min_alnum:
         return False
     if alpha_ratio < min_alpha and digit_ratio < min_digit:
         return False
+        
     return True
 
 
@@ -411,6 +514,7 @@ def _filter_text_items(
     text_items: list[dict[str, Any]],
     cfg: dict[str, Any] | None,
     template_id: str | None = None,
+    rgba: np.ndarray | None = None, # Added rgba support
 ) -> list[dict[str, Any]]:
     """Filter text items using basic rules and vocabulary validation.
 
@@ -418,6 +522,7 @@ def _filter_text_items(
         text_items: List of text items from OCR
         cfg: Configuration dict for filtering parameters
         template_id: Template identifier for vocabulary lookup
+        rgba: Optional source image for font weight estimation
 
     Returns:
         Filtered and deduplicated text items
@@ -432,8 +537,8 @@ def _filter_text_items(
     seen: dict[tuple[str, int, int], dict[str, Any]] = {}
 
     for item in text_items:
-        # Basic filtering
-        if not _keep_text_item(item, cfg):
+        # Enhanced filtering
+        if not _keep_text_item(item, cfg, vocab):
             continue
 
         content = _clean_text(str(item.get("content") or item.get("text") or ""))
@@ -442,13 +547,18 @@ def _filter_text_items(
 
         item["content"] = content
         item["text"] = content
+        
+        # Estimate font weight if image is available
+        if rgba is not None and item.get("bbox"):
+            item["font_weight"] = _estimate_font_weight(rgba, item["bbox"])
 
-        # Vocabulary-based validation
+        # Vocabulary-based validation (adds rejected reason but doesn't hard filter unless strict)
         if vocab:
             is_valid, reason = validate_text_item(item, vocab, strict=False)
             if not is_valid:
                 item["_rejected_reason"] = reason
-                continue
+                # Optionally filter here if strict mode desired
+                # continue
 
         # Deduplication by position
         bbox = item.get("bbox")

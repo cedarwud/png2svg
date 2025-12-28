@@ -646,7 +646,11 @@ def classify_png(
     if margin < thresholds.min_margin:
         reason_codes.append("AMBIGUOUS_MARGIN")
     decision = "unknown" if reason_codes else "known"
-    template_id = "unknown" if decision == "unknown" else top_id
+    if decision == "unknown":
+        template_id = "t_auto_layout"
+        reason_codes.append("FALLBACK_TO_AUTO")
+    else:
+        template_id = top_id
     result = {
         "template_id": template_id,
         "decision": decision,

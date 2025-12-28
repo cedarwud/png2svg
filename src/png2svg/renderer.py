@@ -14,6 +14,7 @@ from templates.t_procedure_flow import render as render_procedure_flow
 from templates.t_performance_lineplot import render as render_performance_lineplot
 from templates.t_project_architecture_v1 import render as render_project_architecture_v1
 from templates.t_rl_agent_loop_v1 import render as render_rl_agent_loop_v1
+from templates.t_auto_layout import render as render_auto_layout
 
 
 def _load_params(params_path: Path) -> dict[str, Any]:
@@ -85,6 +86,7 @@ _RENDER_DISPATCH: dict[str, Any] = {
     "t_project_architecture_v1": render_project_architecture_v1,
     "t_rl_agent_loop_v1": render_rl_agent_loop_v1,
     "t_performance_grid_v1": render_performance_grid_v1,
+    "t_auto_layout": render_auto_layout,
 }
 
 _TEMPLATE_ALIASES = {

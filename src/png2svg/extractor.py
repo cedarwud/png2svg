@@ -35,6 +35,7 @@ from png2svg.extractor_templates import (
     _finalize_3gpp_v1_metadata,
     extract_3gpp_events_3panel_v1,
 )
+from templates.t_auto_layout import extract as extract_auto_layout
 from png2svg.extractor_text import (
     _count_renderable_texts,
     _detect_text_boxes,
@@ -241,7 +242,7 @@ def extract_skeleton(
             )
 
     text_items = _text_items_from_ocr(ocr_results, width, height, effective_config)
-    text_items = _filter_text_items(text_items, ocr_cfg, template_id=template_id)
+    text_items = _filter_text_items(text_items, ocr_cfg, template_id=template_id, rgba=rgba)
 
     if not skip_ocr:
         if backend_value == "none":
@@ -312,7 +313,7 @@ def extract_skeleton(
         )
     elif template_id == "t_procedure_flow":
         params, overlay = _extract_flow(
-            width, height, mask, text_items, text_boxes, warnings, adaptive=effective_config
+            width, height, mask, rgba, text_items, text_boxes, warnings, adaptive=effective_config
         )
     elif template_id == "t_project_architecture_v1":
         params, overlay = _extract_project_architecture_v1(
@@ -337,6 +338,16 @@ def extract_skeleton(
             text_boxes,
             warnings,
             adaptive=effective_config,
+        )
+    elif template_id == "t_auto_layout":
+        params, overlay = extract_auto_layout(
+            width,
+            height,
+            mask,
+            rgba,
+            text_items,
+            warnings,
+            debug_dir=str(debug_dir) if debug_dir else None,
         )
     else:
         errors.append(

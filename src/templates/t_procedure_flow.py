@@ -5,6 +5,7 @@ from dataclasses import dataclass
 from typing import Any
 
 from common.svg_builder import DEFAULT_FONT_FAMILY, DEFAULT_TEXT_ANCHOR, SvgBuilder
+from png2svg.arrow_detector import ArrowType, generate_arrow_points
 from png2svg.errors import Png2SvgError
 
 
@@ -52,6 +53,7 @@ class Edge:
     dashed: bool
     points: list[tuple[float, float]] | None
     dasharray: str | None
+    arrow_end_type: str = "triangle"
 
 
 def _require_list(params: dict[str, Any], key: str) -> list[Any]:
@@ -251,6 +253,14 @@ def _parse_edges(params: dict[str, Any]) -> list[Edge]:
                     ) from exc
                 parsed_points.append((x, y))
             points = parsed_points
+            
+        arrow_end_type = "triangle"
+        arrow_end = raw.get("arrow_end")
+        if isinstance(arrow_end, dict):
+            arrow_end_type = str(arrow_end.get("type", "triangle"))
+        elif isinstance(arrow_end, str):
+            arrow_end_type = arrow_end
+            
         edges.append(
             Edge(
                 from_id=from_id,
@@ -259,6 +269,7 @@ def _parse_edges(params: dict[str, Any]) -> list[Edge]:
                 dashed=dashed,
                 points=points,
                 dasharray=dasharray,
+                arrow_end_type=arrow_end_type,
             )
         )
     return edges
@@ -282,29 +293,6 @@ def _edge_points(edge: Edge, nodes: dict[str, Node]) -> list[tuple[float, float]
         start = (from_node.x, from_node.center_y)
         end = (to_node.x + to_node.width, to_node.center_y)
     return [start, end]
-
-
-def _arrow_points(
-    start: tuple[float, float],
-    end: tuple[float, float],
-    length: float = 10,
-    width: float = 6,
-) -> list[tuple[float, float]] | None:
-    dx = end[0] - start[0]
-    dy = end[1] - start[1]
-    dist = math.hypot(dx, dy)
-    if dist <= 0.001:
-        return None
-    ux = dx / dist
-    uy = dy / dist
-    base_x = end[0] - ux * length
-    base_y = end[1] - uy * length
-    perp_x = -uy
-    perp_y = ux
-    half = width / 2
-    p1 = (base_x + perp_x * half, base_y + perp_y * half)
-    p2 = (base_x - perp_x * half, base_y - perp_y * half)
-    return [end, p1, p2]
 
 
 def _add_multiline_text(
@@ -395,9 +383,27 @@ def _draw_edges(builder: SvgBuilder, edges: list[Edge], nodes: dict[str, Node]) 
         else:
             curves.add(builder.drawing.polyline(points=points, **stroke_kwargs))
 
-        arrow = _arrow_points(points[-2], points[-1])
-        if arrow:
-            markers.add(builder.drawing.polygon(points=arrow, fill="#000000"))
+        if len(points) >= 2:
+            p_end = points[-1]
+            p_prev = points[-2]
+            dx = p_end[0] - p_prev[0]
+            dy = p_end[1] - p_prev[1]
+            angle = math.degrees(math.atan2(dy, dx))
+            
+            try:
+                atype = ArrowType(edge.arrow_end_type)
+            except ValueError:
+                atype = ArrowType.TRIANGLE
+                
+            arrow_points = generate_arrow_points(p_end, angle, size=10, arrow_type=atype)
+            
+            if atype == ArrowType.TRIANGLE_OPEN:
+                markers.add(builder.drawing.polygon(points=arrow_points, fill="none", stroke="#000000", stroke_width=2))
+            elif atype == ArrowType.LINE:
+                # generate_arrow_points for LINE returns [left, tip, right]
+                markers.add(builder.drawing.polyline(points=arrow_points, fill="none", stroke="#000000", stroke_width=2))
+            elif atype != ArrowType.NONE:
+                markers.add(builder.drawing.polygon(points=arrow_points, fill="#000000"))
 
         if edge.label:
             mid_x = (points[0][0] + points[-1][0]) / 2
