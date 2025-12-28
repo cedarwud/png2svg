@@ -1,0 +1,68 @@
+{
+  "binarization": {
+    "alpha_threshold": 10,
+    "block_size": 57,
+    "c": 10,
+    "enabled": true,
+    "luminance_threshold": 245
+  },
+  "curves": {
+    "hue_tolerance_deg": 22.0,
+    "max_segments": 8,
+    "min_segments": 4,
+    "sample_spacing_px": 120,
+    "saturation_min": 0.2,
+    "smooth_window": 7,
+    "value_min": 0.15
+  },
+  "dashes": {
+    "max_coverage": 0.35,
+    "max_len": 221,
+    "max_lines_per_panel": 2,
+    "min_count": 6,
+    "min_coverage": 0.02,
+    "min_gap_ratio": 0.5,
+    "min_len": 17,
+    "min_span_ratio": 0.6
+  },
+  "lines": {
+    "long_line_min_len_px": 1382
+  },
+  "ocr": {
+    "max_bbox_height_ratio": 2.2,
+    "max_dim": 1200,
+    "max_line_aspect_ratio": 3.0,
+    "max_line_height_ratio": 1.3,
+    "max_rois": 40,
+    "min_alnum_ratio": 0.35,
+    "min_alpha_ratio": 0.2,
+    "min_ascii_ratio": 0.7,
+    "min_bbox_height": 6,
+    "min_bbox_width": 6,
+    "min_chars": 2,
+    "min_conf": 0.5,
+    "min_digit_ratio": 0.15,
+    "panel_bottom_min_conf": 0.6,
+    "panel_mid_min_conf": 0.7,
+    "roi_pad_max": 24,
+    "roi_pad_min": 2,
+    "roi_pad_ratio": 0.02,
+    "timeout_sec": 6
+  },
+  "scale": 1.8,
+  "text_boxes": {
+    "max_area": 152175,
+    "max_height_ratio": 0.4,
+    "max_width_ratio": 0.6,
+    "min_area": 380,
+    "min_size": 5
+  },
+  "text_layout": {
+    "baseline_tolerance_px": 2.0,
+    "font_scale_max": 3.0,
+    "font_scale_min": 0.8,
+    "font_scale_ref_height": 360,
+    "grid_px": 5,
+    "ocr_font_size_ratio": 0.6
+  }
+}

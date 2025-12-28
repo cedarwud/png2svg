@@ -1,0 +1,77 @@
+# Vocabulary for t_3gpp_events_3panel template
+# Used for OCR text validation and noise filtering
+
+# Required exact matches (case-insensitive)
+required_exact:
+  - "A3 Event"
+  - "A4 Event"
+  - "A5 Event"
+  - "TTT"
+  - "Hys"
+  - "Time"
+  - "t_start"
+  - "t_trigger"
+
+# Required partial matches (substring)
+required_partial:
+  - "Serving"
+  - "Neighbor"
+  - "Target"
+  - "beam"
+  - "Measured signal"
+  - "RSRP"
+  - "RSRQ"
+  - "SINR"
+  - "Threshold"
+  - "Th_A4"
+  - "Th1_A5"
+  - "Th2_A5"
+  - "Condition"
+  - "Report"
+  - "Event"
+  - "triggered"
+  - "satisfied"
+  - "offset"
+  - "hysteresis"
+  - "exceeds"
+  - "falls below"
+  - "rises above"
+  - "first met"
+
+# Patterns for valid text (regex)
+valid_patterns:
+  - "^A[345]\\s*(Event|triggered)?$"
+  - "^Th[12]?_A[45]$"
+  - "^t_(start|trigger)$"
+  - "^(TTT|Hys)$"
+  - "^(Serving|Neighbor|Target).*beam$"
+  - "^Time\\s*\\(t\\)$"
+  - "^Condition.*met$"
+  - "^Report\\s+sent"
+  - "^Event\\s+triggered$"
+  - "^Both\\s+conditions"
+
+# Known noise patterns to reject (regex)
+noise_patterns:
+  - "^[a-z]{1,3}$"           # Single short lowercase words
+  - "^\\d{1,2}$"             # Isolated small numbers
+  - "wore\\s+"               # Common OCR error
+  - "orn\\s+"                # Common OCR error
+  - "^ho\\s+"                # Common OCR error for "for"
+  - "^th\\s+$"               # Isolated "th"
+  - "^[^\\w]+$"              # Only special characters
+  - "\\s{3,}"                # Multiple spaces (OCR artifact)
+
+# Minimum confidence by role
+confidence_thresholds:
+  title: 0.7
+  panel_label: 0.6
+  axis_label: 0.5
+  annotation: 0.4
+  default: 0.5
+
+# Fuzzy match settings
+fuzzy_match:
+  enabled: true
+  min_similarity: 0.75
+  max_edit_distance: 2

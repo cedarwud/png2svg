@@ -6,6 +6,8 @@ import numpy as np
 
 from png2svg.extractor_math import _smooth_series
 from png2svg.extractor_preprocess import _connected_components
+from png2svg.arrow_detector import ArrowType, classify_line_arrows
+from png2svg.dash_pattern import detect_dash_pattern
 
 
 def _max_run_length(values: np.ndarray) -> int:
@@ -259,6 +261,11 @@ def _detect_dashed_lines(
             avg_gap = sum(gaps) / len(gaps)
             if avg_gap <= min_len * min_gap_ratio:
                 continue
+
+        # Detect actual dash pattern from runs
+        dash_pattern = detect_dash_pattern(valid_runs)
+        dasharray = dash_pattern.dasharray if dash_pattern.confidence > 0.3 else [4, 4]
+
         lines.append(
             {
                 "x1": float(idx),
@@ -267,15 +274,68 @@ def _detect_dashed_lines(
                 "y2": float(span_end),
                 "stroke": "#555555",
                 "stroke_width": 1,
-                "dasharray": [4, 4],
+                "dasharray": dasharray,
                 "role": "t_line",
+                "dash_info": {
+                    "pattern_type": dash_pattern.pattern_type,
+                    "confidence": round(dash_pattern.confidence, 3),
+                },
             }
         )
+
+    horizontal_lines: list[dict[str, Any]] = []
+    candidates = _dashed_line_candidates(mask, axis=1)
+    for candidate in candidates:
+        idx = candidate["idx"]
+        runs = candidate["runs"]
+        valid_runs = [run for run in runs if min_len <= run[1] <= max_len]
+        if len(valid_runs) < min_count:
+            continue
+        span_start = min(run[0] for run in valid_runs)
+        span_end = max(run[0] + run[1] for run in valid_runs)
+        span = span_end - span_start
+        if span < width * min_span_ratio:
+            continue
+        coverage = sum(run[1] for run in valid_runs) / max(span, 1)
+        if coverage < min_coverage or coverage > max_coverage:
+            continue
+        gaps = []
+        for prev, curr in zip(valid_runs, valid_runs[1:]):
+            gap = curr[0] - (prev[0] + prev[1])
+            gaps.append(gap)
+        if gaps:
+            avg_gap = sum(gaps) / len(gaps)
+            if avg_gap <= min_len * min_gap_ratio:
+                continue
+
+        # Detect actual dash pattern from runs
+        dash_pattern = detect_dash_pattern(valid_runs)
+        dasharray = dash_pattern.dasharray if dash_pattern.confidence > 0.3 else [4, 4]
+
+        horizontal_lines.append(
+            {
+                "x1": float(span_start),
+                "y1": float(idx),
+                "x2": float(span_end),
+                "y2": float(idx),
+                "stroke": "#888888",
+                "stroke_width": 1,
+                "dasharray": dasharray,
+                "role": "threshold_line",
+                "dash_info": {
+                    "pattern_type": dash_pattern.pattern_type,
+                    "confidence": round(dash_pattern.confidence, 3),
+                },
+            }
+        )
+
     if panels:
         filtered: list[dict[str, Any]] = []
         for panel in panels:
             px = panel["x"]
             pw = panel["width"]
+            py = panel["y"]
+            ph = panel["height"]
             panel_lines = [
                 line
                 for line in lines
@@ -283,8 +343,16 @@ def _detect_dashed_lines(
             ]
             panel_lines.sort(key=lambda line: float(line["x1"]))
             filtered.extend(panel_lines[:max_lines_per_panel])
+
+            h_lines = [
+                line
+                for line in horizontal_lines
+                if py <= float(line["y1"]) <= py + ph and abs(line["y1"] - line["y2"]) <= 1.0
+            ]
+            h_lines.sort(key=lambda line: float(line["y1"]))
+            filtered.extend(h_lines[:max_lines_per_panel])
         return filtered
-    return lines
+    return lines + horizontal_lines
 
 
 def _detect_markers(rgba: np.ndarray) -> list[dict[str, Any]]:
@@ -313,3 +381,61 @@ def _detect_markers(rgba: np.ndarray) -> list[dict[str, Any]]:
             }
         )
     return markers
+
+
+def _detect_line_arrows(
+    rgba: np.ndarray,
+    lines: list[dict[str, Any]],
+    min_confidence: float = 0.5,
+) -> list[dict[str, Any]]:
+    """Detect and classify arrow heads on detected lines.
+
+    Args:
+        rgba: Source image as RGBA numpy array
+        lines: List of line dicts with x1, y1, x2, y2
+        min_confidence: Minimum confidence to include arrow info
+
+    Returns:
+        Lines with added arrow_start and arrow_end fields
+    """
+    enhanced_lines: list[dict[str, Any]] = []
+    for line in lines:
+        try:
+            enhanced = classify_line_arrows(rgba, line)
+            # Only include arrow info if confidence is high enough
+            arrow_start = enhanced.get("arrow_start", {})
+            arrow_end = enhanced.get("arrow_end", {})
+            if arrow_start.get("confidence", 0) < min_confidence:
+                arrow_start["type"] = ArrowType.NONE.value
+            if arrow_end.get("confidence", 0) < min_confidence:
+                arrow_end["type"] = ArrowType.NONE.value
+            enhanced["arrow_start"] = arrow_start
+            enhanced["arrow_end"] = arrow_end
+            enhanced_lines.append(enhanced)
+        except (KeyError, TypeError, ValueError):
+            enhanced_lines.append(line)
+    return enhanced_lines
+
+
+def _enhance_axes_with_arrows(
+    rgba: np.ndarray,
+    lines: list[dict[str, Any]],
+    adaptive: dict[str, Any] | None = None,
+) -> list[dict[str, Any]]:
+    """Detect arrows on axis lines.
+
+    For axis lines, arrows typically appear at the end of the axis
+    (positive direction).
+
+    Args:
+        rgba: Source image
+        lines: Detected axis lines
+        adaptive: Configuration
+
+    Returns:
+        Lines with arrow type information
+    """
+    min_conf = 0.4
+    if adaptive and adaptive.get("arrows"):
+        min_conf = float(adaptive["arrows"].get("min_confidence", 0.4))
+    return _detect_line_arrows(rgba, lines, min_confidence=min_conf)

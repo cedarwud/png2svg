@@ -39,6 +39,10 @@ cases:
   - id: case_012_lineplot_dense
     dir: cases/case_012_lineplot_dense
     tags: [dense_ticks, multi_series, dashed, small_canvas]
+  - id: case_013_fig1_reference
+    dir: cases/case_013_fig1_reference
+    tags: [3panel, dashed, shaded_regions, long_text]
+    force_template: t_3gpp_events_3panel
   - id: case_013_rl_loop_basic
     dir: cases/case_013_rl_loop_basic
     tags: [rl_loop, long_text]

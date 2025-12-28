@@ -380,6 +380,12 @@ def _score_templates(features: dict[str, Any]) -> dict[str, float]:
         score_3gpp += 0.6
     elif ocr_token_count >= 12:
         score_3gpp += 0.4
+    if long_v >= 6 and long_h <= 1 and axis_ratio >= 0.7:
+        score_3gpp += 0.8
+        if ocr_token_count >= 12:
+            score_3gpp += 0.4
+        if short_total >= 8000:
+            score_3gpp += 0.6
 
     score_lineplot = 0.0
     if long_v >= 1:
@@ -424,6 +430,8 @@ def _score_templates(features: dict[str, Any]) -> dict[str, float]:
     score_project = _project_architecture_score(
         width, height, color_count, ocr_tokens, features["ink_ratio"]
     )
+    if long_v >= 6 and long_h <= 1 and axis_ratio >= 0.7:
+        score_project -= 0.8
 
     score_rl = 0.0
     if rl_hits >= 2:

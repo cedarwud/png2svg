@@ -43,6 +43,7 @@ from png2svg.extractor_text import (
     _text_items_from_ocr,
 )
 from png2svg.extractor_types import ExtractIssue
+from png2svg.dedup import deduplicate_geometry
 
 
 def extract_skeleton(
@@ -240,7 +241,7 @@ def extract_skeleton(
             )
 
     text_items = _text_items_from_ocr(ocr_results, width, height, effective_config)
-    text_items = _filter_text_items(text_items, ocr_cfg)
+    text_items = _filter_text_items(text_items, ocr_cfg, template_id=template_id)
 
     if not skip_ocr:
         if backend_value == "none":
@@ -406,6 +407,9 @@ def extract_skeleton(
         "errors": [issue.to_dict() for issue in errors],
         "warnings": [issue.to_dict() for issue in warnings],
     }
+
+    # Apply geometry deduplication before output
+    params = deduplicate_geometry(params)
 
     if debug_dir is not None:
         _write_debug_artifacts(

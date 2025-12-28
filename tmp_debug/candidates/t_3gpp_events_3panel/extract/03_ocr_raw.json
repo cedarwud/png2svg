@@ -1,0 +1,5425 @@
+[
+  {
+    "bbox": {
+      "height": 62,
+      "width": 312,
+      "x": 1174,
+      "y": 85
+    },
+    "conf": 0.91,
+    "roi": {
+      "height": 276,
+      "width": 2752,
+      "x": 0,
+      "y": 0
+    },
+    "roi_id": "title",
+    "text": "(A3/A4/A5):"
+  },
+  {
+    "bbox": {
+      "height": 62,
+      "width": 147,
+      "x": 1947,
+      "y": 85
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 276,
+      "width": 2752,
+      "x": 0,
+      "y": 0
+    },
+    "roi_id": "title",
+    "text": "(TTT)"
+  },
+  {
+    "bbox": {
+      "height": 48,
+      "width": 158,
+      "x": 188,
+      "y": 87
+    },
+    "conf": 0.9,
+    "roi": {
+      "height": 276,
+      "width": 2752,
+      "x": 0,
+      "y": 0
+    },
+    "roi_id": "title",
+    "text": "3GPP"
+  },
+  {
+    "bbox": {
+      "height": 48,
+      "width": 372,
+      "x": 369,
+      "y": 87
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 276,
+      "width": 2752,
+      "x": 0,
+      "y": 0
+    },
+    "roi_id": "title",
+    "text": "Measurement"
+  },
+  {
+    "bbox": {
+      "height": 48,
+      "width": 156,
+      "x": 761,
+      "y": 87
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 276,
+      "width": 2752,
+      "x": 0,
+      "y": 0
+    },
+    "roi_id": "title",
+    "text": "Event"
+  },
+  {
+    "bbox": {
+      "height": 60,
+      "width": 222,
+      "x": 931,
+      "y": 87
+    },
+    "conf": 0.92,
+    "roi": {
+      "height": 276,
+      "width": 2752,
+      "x": 0,
+      "y": 0
+    },
+    "roi_id": "title",
+    "text": "Triggers"
+  },
+  {
+    "bbox": {
+      "height": 60,
+      "width": 422,
+      "x": 1507,
+      "y": 87
+    },
+    "conf": 0.92,
+    "roi": {
+      "height": 276,
+      "width": 2752,
+      "x": 0,
+      "y": 0
+    },
+    "roi_id": "title",
+    "text": "Time-to-Trigger"
+  },
+  {
+    "bbox": {
+      "height": 48,
+      "width": 99,
+      "x": 2114,
+      "y": 87
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 276,
+      "width": 2752,
+      "x": 0,
+      "y": 0
+    },
+    "roi_id": "title",
+    "text": "and"
+  },
+  {
+    "bbox": {
+      "height": 60,
+      "width": 282,
+      "x": 2238,
+      "y": 87
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 276,
+      "width": 2752,
+      "x": 0,
+      "y": 0
+    },
+    "roi_id": "title",
+    "text": "Hysteresis"
+  },
+  {
+    "bbox": {
+      "height": 62,
+      "width": 30,
+      "x": 94,
+      "y": 213
+    },
+    "conf": 0.79,
+    "roi": {
+      "height": 276,
+      "width": 2752,
+      "x": 0,
+      "y": 0
+    },
+    "roi_id": "title",
+    "text": "4"
+  },
+  {
+    "bbox": {
+      "height": 62,
+      "width": 30,
+      "x": 1000,
+      "y": 213
+    },
+    "conf": 0.75,
+    "roi": {
+      "height": 276,
+      "width": 2752,
+      "x": 0,
+      "y": 0
+    },
+    "roi_id": "title",
+    "text": "4"
+  },
+  {
+    "bbox": {
+      "height": 62,
+      "width": 30,
+      "x": 1906,
+      "y": 213
+    },
+    "conf": 0.37,
+    "roi": {
+      "height": 276,
+      "width": 2752,
+      "x": 0,
+      "y": 0
+    },
+    "roi_id": "title",
+    "text": "4\u2019"
+  },
+  {
+    "bbox": {
+      "height": 37,
+      "width": 115,
+      "x": 209,
+      "y": 236
+    },
+    "conf": 0.91,
+    "roi": {
+      "height": 276,
+      "width": 2752,
+      "x": 0,
+      "y": 0
+    },
+    "roi_id": "title",
+    "text": "Event"
+  },
+  {
+    "bbox": {
+      "height": 34,
+      "width": 57,
+      "x": 1046,
+      "y": 236
+    },
+    "conf": 0.3,
+    "roi": {
+      "height": 276,
+      "width": 2752,
+      "x": 0,
+      "y": 0
+    },
+    "roi_id": "title",
+    "text": "a4"
+  },
+  {
+    "bbox": {
+      "height": 37,
+      "width": 119,
+      "x": 1117,
+      "y": 236
+    },
+    "conf": 0.83,
+    "roi": {
+      "height": 276,
+      "width": 2752,
+      "x": 0,
+      "y": 0
+    },
+    "roi_id": "title",
+    "text": "Event"
+  },
+  {
+    "bbox": {
+      "height": 35,
+      "width": 56,
+      "x": 136,
+      "y": 238
+    },
+    "conf": 0.93,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 231
+    },
+    "roi_id": "panel_top_A3",
+    "text": "A3"
+  },
+  {
+    "bbox": {
+      "height": 35,
+      "width": 117,
+      "x": 208,
+      "y": 238
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 231
+    },
+    "roi_id": "panel_top_A3",
+    "text": "Event"
+  },
+  {
+    "bbox": {
+      "height": 35,
+      "width": 57,
+      "x": 1046,
+      "y": 238
+    },
+    "conf": 0.57,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 230
+    },
+    "roi_id": "panel_top_A4",
+    "text": "A4"
+  },
+  {
+    "bbox": {
+      "height": 35,
+      "width": 117,
+      "x": 1118,
+      "y": 238
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 230
+    },
+    "roi_id": "panel_top_A4",
+    "text": "Event"
+  },
+  {
+    "bbox": {
+      "height": 35,
+      "width": 56,
+      "x": 1957,
+      "y": 238
+    },
+    "conf": 0.9,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 230
+    },
+    "roi_id": "panel_top_A5",
+    "text": "A5"
+  },
+  {
+    "bbox": {
+      "height": 35,
+      "width": 117,
+      "x": 2029,
+      "y": 238
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 230
+    },
+    "roi_id": "panel_top_A5",
+    "text": "Event"
+  },
+  {
+    "bbox": {
+      "height": 34,
+      "width": 57,
+      "x": 135,
+      "y": 239
+    },
+    "conf": 0.72,
+    "roi": {
+      "height": 276,
+      "width": 2752,
+      "x": 0,
+      "y": 0
+    },
+    "roi_id": "title",
+    "text": "a3"
+  },
+  {
+    "bbox": {
+      "height": 34,
+      "width": 57,
+      "x": 1956,
+      "y": 239
+    },
+    "conf": 0.58,
+    "roi": {
+      "height": 276,
+      "width": 2752,
+      "x": 0,
+      "y": 0
+    },
+    "roi_id": "title",
+    "text": "ns"
+  },
+  {
+    "bbox": {
+      "height": 34,
+      "width": 117,
+      "x": 2030,
+      "y": 239
+    },
+    "conf": 0.9,
+    "roi": {
+      "height": 276,
+      "width": 2752,
+      "x": 0,
+      "y": 0
+    },
+    "roi_id": "title",
+    "text": "Event"
+  },
+  {
+    "bbox": {
+      "height": 40,
+      "width": 159,
+      "x": 210,
+      "y": 290
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 231
+    },
+    "roi_id": "panel_top_A3",
+    "text": "Neighbor"
+  },
+  {
+    "bbox": {
+      "height": 32,
+      "width": 159,
+      "x": 381,
+      "y": 290
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 231
+    },
+    "roi_id": "panel_top_A3",
+    "text": "becomes"
+  },
+  {
+    "bbox": {
+      "height": 32,
+      "width": 101,
+      "x": 554,
+      "y": 290
+    },
+    "conf": 0.95,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 231
+    },
+    "roi_id": "panel_top_A3",
+    "text": "better"
+  },
+  {
+    "bbox": {
+      "height": 32,
+      "width": 58,
+      "x": 1046,
+      "y": 290
+    },
+    "conf": 0.9,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 230
+    },
+    "roi_id": "panel_top_A4",
+    "text": "A4:"
+  },
+  {
+    "bbox": {
+      "height": 41,
+      "width": 161,
+      "x": 1120,
+      "y": 290
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 230
+    },
+    "roi_id": "panel_top_A4",
+    "text": "Neighbor"
+  },
+  {
+    "bbox": {
+      "height": 32,
+      "width": 163,
+      "x": 1485,
+      "y": 290
+    },
+    "conf": 0.93,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 230
+    },
+    "roi_id": "panel_top_A4",
+    "text": "threshold"
+  },
+  {
+    "bbox": {
+      "height": 40,
+      "width": 92,
+      "x": 1662,
+      "y": 290
+    },
+    "conf": 0.93,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 230
+    },
+    "roi_id": "panel_top_A4",
+    "text": "Th_A"
+  },
+  {
+    "bbox": {
+      "height": 32,
+      "width": 58,
+      "x": 1957,
+      "y": 290
+    },
+    "conf": 0.44,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 230
+    },
+    "roi_id": "panel_top_A5",
+    "text": "A5:"
+  },
+  {
+    "bbox": {
+      "height": 40,
+      "width": 133,
+      "x": 2031,
+      "y": 290
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 230
+    },
+    "roi_id": "panel_top_A5",
+    "text": "Serving"
+  },
+  {
+    "bbox": {
+      "height": 32,
+      "width": 72,
+      "x": 2176,
+      "y": 290
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 230
+    },
+    "roi_id": "panel_top_A5",
+    "text": "falls"
+  },
+  {
+    "bbox": {
+      "height": 32,
+      "width": 104,
+      "x": 2262,
+      "y": 290
+    },
+    "conf": 0.91,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 230
+    },
+    "roi_id": "panel_top_A5",
+    "text": "below"
+  },
+  {
+    "bbox": {
+      "height": 32,
+      "width": 63,
+      "x": 2377,
+      "y": 290
+    },
+    "conf": 0.91,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 230
+    },
+    "roi_id": "panel_top_A5",
+    "text": "Th1"
+  },
+  {
+    "bbox": {
+      "height": 32,
+      "width": 92,
+      "x": 2457,
+      "y": 290
+    },
+    "conf": 0.95,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 230
+    },
+    "roi_id": "panel_top_A5",
+    "text": "while"
+  },
+  {
+    "bbox": {
+      "height": 31,
+      "width": 58,
+      "x": 136,
+      "y": 291
+    },
+    "conf": 0.92,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 231
+    },
+    "roi_id": "panel_top_A3",
+    "text": "A3:"
+  },
+  {
+    "bbox": {
+      "height": 31,
+      "width": 76,
+      "x": 665,
+      "y": 291
+    },
+    "conf": 0.93,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 231
+    },
+    "roi_id": "panel_top_A3",
+    "text": "than"
+  },
+  {
+    "bbox": {
+      "height": 31,
+      "width": 94,
+      "x": 755,
+      "y": 291
+    },
+    "conf": 0.92,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 231
+    },
+    "roi_id": "panel_top_A3",
+    "text": "servir"
+  },
+  {
+    "bbox": {
+      "height": 31,
+      "width": 147,
+      "x": 1293,
+      "y": 291
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 230
+    },
+    "roi_id": "panel_top_A4",
+    "text": "exceeds"
+  },
+  {
+    "bbox": {
+      "height": 23,
+      "width": 20,
+      "x": 1453,
+      "y": 299
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 230
+    },
+    "roi_id": "panel_top_A4",
+    "text": "a"
+  },
+  {
+    "bbox": {
+      "height": 33,
+      "width": 96,
+      "x": 246,
+      "y": 338
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 231
+    },
+    "roi_id": "panel_top_A3",
+    "text": "offset"
+  },
+  {
+    "bbox": {
+      "height": 42,
+      "width": 81,
+      "x": 354,
+      "y": 338
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 231
+    },
+    "roi_id": "panel_top_A3",
+    "text": "(with"
+  },
+  {
+    "bbox": {
+      "height": 42,
+      "width": 189,
+      "x": 450,
+      "y": 338
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 231
+    },
+    "roi_id": "panel_top_A3",
+    "text": "hysteresis)"
+  },
+  {
+    "bbox": {
+      "height": 40,
+      "width": 40,
+      "x": 139,
+      "y": 339
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 231
+    },
+    "roi_id": "panel_top_A3",
+    "text": "by"
+  },
+  {
+    "bbox": {
+      "height": 32,
+      "width": 47,
+      "x": 651,
+      "y": 339
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 231
+    },
+    "roi_id": "panel_top_A3",
+    "text": "for"
+  },
+  {
+    "bbox": {
+      "height": 31,
+      "width": 73,
+      "x": 708,
+      "y": 339
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 231
+    },
+    "roi_id": "panel_top_A3",
+    "text": "TTT"
+  },
+  {
+    "bbox": {
+      "height": 32,
+      "width": 47,
+      "x": 1047,
+      "y": 339
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 230
+    },
+    "roi_id": "panel_top_A4",
+    "text": "for"
+  },
+  {
+    "bbox": {
+      "height": 31,
+      "width": 73,
+      "x": 1105,
+      "y": 339
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 230
+    },
+    "roi_id": "panel_top_A4",
+    "text": "TTT"
+  },
+  {
+    "bbox": {
+      "height": 40,
+      "width": 157,
+      "x": 1959,
+      "y": 339
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 230
+    },
+    "roi_id": "panel_top_A5",
+    "text": "neighbor"
+  },
+  {
+    "bbox": {
+      "height": 32,
+      "width": 83,
+      "x": 2128,
+      "y": 339
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 230
+    },
+    "roi_id": "panel_top_A5",
+    "text": "rises"
+  },
+  {
+    "bbox": {
+      "height": 32,
+      "width": 108,
+      "x": 2224,
+      "y": 339
+    },
+    "conf": 0.93,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 230
+    },
+    "roi_id": "panel_top_A5",
+    "text": "above"
+  },
+  {
+    "bbox": {
+      "height": 31,
+      "width": 68,
+      "x": 2344,
+      "y": 339
+    },
+    "conf": 0.9,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 230
+    },
+    "roi_id": "panel_top_A5",
+    "text": "Th2"
+  },
+  {
+    "bbox": {
+      "height": 32,
+      "width": 49,
+      "x": 2424,
+      "y": 339
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 230
+    },
+    "roi_id": "panel_top_A5",
+    "text": "for"
+  },
+  {
+    "bbox": {
+      "height": 31,
+      "width": 74,
+      "x": 2482,
+      "y": 339
+    },
+    "conf": 0.95,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 230
+    },
+    "roi_id": "panel_top_A5",
+    "text": "TTT"
+  },
+  {
+    "bbox": {
+      "height": 24,
+      "width": 41,
+      "x": 191,
+      "y": 347
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 231
+    },
+    "roi_id": "panel_top_A3",
+    "text": "an"
+  },
+  {
+    "bbox": {
+      "height": 64,
+      "width": 31,
+      "x": 46,
+      "y": 410
+    },
+    "conf": 0.64,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 231
+    },
+    "roi_id": "panel_top_A3",
+    "text": "Z"
+  },
+  {
+    "bbox": {
+      "height": 64,
+      "width": 31,
+      "x": 953,
+      "y": 410
+    },
+    "conf": 0.68,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 230
+    },
+    "roi_id": "panel_top_A4",
+    "text": "Z"
+  },
+  {
+    "bbox": {
+      "height": 64,
+      "width": 31,
+      "x": 1859,
+      "y": 410
+    },
+    "conf": 0.71,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 230
+    },
+    "roi_id": "panel_top_A5",
+    "text": "Z"
+  },
+  {
+    "bbox": {
+      "height": 60,
+      "width": 217,
+      "x": 451,
+      "y": 430
+    },
+    "conf": 0.25,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 231
+    },
+    "roi_id": "panel_top_A3",
+    "text": "mY"
+  },
+  {
+    "bbox": {
+      "height": 47,
+      "width": 361,
+      "x": 1214,
+      "y": 430
+    },
+    "conf": 0.2,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 230
+    },
+    "roi_id": "panel_top_A4",
+    "text": "Lae"
+  },
+  {
+    "bbox": {
+      "height": 31,
+      "width": 73,
+      "x": 2263,
+      "y": 430
+    },
+    "conf": 0.55,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 230
+    },
+    "roi_id": "panel_top_A5",
+    "text": "TT"
+  },
+  {
+    "bbox": {
+      "height": 56,
+      "width": 23,
+      "x": 308,
+      "y": 434
+    },
+    "conf": 0.41,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 231
+    },
+    "roi_id": "panel_top_A3",
+    "text": "_"
+  },
+  {
+    "bbox": {
+      "height": 43,
+      "width": 5,
+      "x": 2119,
+      "y": 434
+    },
+    "conf": 0.33,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 230
+    },
+    "roi_id": "panel_top_A5",
+    "text": "1"
+  },
+  {
+    "bbox": {
+      "height": 43,
+      "width": 4,
+      "x": 2476,
+      "y": 434
+    },
+    "conf": 0.65,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 230
+    },
+    "roi_id": "panel_top_A5",
+    "text": "|"
+  },
+  {
+    "bbox": {
+      "height": 48,
+      "width": 36,
+      "x": 1859,
+      "y": 466
+    },
+    "conf": 0.27,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 230
+    },
+    "roi_id": "panel_top_A5",
+    "text": "oO"
+  },
+  {
+    "bbox": {
+      "height": 8,
+      "width": 18,
+      "x": 2671,
+      "y": 466
+    },
+    "conf": 0.34,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 230
+    },
+    "roi_id": "panel_top_A5",
+    "text": "."
+  },
+  {
+    "bbox": {
+      "height": 45,
+      "width": 24,
+      "x": 2119,
+      "y": 469
+    },
+    "conf": 0.56,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 230
+    },
+    "roi_id": "panel_top_A5",
+    "text": "it"
+  },
+  {
+    "bbox": {
+      "height": 45,
+      "width": 109,
+      "x": 2456,
+      "y": 469
+    },
+    "conf": 0.13,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 230
+    },
+    "roi_id": "panel_top_A5",
+    "text": "<n"
+  },
+  {
+    "bbox": {
+      "height": 20,
+      "width": 48,
+      "x": 2640,
+      "y": 470
+    },
+    "conf": 0.44,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 230
+    },
+    "roi_id": "panel_top_A5",
+    "text": "ae"
+  },
+  {
+    "bbox": {
+      "height": 40,
+      "width": 36,
+      "x": 46,
+      "y": 474
+    },
+    "conf": 0.49,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 231
+    },
+    "roi_id": "panel_top_A3",
+    "text": "2)"
+  },
+  {
+    "bbox": {
+      "height": 17,
+      "width": 50,
+      "x": 797,
+      "y": 479
+    },
+    "conf": 0.13,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 231
+    },
+    "roi_id": "panel_top_A3",
+    "text": "ie"
+  },
+  {
+    "bbox": {
+      "height": 29,
+      "width": 4,
+      "x": 308,
+      "y": 485
+    },
+    "conf": 0.69,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 231
+    },
+    "roi_id": "panel_top_A3",
+    "text": "!"
+  },
+  {
+    "bbox": {
+      "height": 29,
+      "width": 88,
+      "x": 664,
+      "y": 485
+    },
+    "conf": 0.18,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 231
+    },
+    "roi_id": "panel_top_A3",
+    "text": "er"
+  },
+  {
+    "bbox": {
+      "height": 52,
+      "width": 35,
+      "x": 46,
+      "y": 570
+    },
+    "conf": 0.0,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "2)"
+  },
+  {
+    "bbox": {
+      "height": 30,
+      "width": 44,
+      "x": 593,
+      "y": 570
+    },
+    "conf": 0.55,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "-\""
+  },
+  {
+    "bbox": {
+      "height": 35,
+      "width": 22,
+      "x": 655,
+      "y": 570
+    },
+    "conf": 0.57,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "|"
+  },
+  {
+    "bbox": {
+      "height": 33,
+      "width": 35,
+      "x": 949,
+      "y": 570
+    },
+    "conf": 0.24,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "wn"
+  },
+  {
+    "bbox": {
+      "height": 10,
+      "width": 4,
+      "x": 1214,
+      "y": 570
+    },
+    "conf": 0.0,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": ","
+  },
+  {
+    "bbox": {
+      "height": 24,
+      "width": 29,
+      "x": 1514,
+      "y": 570
+    },
+    "conf": 0.29,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "ff"
+  },
+  {
+    "bbox": {
+      "height": 28,
+      "width": 27,
+      "x": 1554,
+      "y": 570
+    },
+    "conf": 0.05,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "oo"
+  },
+  {
+    "bbox": {
+      "height": 8,
+      "width": 4,
+      "x": 2119,
+      "y": 571
+    },
+    "conf": 0.52,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": "1"
+  },
+  {
+    "bbox": {
+      "height": 29,
+      "width": 80,
+      "x": 2406,
+      "y": 571
+    },
+    "conf": 0.6,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": "oon"
+  },
+  {
+    "bbox": {
+      "height": 35,
+      "width": 38,
+      "x": 1854,
+      "y": 572
+    },
+    "conf": 0.0,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": "(\u00a2p)"
+  },
+  {
+    "bbox": {
+      "height": 65,
+      "width": 35,
+      "x": 949,
+      "y": 580
+    },
+    "conf": 0.19,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "oe"
+  },
+  {
+    "bbox": {
+      "height": 48,
+      "width": 157,
+      "x": 2513,
+      "y": 581
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": "triggered"
+  },
+  {
+    "bbox": {
+      "height": 31,
+      "width": 148,
+      "x": 701,
+      "y": 585
+    },
+    "conf": 0.84,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "triggerec"
+  },
+  {
+    "bbox": {
+      "height": 5,
+      "width": 4,
+      "x": 1635,
+      "y": 585
+    },
+    "conf": 0.73,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "."
+  },
+  {
+    "bbox": {
+      "height": 5,
+      "width": 5,
+      "x": 2540,
+      "y": 585
+    },
+    "conf": 0.48,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": ":"
+  },
+  {
+    "bbox": {
+      "height": 39,
+      "width": 147,
+      "x": 1607,
+      "y": 586
+    },
+    "conf": 0.74,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "triggerec"
+  },
+  {
+    "bbox": {
+      "height": 55,
+      "width": 165,
+      "x": 1350,
+      "y": 587
+    },
+    "conf": 0.24,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "wore"
+  },
+  {
+    "bbox": {
+      "height": 44,
+      "width": 5,
+      "x": 1570,
+      "y": 587
+    },
+    "conf": 0.64,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "|"
+  },
+  {
+    "bbox": {
+      "height": 70,
+      "width": 15,
+      "x": 2109,
+      "y": 587
+    },
+    "conf": 0.48,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": "1"
+  },
+  {
+    "bbox": {
+      "height": 71,
+      "width": 20,
+      "x": 2460,
+      "y": 587
+    },
+    "conf": 0.64,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": "|"
+  },
+  {
+    "bbox": {
+      "height": 37,
+      "width": 35,
+      "x": 42,
+      "y": 593
+    },
+    "conf": 0.85,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "fad"
+  },
+  {
+    "bbox": {
+      "height": 31,
+      "width": 42,
+      "x": 736,
+      "y": 593
+    },
+    "conf": 0.75,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "gg"
+  },
+  {
+    "bbox": {
+      "height": 64,
+      "width": 32,
+      "x": 1859,
+      "y": 600
+    },
+    "conf": 0.38,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": "x"
+  },
+  {
+    "bbox": {
+      "height": 25,
+      "width": 112,
+      "x": 471,
+      "y": 602
+    },
+    "conf": 0.18,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "orn"
+  },
+  {
+    "bbox": {
+      "height": 41,
+      "width": 140,
+      "x": 2256,
+      "y": 602
+    },
+    "conf": 0.27,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": "wort"
+  },
+  {
+    "bbox": {
+      "height": 39,
+      "width": 139,
+      "x": 1936,
+      "y": 611
+    },
+    "conf": 0.65,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": "Th2_A5"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 4,
+      "x": 308,
+      "y": 613
+    },
+    "conf": 0.78,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "I"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 5,
+      "x": 664,
+      "y": 613
+    },
+    "conf": 0.8,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "I"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 57,
+      "x": 143,
+      "y": 614
+    },
+    "conf": 0.0,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "a"
+  },
+  {
+    "bbox": {
+      "height": 35,
+      "width": 32,
+      "x": 46,
+      "y": 629
+    },
+    "conf": 0.3,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "ri"
+  },
+  {
+    "bbox": {
+      "height": 33,
+      "width": 43,
+      "x": 418,
+      "y": 629
+    },
+    "conf": 0.38,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "on"
+  },
+  {
+    "bbox": {
+      "height": 29,
+      "width": 63,
+      "x": 213,
+      "y": 634
+    },
+    "conf": 0.29,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "rs"
+  },
+  {
+    "bbox": {
+      "height": 34,
+      "width": 35,
+      "x": 949,
+      "y": 634
+    },
+    "conf": 0.51,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "fal"
+  },
+  {
+    "bbox": {
+      "height": 44,
+      "width": 4,
+      "x": 308,
+      "y": 638
+    },
+    "conf": 0.62,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "|"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 5,
+      "x": 664,
+      "y": 638
+    },
+    "conf": 0.74,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "!"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 4,
+      "x": 1214,
+      "y": 638
+    },
+    "conf": 0.39,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "J"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 5,
+      "x": 1570,
+      "y": 638
+    },
+    "conf": 0.66,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "5"
+  },
+  {
+    "bbox": {
+      "height": 49,
+      "width": 74,
+      "x": 2133,
+      "y": 644
+    },
+    "conf": 0.17,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": "ne"
+  },
+  {
+    "bbox": {
+      "height": 15,
+      "width": 17,
+      "x": 1325,
+      "y": 647
+    },
+    "conf": 0.87,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "\u00e9"
+  },
+  {
+    "bbox": {
+      "height": 35,
+      "width": 524,
+      "x": 1925,
+      "y": 648
+    },
+    "conf": 0.22,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": "nn"
+  },
+  {
+    "bbox": {
+      "height": 35,
+      "width": 136,
+      "x": 2231,
+      "y": 648
+    },
+    "conf": 0.19,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": "ee"
+  },
+  {
+    "bbox": {
+      "height": 48,
+      "width": 43,
+      "x": 368,
+      "y": 663
+    },
+    "conf": 0.32,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "eo"
+  },
+  {
+    "bbox": {
+      "height": 56,
+      "width": 103,
+      "x": 1214,
+      "y": 664
+    },
+    "conf": 0.11,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "ae"
+  },
+  {
+    "bbox": {
+      "height": 43,
+      "width": 5,
+      "x": 1570,
+      "y": 664
+    },
+    "conf": 0.86,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "!"
+  },
+  {
+    "bbox": {
+      "height": 14,
+      "width": 40,
+      "x": 158,
+      "y": 665
+    },
+    "conf": 0.17,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "\u2122."
+  },
+  {
+    "bbox": {
+      "height": 17,
+      "width": 5,
+      "x": 664,
+      "y": 665
+    },
+    "conf": 0.39,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "I"
+  },
+  {
+    "bbox": {
+      "height": 52,
+      "width": 33,
+      "x": 45,
+      "y": 667
+    },
+    "conf": 0.23,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "4"
+  },
+  {
+    "bbox": {
+      "height": 53,
+      "width": 31,
+      "x": 953,
+      "y": 667
+    },
+    "conf": 0.0,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "&"
+  },
+  {
+    "bbox": {
+      "height": 25,
+      "width": 31,
+      "x": 1859,
+      "y": 667
+    },
+    "conf": 0.33,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": "w"
+  },
+  {
+    "bbox": {
+      "height": 3,
+      "width": 3,
+      "x": 297,
+      "y": 678
+    },
+    "conf": 0.1,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": ":"
+  },
+  {
+    "bbox": {
+      "height": 11,
+      "width": 24,
+      "x": 209,
+      "y": 681
+    },
+    "conf": 0.85,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "~"
+  },
+  {
+    "bbox": {
+      "height": 45,
+      "width": 82,
+      "x": 2119,
+      "y": 688
+    },
+    "conf": 0.5,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": "a"
+  },
+  {
+    "bbox": {
+      "height": 22,
+      "width": 21,
+      "x": 308,
+      "y": 689
+    },
+    "conf": 0.44,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "OK"
+  },
+  {
+    "bbox": {
+      "height": 17,
+      "width": 5,
+      "x": 664,
+      "y": 690
+    },
+    "conf": 0.57,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "j"
+  },
+  {
+    "bbox": {
+      "height": 51,
+      "width": 31,
+      "x": 1859,
+      "y": 696
+    },
+    "conf": 0.04,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": "D"
+  },
+  {
+    "bbox": {
+      "height": 59,
+      "width": 35,
+      "x": 42,
+      "y": 700
+    },
+    "conf": 0.2,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "oe"
+  },
+  {
+    "bbox": {
+      "height": 50,
+      "width": 77,
+      "x": 291,
+      "y": 709
+    },
+    "conf": 0.52,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "VAR"
+  },
+  {
+    "bbox": {
+      "height": 114,
+      "width": 96,
+      "x": 1658,
+      "y": 711
+    },
+    "conf": 0.41,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "fis"
+  },
+  {
+    "bbox": {
+      "height": 44,
+      "width": 38,
+      "x": 1214,
+      "y": 715
+    },
+    "conf": 0.39,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "|e"
+  },
+  {
+    "bbox": {
+      "height": 26,
+      "width": 31,
+      "x": 953,
+      "y": 721
+    },
+    "conf": 0.14,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "\u00a9"
+  },
+  {
+    "bbox": {
+      "height": 40,
+      "width": 117,
+      "x": 1027,
+      "y": 722
+    },
+    "conf": 0.0,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "|ThA4"
+  },
+  {
+    "bbox": {
+      "height": 59,
+      "width": 49,
+      "x": 2108,
+      "y": 731
+    },
+    "conf": 0.33,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": "Vv"
+  },
+  {
+    "bbox": {
+      "height": 44,
+      "width": 79,
+      "x": 2274,
+      "y": 731
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": "Both"
+  },
+  {
+    "bbox": {
+      "height": 44,
+      "width": 5,
+      "x": 2475,
+      "y": 740
+    },
+    "conf": 0.68,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": "H"
+  },
+  {
+    "bbox": {
+      "height": 44,
+      "width": 103,
+      "x": 308,
+      "y": 752
+    },
+    "conf": 0.4,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "ann"
+  },
+  {
+    "bbox": {
+      "height": 32,
+      "width": 153,
+      "x": 696,
+      "y": 752
+    },
+    "conf": 0.89,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "Threshol"
+  },
+  {
+    "bbox": {
+      "height": 38,
+      "width": 73,
+      "x": 1159,
+      "y": 752
+    },
+    "conf": 0.26,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "wf"
+  },
+  {
+    "bbox": {
+      "height": 41,
+      "width": 32,
+      "x": 54,
+      "y": 763
+    },
+    "conf": 0.5,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "3"
+  },
+  {
+    "bbox": {
+      "height": 16,
+      "width": 12,
+      "x": 978,
+      "y": 763
+    },
+    "conf": 0.16,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "p"
+  },
+  {
+    "bbox": {
+      "height": 17,
+      "width": 11,
+      "x": 1885,
+      "y": 763
+    },
+    "conf": 0.87,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": ">"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 5,
+      "x": 664,
+      "y": 766
+    },
+    "conf": 0.79,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "i"
+  },
+  {
+    "bbox": {
+      "height": 4,
+      "width": 38,
+      "x": 1019,
+      "y": 766
+    },
+    "conf": 0.03,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "P-"
+  },
+  {
+    "bbox": {
+      "height": 4,
+      "width": 43,
+      "x": 1069,
+      "y": 766
+    },
+    "conf": 0.03,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "st"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 524,
+      "x": 1230,
+      "y": 766
+    },
+    "conf": 0.0,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "-----------4---F-7>"
+  },
+  {
+    "bbox": {
+      "height": 43,
+      "width": 36,
+      "x": 960,
+      "y": 775
+    },
+    "conf": 0.39,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "D>"
+  },
+  {
+    "bbox": {
+      "height": 46,
+      "width": 180,
+      "x": 2224,
+      "y": 780
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": "conditions"
+  },
+  {
+    "bbox": {
+      "height": 52,
+      "width": 33,
+      "x": 1866,
+      "y": 785
+    },
+    "conf": 0.54,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": "?"
+  },
+  {
+    "bbox": {
+      "height": 88,
+      "width": 138,
+      "x": 435,
+      "y": 788
+    },
+    "conf": 0.0,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "~LHys"
+  },
+  {
+    "bbox": {
+      "height": 27,
+      "width": 9,
+      "x": 660,
+      "y": 788
+    },
+    "conf": 0.48,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "i)"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 5,
+      "x": 1570,
+      "y": 792
+    },
+    "conf": 0.67,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "'"
+  },
+  {
+    "bbox": {
+      "height": 44,
+      "width": 51,
+      "x": 2073,
+      "y": 792
+    },
+    "conf": 0.54,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": "NX"
+  },
+  {
+    "bbox": {
+      "height": 59,
+      "width": 45,
+      "x": 41,
+      "y": 795
+    },
+    "conf": 0.4,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "cy"
+  },
+  {
+    "bbox": {
+      "height": 47,
+      "width": 155,
+      "x": 259,
+      "y": 797
+    },
+    "conf": 0.37,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "ONS."
+  },
+  {
+    "bbox": {
+      "height": 3,
+      "width": 4,
+      "x": 421,
+      "y": 797
+    },
+    "conf": 0.06,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "."
+  },
+  {
+    "bbox": {
+      "height": 9,
+      "width": 11,
+      "x": 1186,
+      "y": 798
+    },
+    "conf": 0.41,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "a"
+  },
+  {
+    "bbox": {
+      "height": 40,
+      "width": 133,
+      "x": 706,
+      "y": 801
+    },
+    "conf": 0.88,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "Serving"
+  },
+  {
+    "bbox": {
+      "height": 5,
+      "width": 5,
+      "x": 789,
+      "y": 802
+    },
+    "conf": 0.61,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "."
+  },
+  {
+    "bbox": {
+      "height": 5,
+      "width": 4,
+      "x": 368,
+      "y": 804
+    },
+    "conf": 0.63,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "."
+  },
+  {
+    "bbox": {
+      "height": 34,
+      "width": 28,
+      "x": 956,
+      "y": 813
+    },
+    "conf": 0.08,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "i)"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 5,
+      "x": 1570,
+      "y": 817
+    },
+    "conf": 0.62,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "'"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 5,
+      "x": 664,
+      "y": 818
+    },
+    "conf": 0.71,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "i"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 4,
+      "x": 1214,
+      "y": 818
+    },
+    "conf": 0.83,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "|"
+  },
+  {
+    "bbox": {
+      "height": 15,
+      "width": 14,
+      "x": 1166,
+      "y": 821
+    },
+    "conf": 0.62,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "\u00a2"
+  },
+  {
+    "bbox": {
+      "height": 46,
+      "width": 146,
+      "x": 2240,
+      "y": 829
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": "satisfied"
+  },
+  {
+    "bbox": {
+      "height": 79,
+      "width": 100,
+      "x": 683,
+      "y": 837
+    },
+    "conf": 0.67,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "Offset"
+  },
+  {
+    "bbox": {
+      "height": 31,
+      "width": 41,
+      "x": 952,
+      "y": 839
+    },
+    "conf": 0.89,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "="
+  },
+  {
+    "bbox": {
+      "height": 31,
+      "width": 41,
+      "x": 1858,
+      "y": 839
+    },
+    "conf": 0.73,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": "="
+  },
+  {
+    "bbox": {
+      "height": 69,
+      "width": 133,
+      "x": 536,
+      "y": 843
+    },
+    "conf": 0.0,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "~~.)"
+  },
+  {
+    "bbox": {
+      "height": 43,
+      "width": 78,
+      "x": 1140,
+      "y": 843
+    },
+    "conf": 0.4,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "an"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 5,
+      "x": 2475,
+      "y": 843
+    },
+    "conf": 0.93,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": "1"
+  },
+  {
+    "bbox": {
+      "height": 64,
+      "width": 51,
+      "x": 205,
+      "y": 844
+    },
+    "conf": 0.49,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "a\u201c"
+  },
+  {
+    "bbox": {
+      "height": 14,
+      "width": 13,
+      "x": 2056,
+      "y": 845
+    },
+    "conf": 0.59,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": "a"
+  },
+  {
+    "bbox": {
+      "height": 31,
+      "width": 13,
+      "x": 835,
+      "y": 850
+    },
+    "conf": 0.67,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "F"
+  },
+  {
+    "bbox": {
+      "height": 21,
+      "width": 15,
+      "x": 801,
+      "y": 855
+    },
+    "conf": 0.93,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "+"
+  },
+  {
+    "bbox": {
+      "height": 38,
+      "width": 76,
+      "x": 436,
+      "y": 857
+    },
+    "conf": 0.29,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "a"
+  },
+  {
+    "bbox": {
+      "height": 49,
+      "width": 31,
+      "x": 46,
+      "y": 865
+    },
+    "conf": 0.41,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "3"
+  },
+  {
+    "bbox": {
+      "height": 44,
+      "width": 104,
+      "x": 2020,
+      "y": 868
+    },
+    "conf": 0.57,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": "\u201c4"
+  },
+  {
+    "bbox": {
+      "height": 43,
+      "width": 5,
+      "x": 2475,
+      "y": 868
+    },
+    "conf": 0.39,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": "|"
+  },
+  {
+    "bbox": {
+      "height": 20,
+      "width": 23,
+      "x": 961,
+      "y": 873
+    },
+    "conf": 0.14,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "o"
+  },
+  {
+    "bbox": {
+      "height": 41,
+      "width": 23,
+      "x": 1867,
+      "y": 873
+    },
+    "conf": 0.19,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": "G"
+  },
+  {
+    "bbox": {
+      "height": 7,
+      "width": 9,
+      "x": 1131,
+      "y": 876
+    },
+    "conf": 0.0,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "\u2019"
+  },
+  {
+    "bbox": {
+      "height": 54,
+      "width": 58,
+      "x": 1068,
+      "y": 892
+    },
+    "conf": 0.23,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "i\u201d"
+  },
+  {
+    "bbox": {
+      "height": 44,
+      "width": 4,
+      "x": 1214,
+      "y": 893
+    },
+    "conf": 0.18,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "ot"
+  },
+  {
+    "bbox": {
+      "height": 49,
+      "width": 31,
+      "x": 953,
+      "y": 894
+    },
+    "conf": 0.6,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "al"
+  },
+  {
+    "bbox": {
+      "height": 47,
+      "width": 72,
+      "x": 1917,
+      "y": 899
+    },
+    "conf": 0.26,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": "Po"
+  },
+  {
+    "bbox": {
+      "height": 60,
+      "width": 111,
+      "x": 726,
+      "y": 903
+    },
+    "conf": 0.17,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "re"
+  },
+  {
+    "bbox": {
+      "height": 25,
+      "width": 81,
+      "x": 560,
+      "y": 910
+    },
+    "conf": 0.17,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "i"
+  },
+  {
+    "bbox": {
+      "height": 25,
+      "width": 713,
+      "x": 2001,
+      "y": 912
+    },
+    "conf": 0.21,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": "RETIN"
+  },
+  {
+    "bbox": {
+      "height": 28,
+      "width": 32,
+      "x": 46,
+      "y": 915
+    },
+    "conf": 0.88,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "2"
+  },
+  {
+    "bbox": {
+      "height": 31,
+      "width": 40,
+      "x": 160,
+      "y": 915
+    },
+    "conf": 0.23,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "oa"
+  },
+  {
+    "bbox": {
+      "height": 20,
+      "width": 24,
+      "x": 1867,
+      "y": 915
+    },
+    "conf": 0.38,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": "@\u00ae"
+  },
+  {
+    "bbox": {
+      "height": 44,
+      "width": 5,
+      "x": 308,
+      "y": 919
+    },
+    "conf": 0.38,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "H"
+  },
+  {
+    "bbox": {
+      "height": 39,
+      "width": 139,
+      "x": 1936,
+      "y": 929
+    },
+    "conf": 0.8,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": "Thi_A5"
+  },
+  {
+    "bbox": {
+      "height": 48,
+      "width": 31,
+      "x": 1859,
+      "y": 939
+    },
+    "conf": 0.85,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": "="
+  },
+  {
+    "bbox": {
+      "height": 19,
+      "width": 4,
+      "x": 1214,
+      "y": 944
+    },
+    "conf": 0.0,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "!"
+  },
+  {
+    "bbox": {
+      "height": 44,
+      "width": 5,
+      "x": 2119,
+      "y": 944
+    },
+    "conf": 0.53,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": "!"
+  },
+  {
+    "bbox": {
+      "height": 19,
+      "width": 5,
+      "x": 2475,
+      "y": 944
+    },
+    "conf": 0.87,
+    "roi": {
+      "height": 454,
+      "width": 886,
+      "x": 1828,
+      "y": 571
+    },
+    "roi_id": "panel_mid_A5",
+    "text": "\\"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 5,
+      "x": 1570,
+      "y": 945
+    },
+    "conf": 0.7,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "J"
+  },
+  {
+    "bbox": {
+      "height": 11,
+      "width": 17,
+      "x": 1042,
+      "y": 948
+    },
+    "conf": 0.32,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "\u00b0"
+  },
+  {
+    "bbox": {
+      "height": 5,
+      "width": 26,
+      "x": 823,
+      "y": 953
+    },
+    "conf": 0.0,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "-"
+  },
+  {
+    "bbox": {
+      "height": 41,
+      "width": 27,
+      "x": 960,
+      "y": 957
+    },
+    "conf": 0.26,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "i]"
+  },
+  {
+    "bbox": {
+      "height": 28,
+      "width": 31,
+      "x": 46,
+      "y": 958
+    },
+    "conf": 0.33,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "atl"
+  },
+  {
+    "bbox": {
+      "height": 5,
+      "width": 31,
+      "x": 953,
+      "y": 958
+    },
+    "conf": 0.42,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "_"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 4,
+      "x": 1214,
+      "y": 970
+    },
+    "conf": 0.54,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "I"
+  },
+  {
+    "bbox": {
+      "height": 34,
+      "width": 187,
+      "x": 125,
+      "y": 989
+    },
+    "conf": 0.0,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "INeighbor/!"
+  },
+  {
+    "bbox": {
+      "height": 35,
+      "width": 186,
+      "x": 1032,
+      "y": 989
+    },
+    "conf": 0.37,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "iNeighbor/!"
+  },
+  {
+    "bbox": {
+      "height": 5,
+      "width": 4,
+      "x": 1083,
+      "y": 989
+    },
+    "conf": 0.0,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "."
+  },
+  {
+    "bbox": {
+      "height": 33,
+      "width": 32,
+      "x": 54,
+      "y": 990
+    },
+    "conf": 0.29,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "="
+  },
+  {
+    "bbox": {
+      "height": 4,
+      "width": 4,
+      "x": 176,
+      "y": 990
+    },
+    "conf": 0.42,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "ae"
+  },
+  {
+    "bbox": {
+      "height": 34,
+      "width": 33,
+      "x": 960,
+      "y": 990
+    },
+    "conf": 0.67,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "&"
+  },
+  {
+    "bbox": {
+      "height": 16,
+      "width": 131,
+      "x": 374,
+      "y": 1007
+    },
+    "conf": 0.05,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "ea..."
+  },
+  {
+    "bbox": {
+      "height": 17,
+      "width": 244,
+      "x": 1280,
+      "y": 1007
+    },
+    "conf": 0.0,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "eae..."
+  },
+  {
+    "bbox": {
+      "height": 15,
+      "width": 96,
+      "x": 521,
+      "y": 1008
+    },
+    "conf": 0.49,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "...."
+  },
+  {
+    "bbox": {
+      "height": 2,
+      "width": 5,
+      "x": 664,
+      "y": 1021
+    },
+    "conf": 0.5,
+    "roi": {
+      "height": 453,
+      "width": 814,
+      "x": 35,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A3",
+    "text": "7}"
+  },
+  {
+    "bbox": {
+      "height": 3,
+      "width": 5,
+      "x": 1570,
+      "y": 1021
+    },
+    "conf": 0.42,
+    "roi": {
+      "height": 454,
+      "width": 834,
+      "x": 920,
+      "y": 570
+    },
+    "roi_id": "panel_mid_A4",
+    "text": "OT"
+  },
+  {
+    "bbox": {
+      "height": 48,
+      "width": 24,
+      "x": 54,
+      "y": 1080
+    },
+    "conf": 0.77,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 1080
+    },
+    "roi_id": "panel_bottom_A3",
+    "text": "\u00ae"
+  },
+  {
+    "bbox": {
+      "height": 53,
+      "width": 23,
+      "x": 98,
+      "y": 1080
+    },
+    "conf": 0.93,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 1080
+    },
+    "roi_id": "panel_bottom_A3",
+    "text": "|"
+  },
+  {
+    "bbox": {
+      "height": 36,
+      "width": 5,
+      "x": 308,
+      "y": 1080
+    },
+    "conf": 0.72,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 1080
+    },
+    "roi_id": "panel_bottom_A3",
+    "text": "|"
+  },
+  {
+    "bbox": {
+      "height": 36,
+      "width": 5,
+      "x": 664,
+      "y": 1080
+    },
+    "conf": 0.51,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 1080
+    },
+    "roi_id": "panel_bottom_A3",
+    "text": "1"
+  },
+  {
+    "bbox": {
+      "height": 15,
+      "width": 41,
+      "x": 808,
+      "y": 1080
+    },
+    "conf": 0.48,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 1080
+    },
+    "roi_id": "panel_bottom_A3",
+    "text": "="
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 30,
+      "x": 957,
+      "y": 1082
+    },
+    "conf": 0.23,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A4",
+    "text": "\u2018\u2014_"
+  },
+  {
+    "bbox": {
+      "height": 8,
+      "width": 4,
+      "x": 1214,
+      "y": 1082
+    },
+    "conf": 0.0,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A4",
+    "text": "."
+  },
+  {
+    "bbox": {
+      "height": 8,
+      "width": 5,
+      "x": 1570,
+      "y": 1082
+    },
+    "conf": 0.04,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A4",
+    "text": "*"
+  },
+  {
+    "bbox": {
+      "height": 12,
+      "width": 34,
+      "x": 1720,
+      "y": 1082
+    },
+    "conf": 0.14,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A4",
+    "text": "i..."
+  },
+  {
+    "bbox": {
+      "height": 46,
+      "width": 24,
+      "x": 1866,
+      "y": 1082
+    },
+    "conf": 0.89,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A5",
+    "text": "\u00a9"
+  },
+  {
+    "bbox": {
+      "height": 34,
+      "width": 5,
+      "x": 2119,
+      "y": 1082
+    },
+    "conf": 0.0,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A5",
+    "text": "'"
+  },
+  {
+    "bbox": {
+      "height": 3,
+      "width": 14,
+      "x": 2300,
+      "y": 1082
+    },
+    "conf": 0.48,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A5",
+    "text": "7"
+  },
+  {
+    "bbox": {
+      "height": 34,
+      "width": 5,
+      "x": 2475,
+      "y": 1082
+    },
+    "conf": 0.55,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A5",
+    "text": "I"
+  },
+  {
+    "bbox": {
+      "height": 21,
+      "width": 92,
+      "x": 2610,
+      "y": 1082
+    },
+    "conf": 0.63,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A5",
+    "text": "\u2014"
+  },
+  {
+    "bbox": {
+      "height": 31,
+      "width": 95,
+      "x": 162,
+      "y": 1087
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 1080
+    },
+    "roi_id": "panel_bottom_A3",
+    "text": "beam"
+  },
+  {
+    "bbox": {
+      "height": 31,
+      "width": 62,
+      "x": 1069,
+      "y": 1087
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A4",
+    "text": "bea"
+  },
+  {
+    "bbox": {
+      "height": 21,
+      "width": 23,
+      "x": 961,
+      "y": 1095
+    },
+    "conf": 0.08,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A4",
+    "text": "o"
+  },
+  {
+    "bbox": {
+      "height": 22,
+      "width": 82,
+      "x": 1136,
+      "y": 1095
+    },
+    "conf": 0.62,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A4",
+    "text": "mi"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 5,
+      "x": 1570,
+      "y": 1098
+    },
+    "conf": 0.0,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A4",
+    "text": "\\"
+  },
+  {
+    "bbox": {
+      "height": 35,
+      "width": 24,
+      "x": 960,
+      "y": 1116
+    },
+    "conf": 0.26,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A4",
+    "text": "2"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 5,
+      "x": 308,
+      "y": 1123
+    },
+    "conf": 0.0,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 1080
+    },
+    "roi_id": "panel_bottom_A3",
+    "text": "\\"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 5,
+      "x": 664,
+      "y": 1123
+    },
+    "conf": 0.47,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 1080
+    },
+    "roi_id": "panel_bottom_A3",
+    "text": "'"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 4,
+      "x": 1214,
+      "y": 1123
+    },
+    "conf": 0.46,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A4",
+    "text": "!"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 5,
+      "x": 2119,
+      "y": 1123
+    },
+    "conf": 0.88,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A5",
+    "text": "1"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 4,
+      "x": 2476,
+      "y": 1123
+    },
+    "conf": 0.73,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A5",
+    "text": "1"
+  },
+  {
+    "bbox": {
+      "height": 19,
+      "width": 24,
+      "x": 54,
+      "y": 1132
+    },
+    "conf": 0.89,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 1080
+    },
+    "roi_id": "panel_bottom_A3",
+    "text": "5"
+  },
+  {
+    "bbox": {
+      "height": 19,
+      "width": 23,
+      "x": 1867,
+      "y": 1132
+    },
+    "conf": 0.93,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A5",
+    "text": "5"
+  },
+  {
+    "bbox": {
+      "height": 46,
+      "width": 27,
+      "x": 960,
+      "y": 1138
+    },
+    "conf": 0.81,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A4",
+    "text": "7)"
+  },
+  {
+    "bbox": {
+      "height": 19,
+      "width": 5,
+      "x": 308,
+      "y": 1148
+    },
+    "conf": 0.54,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 1080
+    },
+    "roi_id": "panel_bottom_A3",
+    "text": "'"
+  },
+  {
+    "bbox": {
+      "height": 19,
+      "width": 5,
+      "x": 664,
+      "y": 1148
+    },
+    "conf": 0.19,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 1080
+    },
+    "roi_id": "panel_bottom_A3",
+    "text": "!"
+  },
+  {
+    "bbox": {
+      "height": 19,
+      "width": 5,
+      "x": 2475,
+      "y": 1148
+    },
+    "conf": 0.5,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A5",
+    "text": "i"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 4,
+      "x": 1214,
+      "y": 1149
+    },
+    "conf": 0.6,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A4",
+    "text": "1"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 5,
+      "x": 1570,
+      "y": 1149
+    },
+    "conf": 0.37,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A4",
+    "text": "I"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 5,
+      "x": 2119,
+      "y": 1149
+    },
+    "conf": 0.42,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A5",
+    "text": "I"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 24,
+      "x": 54,
+      "y": 1154
+    },
+    "conf": 0.67,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 1080
+    },
+    "roi_id": "panel_bottom_A3",
+    "text": "n"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 24,
+      "x": 1866,
+      "y": 1154
+    },
+    "conf": 0.63,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A5",
+    "text": "a"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 5,
+      "x": 308,
+      "y": 1174
+    },
+    "conf": 0.0,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 1080
+    },
+    "roi_id": "panel_bottom_A3",
+    "text": "f"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 5,
+      "x": 664,
+      "y": 1174
+    },
+    "conf": 0.24,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 1080
+    },
+    "roi_id": "panel_bottom_A3",
+    "text": "1"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 4,
+      "x": 1214,
+      "y": 1174
+    },
+    "conf": 0.45,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A4",
+    "text": "1"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 5,
+      "x": 1570,
+      "y": 1174
+    },
+    "conf": 0.06,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A4",
+    "text": "'"
+  },
+  {
+    "bbox": {
+      "height": 20,
+      "width": 23,
+      "x": 1867,
+      "y": 1174
+    },
+    "conf": 0.0,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A5",
+    "text": "o"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 5,
+      "x": 2119,
+      "y": 1174
+    },
+    "conf": 0.85,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A5",
+    "text": "i"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 5,
+      "x": 2475,
+      "y": 1174
+    },
+    "conf": 0.73,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A5",
+    "text": "1"
+  },
+  {
+    "bbox": {
+      "height": 19,
+      "width": 24,
+      "x": 54,
+      "y": 1175
+    },
+    "conf": 0.25,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 1080
+    },
+    "roi_id": "panel_bottom_A3",
+    "text": "6"
+  },
+  {
+    "bbox": {
+      "height": 19,
+      "width": 24,
+      "x": 960,
+      "y": 1175
+    },
+    "conf": 0.28,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A4",
+    "text": "@"
+  },
+  {
+    "bbox": {
+      "height": 21,
+      "width": 24,
+      "x": 961,
+      "y": 1196
+    },
+    "conf": 0.54,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A4",
+    "text": "o"
+  },
+  {
+    "bbox": {
+      "height": 21,
+      "width": 23,
+      "x": 1867,
+      "y": 1196
+    },
+    "conf": 0.19,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A5",
+    "text": "o"
+  },
+  {
+    "bbox": {
+      "height": 20,
+      "width": 24,
+      "x": 54,
+      "y": 1197
+    },
+    "conf": 0.77,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 1080
+    },
+    "roi_id": "panel_bottom_A3",
+    "text": "\u00a9"
+  },
+  {
+    "bbox": {
+      "height": 19,
+      "width": 5,
+      "x": 308,
+      "y": 1199
+    },
+    "conf": 0.46,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 1080
+    },
+    "roi_id": "panel_bottom_A3",
+    "text": "'"
+  },
+  {
+    "bbox": {
+      "height": 19,
+      "width": 5,
+      "x": 664,
+      "y": 1199
+    },
+    "conf": 0.14,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 1080
+    },
+    "roi_id": "panel_bottom_A3",
+    "text": "'"
+  },
+  {
+    "bbox": {
+      "height": 19,
+      "width": 5,
+      "x": 1570,
+      "y": 1199
+    },
+    "conf": 0.23,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A4",
+    "text": "'"
+  },
+  {
+    "bbox": {
+      "height": 19,
+      "width": 5,
+      "x": 2119,
+      "y": 1199
+    },
+    "conf": 0.58,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A5",
+    "text": "1"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 4,
+      "x": 1214,
+      "y": 1200
+    },
+    "conf": 0.5,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A4",
+    "text": "1"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 5,
+      "x": 2475,
+      "y": 1200
+    },
+    "conf": 0.82,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A5",
+    "text": "1"
+  },
+  {
+    "bbox": {
+      "height": 30,
+      "width": 31,
+      "x": 46,
+      "y": 1220
+    },
+    "conf": 0.94,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 1080
+    },
+    "roi_id": "panel_bottom_A3",
+    "text": "="
+  },
+  {
+    "bbox": {
+      "height": 30,
+      "width": 31,
+      "x": 953,
+      "y": 1220
+    },
+    "conf": 0.88,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A4",
+    "text": "="
+  },
+  {
+    "bbox": {
+      "height": 30,
+      "width": 31,
+      "x": 1859,
+      "y": 1220
+    },
+    "conf": 0.92,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A5",
+    "text": "="
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 4,
+      "x": 1214,
+      "y": 1225
+    },
+    "conf": 0.58,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A4",
+    "text": "I"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 5,
+      "x": 1570,
+      "y": 1225
+    },
+    "conf": 0.3,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A4",
+    "text": "!"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 5,
+      "x": 2119,
+      "y": 1225
+    },
+    "conf": 0.74,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A5",
+    "text": "!"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 5,
+      "x": 2475,
+      "y": 1225
+    },
+    "conf": 0.28,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A5",
+    "text": "!"
+  },
+  {
+    "bbox": {
+      "height": 17,
+      "width": 4,
+      "x": 1214,
+      "y": 1251
+    },
+    "conf": 0.54,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A4",
+    "text": "1"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 5,
+      "x": 1570,
+      "y": 1251
+    },
+    "conf": 0.0,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A4",
+    "text": "!"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 5,
+      "x": 2119,
+      "y": 1251
+    },
+    "conf": 0.0,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A5",
+    "text": "\\"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 5,
+      "x": 2475,
+      "y": 1251
+    },
+    "conf": 0.82,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A5",
+    "text": "1"
+  },
+  {
+    "bbox": {
+      "height": 27,
+      "width": 135,
+      "x": 146,
+      "y": 1268
+    },
+    "conf": 0.89,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 1080
+    },
+    "roi_id": "panel_bottom_A3",
+    "text": "Condition"
+  },
+  {
+    "bbox": {
+      "height": 26,
+      "width": 135,
+      "x": 1052,
+      "y": 1269
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A4",
+    "text": "Condition"
+  },
+  {
+    "bbox": {
+      "height": 26,
+      "width": 136,
+      "x": 1957,
+      "y": 1269
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A5",
+    "text": "Condition"
+  },
+  {
+    "bbox": {
+      "height": 31,
+      "width": 94,
+      "x": 688,
+      "y": 1270
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 1080
+    },
+    "roi_id": "panel_bottom_A3",
+    "text": "Report"
+  },
+  {
+    "bbox": {
+      "height": 31,
+      "width": 94,
+      "x": 1594,
+      "y": 1270
+    },
+    "conf": 0.95,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A4",
+    "text": "Report"
+  },
+  {
+    "bbox": {
+      "height": 31,
+      "width": 94,
+      "x": 2498,
+      "y": 1270
+    },
+    "conf": 0.95,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A5",
+    "text": "Report"
+  },
+  {
+    "bbox": {
+      "height": 27,
+      "width": 13,
+      "x": 2671,
+      "y": 1270
+    },
+    "conf": 0.85,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A5",
+    "text": "/"
+  },
+  {
+    "bbox": {
+      "height": 24,
+      "width": 58,
+      "x": 791,
+      "y": 1271
+    },
+    "conf": 0.91,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 1080
+    },
+    "roi_id": "panel_bottom_A3",
+    "text": "sent"
+  },
+  {
+    "bbox": {
+      "height": 24,
+      "width": 57,
+      "x": 1697,
+      "y": 1271
+    },
+    "conf": 0.88,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A4",
+    "text": "sent"
+  },
+  {
+    "bbox": {
+      "height": 24,
+      "width": 60,
+      "x": 2602,
+      "y": 1271
+    },
+    "conf": 0.85,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A5",
+    "text": "sent"
+  },
+  {
+    "bbox": {
+      "height": 19,
+      "width": 5,
+      "x": 308,
+      "y": 1275
+    },
+    "conf": 0.48,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 1080
+    },
+    "roi_id": "panel_bottom_A3",
+    "text": "\u00a2"
+  },
+  {
+    "bbox": {
+      "height": 19,
+      "width": 5,
+      "x": 2475,
+      "y": 1275
+    },
+    "conf": 0.89,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A5",
+    "text": "i"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 5,
+      "x": 664,
+      "y": 1276
+    },
+    "conf": 0.85,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 1080
+    },
+    "roi_id": "panel_bottom_A3",
+    "text": "t"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 4,
+      "x": 1214,
+      "y": 1276
+    },
+    "conf": 0.82,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A4",
+    "text": "1"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 5,
+      "x": 1570,
+      "y": 1276
+    },
+    "conf": 0.67,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A4",
+    "text": "1"
+  },
+  {
+    "bbox": {
+      "height": 18,
+      "width": 5,
+      "x": 2119,
+      "y": 1276
+    },
+    "conf": 0.93,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A5",
+    "text": "1"
+  },
+  {
+    "bbox": {
+      "height": 45,
+      "width": 5,
+      "x": 2475,
+      "y": 1301
+    },
+    "conf": 0.69,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A5",
+    "text": "|"
+  },
+  {
+    "bbox": {
+      "height": 44,
+      "width": 5,
+      "x": 308,
+      "y": 1302
+    },
+    "conf": 0.7,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 1080
+    },
+    "roi_id": "panel_bottom_A3",
+    "text": "|"
+  },
+  {
+    "bbox": {
+      "height": 43,
+      "width": 5,
+      "x": 664,
+      "y": 1302
+    },
+    "conf": 0.94,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 1080
+    },
+    "roi_id": "panel_bottom_A3",
+    "text": "|"
+  },
+  {
+    "bbox": {
+      "height": 43,
+      "width": 4,
+      "x": 1214,
+      "y": 1302
+    },
+    "conf": 0.77,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A4",
+    "text": "|"
+  },
+  {
+    "bbox": {
+      "height": 44,
+      "width": 5,
+      "x": 1570,
+      "y": 1302
+    },
+    "conf": 0.37,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A4",
+    "text": "|"
+  },
+  {
+    "bbox": {
+      "height": 43,
+      "width": 5,
+      "x": 2119,
+      "y": 1302
+    },
+    "conf": 0.74,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A5",
+    "text": "|"
+  },
+  {
+    "bbox": {
+      "height": 26,
+      "width": 56,
+      "x": 153,
+      "y": 1306
+    },
+    "conf": 0.95,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 1080
+    },
+    "roi_id": "panel_bottom_A3",
+    "text": "first"
+  },
+  {
+    "bbox": {
+      "height": 26,
+      "width": 56,
+      "x": 1059,
+      "y": 1306
+    },
+    "conf": 0.96,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A4",
+    "text": "first"
+  },
+  {
+    "bbox": {
+      "height": 26,
+      "width": 56,
+      "x": 1965,
+      "y": 1306
+    },
+    "conf": 0.59,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A5",
+    "text": "first"
+  },
+  {
+    "bbox": {
+      "height": 33,
+      "width": 129,
+      "x": 2583,
+      "y": 1306
+    },
+    "conf": 0.95,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A5",
+    "text": "triggered"
+  },
+  {
+    "bbox": {
+      "height": 25,
+      "width": 77,
+      "x": 688,
+      "y": 1307
+    },
+    "conf": 0.93,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 1080
+    },
+    "roi_id": "panel_bottom_A3",
+    "text": "Event"
+  },
+  {
+    "bbox": {
+      "height": 31,
+      "width": 76,
+      "x": 773,
+      "y": 1307
+    },
+    "conf": 0.87,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 1080
+    },
+    "roi_id": "panel_bottom_A3",
+    "text": "trigge"
+  },
+  {
+    "bbox": {
+      "height": 25,
+      "width": 77,
+      "x": 1593,
+      "y": 1307
+    },
+    "conf": 0.93,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A4",
+    "text": "Event"
+  },
+  {
+    "bbox": {
+      "height": 32,
+      "width": 75,
+      "x": 1679,
+      "y": 1307
+    },
+    "conf": 0.91,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A4",
+    "text": "trigge"
+  },
+  {
+    "bbox": {
+      "height": 25,
+      "width": 78,
+      "x": 2498,
+      "y": 1307
+    },
+    "conf": 0.9,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A5",
+    "text": "Event"
+  },
+  {
+    "bbox": {
+      "height": 23,
+      "width": 53,
+      "x": 220,
+      "y": 1309
+    },
+    "conf": 0.7,
+    "roi": {
+      "height": 283,
+      "width": 814,
+      "x": 35,
+      "y": 1080
+    },
+    "roi_id": "panel_bottom_A3",
+    "text": "met"
+  },
+  {
+    "bbox": {
+      "height": 23,
+      "width": 55,
+      "x": 1125,
+      "y": 1309
+    },
+    "conf": 0.74,
+    "roi": {
+      "height": 284,
+      "width": 834,
+      "x": 920,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A4",
+    "text": "met"
+  },
+  {
+    "bbox": {
+      "height": 23,
+      "width": 55,
+      "x": 2031,
+      "y": 1309
+    },
+    "conf": 0.59,
+    "roi": {
+      "height": 284,
+      "width": 886,
+      "x": 1828,
+      "y": 1082
+    },
+    "roi_id": "panel_bottom_A5",
+    "text": "met"
+  }
+]

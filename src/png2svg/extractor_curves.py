@@ -91,6 +91,61 @@ def _curve_color_mask(
     return mask
 
 
+def _extract_dominant_color(
+    rgba: np.ndarray,
+    mask: np.ndarray,
+    fallback_color: str = "#2b6cb0",
+) -> str:
+    """Extract the dominant color from pixels matching a mask.
+
+    Args:
+        rgba: Source image as RGBA numpy array
+        mask: Boolean mask indicating which pixels to sample
+        fallback_color: Color to return if extraction fails
+
+    Returns:
+        Hex color string of dominant color
+    """
+    if mask.sum() < 10:
+        return fallback_color
+
+    # Get pixels matching the mask
+    rgb = rgba[:, :, :3]
+    masked_pixels = rgb[mask]
+
+    if len(masked_pixels) == 0:
+        return fallback_color
+
+    # Calculate median color (more robust than mean)
+    median_r = int(np.median(masked_pixels[:, 0]))
+    median_g = int(np.median(masked_pixels[:, 1]))
+    median_b = int(np.median(masked_pixels[:, 2]))
+
+    return f"#{median_r:02x}{median_g:02x}{median_b:02x}"
+
+
+def extract_curve_color(
+    rgba: np.ndarray,
+    target_hue: float,
+    adaptive: dict[str, Any],
+    fallback_color: str = "#2b6cb0",
+) -> tuple[np.ndarray, str]:
+    """Extract curve mask and its dominant color.
+
+    Args:
+        rgba: Source image
+        target_hue: Target hue angle (0-360)
+        adaptive: Configuration dict
+        fallback_color: Color to use if extraction fails
+
+    Returns:
+        Tuple of (mask, hex_color)
+    """
+    mask = _curve_color_mask(rgba, target_hue, adaptive)
+    color = _extract_dominant_color(rgba, mask, fallback_color)
+    return mask, color
+
+
 def _point_distance(point: tuple[float, float], start: tuple[float, float], end: tuple[float, float]) -> float:
     if start == end:
         dx = point[0] - start[0]

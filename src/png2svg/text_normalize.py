@@ -72,6 +72,8 @@ CANONICAL_TEXT = {
         "title": "3GPP Measurement Event Triggers (A3/A4/A5): Time-to-Trigger (TTT) and Hysteresis",
         "curve_label_serving": "Serving beam",
         "curve_label_neighbor": "Neighbor/Target beam",
+        "axis_label_x": "Time (t)",
+        "axis_label_y": "Measured signal level (e.g., RSRP/RSRQ/SINR)",
     }
 }
 

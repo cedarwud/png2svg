@@ -1,0 +1,47 @@
+{
+  "candidate_templates": [
+    {
+      "score": 6.8,
+      "template_id": "t_3gpp_events_3panel"
+    },
+    {
+      "score": 3.2,
+      "template_id": "t_project_architecture_v1"
+    },
+    {
+      "score": 2.3,
+      "template_id": "t_performance_grid_v1"
+    },
+    {
+      "score": 0.9,
+      "template_id": "t_rl_agent_loop_v1"
+    },
+    {
+      "score": 0.8999999999999999,
+      "template_id": "t_procedure_flow"
+    },
+    {
+      "score": -0.20000000000000007,
+      "template_id": "t_performance_lineplot"
+    }
+  ],
+  "confidence": 0.6145833333333333,
+  "decision": "known",
+  "features_summary": {
+    "axis_aligned_ratio": 0.752597629838288,
+    "color_count": 16,
+    "ink_ratio": 0.3059685285701308,
+    "long_horizontal_lines": 0,
+    "long_vertical_lines": 51,
+    "ocr_token_count": 227,
+    "saturated_ratio": 0.0351157574393958,
+    "short_horizontal_segments": 43258,
+    "short_vertical_segments": 38500
+  },
+  "image_meta": {
+    "height": 1536,
+    "width": 2752
+  },
+  "reason_codes": [],
+  "template_id": "t_3gpp_events_3panel"
+}

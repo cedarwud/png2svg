@@ -1,0 +1,17 @@
+{
+  "errors": [],
+  "status": "pass",
+  "template_id": "t_3gpp_events_3panel",
+  "warnings": [
+    {
+      "code": "W4001_PANELS_FALLBACK",
+      "hint": "Verify panel bounding boxes and adjust manually if needed.",
+      "message": "Panel detection incomplete; using default layout."
+    },
+    {
+      "code": "W4008_TITLE_CANONICAL",
+      "hint": "Edit params.json if a different title is required.",
+      "message": "Large-format 3GPP title standardized to canonical text."
+    }
+  ]
+}

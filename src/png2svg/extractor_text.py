@@ -8,6 +8,11 @@ import numpy as np
 from common.svg_builder import DEFAULT_FONT_FAMILY
 from png2svg.extractor_curves import _hue_distance, _rgb_to_hsv
 from png2svg.extractor_preprocess import _connected_components, _ink_mask
+from png2svg.text_vocabulary import (
+    deduplicate_text_items,
+    load_vocabulary,
+    validate_text_item,
+)
 
 
 def _text_items_from_boxes(text_boxes: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -402,27 +407,63 @@ def _keep_text_item(item: dict[str, Any], cfg: dict[str, Any] | None) -> bool:
     return True
 
 
-def _filter_text_items(text_items: list[dict[str, Any]], cfg: dict[str, Any] | None) -> list[dict[str, Any]]:
+def _filter_text_items(
+    text_items: list[dict[str, Any]],
+    cfg: dict[str, Any] | None,
+    template_id: str | None = None,
+) -> list[dict[str, Any]]:
+    """Filter text items using basic rules and vocabulary validation.
+
+    Args:
+        text_items: List of text items from OCR
+        cfg: Configuration dict for filtering parameters
+        template_id: Template identifier for vocabulary lookup
+
+    Returns:
+        Filtered and deduplicated text items
+    """
     if not text_items:
         return []
+
+    # Load vocabulary for template-specific filtering
+    vocab = load_vocabulary(template_id) if template_id else None
+
     filtered: list[dict[str, Any]] = []
     seen: dict[tuple[str, int, int], dict[str, Any]] = {}
+
     for item in text_items:
+        # Basic filtering
         if not _keep_text_item(item, cfg):
             continue
+
         content = _clean_text(str(item.get("content") or item.get("text") or ""))
         if not content:
             continue
+
         item["content"] = content
         item["text"] = content
+
+        # Vocabulary-based validation
+        if vocab:
+            is_valid, reason = validate_text_item(item, vocab, strict=False)
+            if not is_valid:
+                item["_rejected_reason"] = reason
+                continue
+
+        # Deduplication by position
         bbox = item.get("bbox")
         if isinstance(bbox, dict):
             try:
-                key = (content, int(round(float(bbox.get("x", 0.0)))), int(round(float(bbox.get("y", 0.0)))))
+                key = (
+                    content.lower(),
+                    int(round(float(bbox.get("x", 0.0)) / 10)) * 10,  # Grid snap
+                    int(round(float(bbox.get("y", 0.0)) / 10)) * 10,
+                )
             except (TypeError, ValueError):
-                key = (content, 0, 0)
+                key = (content.lower(), 0, 0)
         else:
-            key = (content, 0, 0)
+            key = (content.lower(), 0, 0)
+
         existing = seen.get(key)
         if existing is None:
             seen[key] = item
@@ -435,6 +476,11 @@ def _filter_text_items(text_items: list[dict[str, Any]], cfg: dict[str, Any] | N
                     filtered[idx] = item
             except (TypeError, ValueError):
                 continue
+
+    # Additional deduplication pass
+    filtered = deduplicate_text_items(filtered, distance_threshold=30.0)
+
+    # Sort by position
     filtered.sort(
         key=lambda item: (
             float(item.get("bbox", {}).get("y", 0.0)),
@@ -913,7 +959,24 @@ def _apply_text_layout(
             )
 
 
-def _estimate_text_color_3gpp(rgba: np.ndarray, bbox: dict[str, Any]) -> str | None:
+def _estimate_text_color_3gpp(
+    rgba: np.ndarray,
+    bbox: dict[str, Any],
+    serving_color: str | None = None,
+    neighbor_color: str | None = None,
+) -> str | None:
+    """Estimate text color based on pixel analysis.
+
+    Args:
+        rgba: Source image
+        bbox: Bounding box dict with x, y, width, height
+        serving_color: Color to use for serving curve text (defaults to #2b6cb0)
+        neighbor_color: Color to use for neighbor curve text (defaults to #dd6b20)
+    """
+    # Use provided colors or defaults
+    blue_color = serving_color if serving_color else "#2b6cb0"
+    orange_color = neighbor_color if neighbor_color else "#dd6b20"
+
     try:
         x0 = int(max(float(bbox.get("x", 0.0)), 0.0))
         y0 = int(max(float(bbox.get("y", 0.0)), 0.0))
@@ -939,31 +1002,58 @@ def _estimate_text_color_3gpp(rgba: np.ndarray, bbox: dict[str, Any]) -> str | N
     if median_hue is None:
         return None
     if _hue_distance(median_hue, 220.0) <= 25.0:
-        return "#2b6cb0"
+        return blue_color
     if _hue_distance(median_hue, 30.0) <= 20.0:
-        return "#dd6b20"
+        return orange_color
     return None
 
 
-def _assign_text_colors_3gpp(text_items: list[dict[str, Any]], rgba: np.ndarray) -> None:
+def _assign_text_colors_3gpp(
+    text_items: list[dict[str, Any]],
+    rgba: np.ndarray,
+    serving_color: str | None = None,
+    neighbor_color: str | None = None,
+) -> None:
+    """Assign colors to text items based on pixel analysis.
+
+    Args:
+        text_items: List of text items
+        rgba: Source image
+        serving_color: Color to use for serving curve text
+        neighbor_color: Color to use for neighbor curve text
+    """
     for item in text_items:
         if item.get("render") is False:
             continue
         bbox = item.get("bbox")
         if not isinstance(bbox, dict):
             continue
-        color = _estimate_text_color_3gpp(rgba, bbox)
+        color = _estimate_text_color_3gpp(rgba, bbox, serving_color, neighbor_color)
         if color:
             item["fill"] = color
 
 
-def _enforce_curve_label_colors_3gpp(text_items: list[dict[str, Any]]) -> None:
+def _enforce_curve_label_colors_3gpp(
+    text_items: list[dict[str, Any]],
+    serving_color: str | None = None,
+    neighbor_color: str | None = None,
+) -> None:
+    """Set curve label colors.
+
+    Args:
+        text_items: List of text items
+        serving_color: Color for serving curve labels (extracted from image)
+        neighbor_color: Color for neighbor curve labels (extracted from image)
+    """
+    # Use extracted colors if provided, otherwise fall back to defaults
+    serving = serving_color if serving_color else "#2b6cb0"
+    neighbor = neighbor_color if neighbor_color else "#dd6b20"
     for item in text_items:
         role = str(item.get("role") or "")
         if role == "curve_label_serving":
-            item["fill"] = "#2b6cb0"
+            item["fill"] = serving
         elif role == "curve_label_neighbor":
-            item["fill"] = "#dd6b20"
+            item["fill"] = neighbor
 
 
 def _assign_roles_lineplot(

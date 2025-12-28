@@ -363,7 +363,11 @@ def convert_png(
             "classification": classification,
             "classification_error": classification_error,
             "candidates": [],
+            "errors": [],
+            "warnings": [],
         }
+        if classification_error:
+            report["errors"].append(classification_error)
         if debug_dir is not None and report_requested:
             _write_json(debug_dir / "convert_report.json", report)
         raise Png2SvgError(
@@ -609,7 +613,11 @@ def convert_png(
             "quality_gate": "on" if quality_gate else "off",
             "allow_failed_gate": allow_failed_gate,
             "text_mode": text_mode,
+            "errors": [],
+            "warnings": [],
         }
+        if classification_error:
+            report["errors"].append(classification_error)
 
         if not validation_passing:
             if debug_dir is not None and report_requested:
@@ -655,6 +663,13 @@ def convert_png(
         if quality_gate and not passing:
             report["status"] = "fail"
             report["quality_gate_status"] = "fail"
+            report["errors"].append(
+                _issue(
+                    "E5108_QUALITY_GATE_FAILED",
+                    "No candidate templates passed the quality gate.",
+                    "Inspect gate_report.json and diff.png under the debug directory.",
+                )
+            )
         elif quality_gate:
             report["quality_gate_status"] = "pass"
 

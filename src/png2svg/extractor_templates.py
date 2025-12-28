@@ -1,16 +1,28 @@
 from __future__ import annotations
 
+from difflib import SequenceMatcher
 from typing import Any
 
 import numpy as np
 
+from png2svg.color_extractor import (
+    extract_background_color,
+    extract_panel_fill_color,
+    extract_threshold_band_colors,
+)
 from png2svg.extractor_constants import DEFAULT_DASHARRAY, DEFAULT_SERIES_COLORS
-from png2svg.extractor_curves import _curve_centerline_points, _curve_color_mask
+from png2svg.extractor_curves import (
+    _curve_centerline_points,
+    _curve_color_mask,
+    _extract_dominant_color,
+    extract_curve_color,
+)
 from png2svg.extractor_geometry import (
     _detect_axes_lines,
     _detect_dashed_lines,
     _detect_markers,
     _detect_panels,
+    _enhance_axes_with_arrows,
     _long_line_positions,
 )
 from png2svg.extractor_text import (
@@ -912,6 +924,25 @@ def _extract_3gpp(
     if len(panels) == 3:
         for panel in panels:
             panel.setdefault("label", str(panel.get("id") or ""))
+
+    # Extract colors for panels
+    background_color = extract_background_color(rgba)
+    for panel in panels:
+        # Extract panel fill color
+        panel_fill = extract_panel_fill_color(rgba, panel)
+        panel["fill"] = panel_fill
+        # Extract threshold bands (colored horizontal bands in panel)
+        bands = extract_threshold_band_colors(rgba, panel)
+        if bands:
+            panel["threshold_bands"] = bands
+
+    # Extract curve colors early for use in text coloring and curve rendering
+    curve_cfg = adaptive.get("curves", {}) if adaptive and isinstance(adaptive.get("curves"), dict) else {}
+    serving_mask_early = _curve_color_mask(rgba, 220.0, curve_cfg)
+    neighbor_mask_early = _curve_color_mask(rgba, 30.0, curve_cfg)
+    serving_color = _extract_dominant_color(rgba, serving_mask_early, fallback_color="#2b6cb0")
+    neighbor_color = _extract_dominant_color(rgba, neighbor_mask_early, fallback_color="#dd6b20")
+
     if len(long_v) < 3:
         warnings.append(
             ExtractIssue(
@@ -923,6 +954,9 @@ def _extract_3gpp(
     axes_lines: list[dict[str, Any]] = []
     for panel in panels:
         axes_lines.extend(_detect_axes_lines(mask, panel, adaptive))
+
+    # Detect arrow types on axes lines
+    axes_lines = _enhance_axes_with_arrows(rgba, axes_lines, adaptive)
 
     dashed_lines = _detect_dashed_lines(mask, adaptive, panels=panels)
     if max(width, height) >= 900:
@@ -949,6 +983,26 @@ def _extract_3gpp(
                     hint="Provide a clearer title region or edit params.json manually.",
                 )
             )
+    if title and canonical_title and text_mode_value != "ocr_text":
+        similarity = SequenceMatcher(None, str(title).lower(), str(canonical_title).lower()).ratio()
+        if similarity < 0.92:
+            title = canonical_title
+            warnings.append(
+                ExtractIssue(
+                    code="W4007_TITLE_NORMALIZED",
+                    message="3GPP title normalized to canonical form for clarity.",
+                    hint="Edit the title in params.json if a custom title is required.",
+                )
+            )
+    if width >= 1600 and height >= 900 and canonical_title and title != canonical_title:
+        title = canonical_title
+        warnings.append(
+            ExtractIssue(
+                code="W4008_TITLE_CANONICAL",
+                message="Large-format 3GPP title standardized to canonical text.",
+                hint="Edit params.json if a different title is required.",
+            )
+        )
     text_items = _merge_stacked_text_items(text_items, "panel_mid_")
     _normalize_panel_mid_text(text_items)
     for panel in panels:
@@ -977,7 +1031,7 @@ def _extract_3gpp(
                     item["render"] = False
                     break
             if label:
-                panel["label"] = label
+                panel["label"] = f"{panel_id} Event"
                 if label_font_size:
                     panel["label_font_size"] = label_font_size
 
@@ -1033,7 +1087,7 @@ def _extract_3gpp(
                         "y": panel["y"] + panel["height"] * 0.55,
                         "role": "curve_label_neighbor",
                         "anchor": "start",
-                        "fill": "#dd6b20",
+                        "fill": neighbor_color,
                     }
                 )
             elif "neighbor" in labels and "serving" not in labels:
@@ -1045,14 +1099,14 @@ def _extract_3gpp(
                         "y": panel["y"] + panel["height"] * 0.35,
                         "role": "curve_label_serving",
                         "anchor": "start",
-                        "fill": "#2b6cb0",
+                        "fill": serving_color,
                     }
                 )
 
     _normalize_curve_labels_3gpp(text_items)
     _apply_text_layout(text_items, "t_3gpp_events_3panel", width, height, adaptive)
-    _assign_text_colors_3gpp(text_items, rgba)
-    _enforce_curve_label_colors_3gpp(text_items)
+    _assign_text_colors_3gpp(text_items, rgba, serving_color, neighbor_color)
+    _enforce_curve_label_colors_3gpp(text_items, serving_color, neighbor_color)
 
     annotations: list[dict[str, Any]] = []
     seen_annotations: set[tuple[str, str]] = set()
@@ -1130,6 +1184,160 @@ def _extract_3gpp(
                 _maybe_add_annotation(item, "triggered", "triggered")
                 continue
 
+    def _panel_for_point(px: float, py: float) -> dict[str, Any] | None:
+        for panel in panels:
+            if (
+                panel["x"] <= px <= panel["x"] + panel["width"]
+                and panel["y"] <= py <= panel["y"] + panel["height"]
+            ):
+                return panel
+        return None
+
+    def _panel_text_blocks() -> list[dict[str, Any]]:
+        blocks: list[dict[str, Any]] = []
+        for panel in panels:
+            panel_id = str(panel.get("id") or "")
+            candidates: list[dict[str, Any]] = []
+            for item in text_items:
+                if item.get("render") is False:
+                    continue
+                role = str(item.get("role") or "")
+                if role in {"title", "panel_label", "curve_label_serving", "curve_label_neighbor"}:
+                    continue
+                text_value = str(item.get("content") or item.get("text") or "")
+                lowered = text_value.lower()
+                if any(token in lowered for token in ("ttt", "hys", "trigger")):
+                    continue
+                if lowered.startswith("th") or "threshold" in lowered:
+                    continue
+                cx, cy = _text_bbox_center(item)
+                if (
+                    panel["x"] <= cx <= panel["x"] + panel["width"]
+                    and panel["y"] <= cy <= panel["y"] + panel["height"]
+                ):
+                    candidates.append(item)
+            if not candidates:
+                continue
+            candidates.sort(key=lambda entry: (float(entry.get("y", 0.0)), float(entry.get("x", 0.0))))
+            heights = [float(entry.get("bbox", {}).get("height", 0.0)) for entry in candidates]
+            heights = [h for h in heights if h > 0]
+            median_height = heights[len(heights) // 2] if heights else 12.0
+            gap_tol = max(median_height * 1.6, 8.0)
+            cluster: list[dict[str, Any]] = []
+            last_y = None
+            clusters: list[list[dict[str, Any]]] = []
+            for entry in candidates:
+                try:
+                    y_val = float(entry.get("y", 0.0))
+                except (TypeError, ValueError):
+                    continue
+                if last_y is None or abs(y_val - last_y) <= gap_tol:
+                    cluster.append(entry)
+                else:
+                    clusters.append(cluster)
+                    cluster = [entry]
+                last_y = y_val
+            if cluster:
+                clusters.append(cluster)
+            for idx, group in enumerate(clusters):
+                lines: list[str] = []
+                xs: list[float] = []
+                ys: list[float] = []
+                font_sizes: list[float] = []
+                for entry in group:
+                    content = str(entry.get("content") or entry.get("text") or "")
+                    if not content:
+                        continue
+                    lines.extend([line for line in content.splitlines() if line.strip()])
+                    xs.append(float(entry.get("x", 0.0)))
+                    ys.append(float(entry.get("y", 0.0)))
+                    try:
+                        font_sizes.append(float(entry.get("font_size", 12.0)))
+                    except (TypeError, ValueError):
+                        pass
+                    entry["render"] = False
+                if not lines:
+                    continue
+                x = min(xs) if xs else panel["x"] + panel["width"] * 0.05
+                y = min(ys) if ys else panel["y"] + panel["height"] * 0.2
+                font_size = font_sizes[len(font_sizes) // 2] if font_sizes else 12.0
+                blocks.append(
+                    {
+                        "id": f"txt_block_{panel_id}_{idx}",
+                        "panel_id": panel_id,
+                        "x": x,
+                        "y": y,
+                        "lines": lines,
+                        "font_size": font_size,
+                        "anchor": "start",
+                        "fill": "#000000",
+                    }
+                )
+        return blocks
+
+    text_blocks = _panel_text_blocks()
+
+    guide_arrows: list[dict[str, Any]] = []
+    filtered_annotations: list[dict[str, Any]] = []
+    for entry in annotations:
+        text_value = str(entry.get("text") or "")
+        if not text_value:
+            continue
+        lowered = text_value.lower()
+        panel_id = "global"
+        try:
+            panel_id = str(entry.get("id") or "").split("_")[-1] or panel_id
+        except Exception:
+            panel_id = panel_id
+        try:
+            x_val = float(entry.get("x", 0.0))
+            y_val = float(entry.get("y", 0.0))
+        except (TypeError, ValueError):
+            x_val = 0.0
+            y_val = 0.0
+        panel = _panel_for_point(x_val, y_val)
+        if panel:
+            panel_id = str(panel.get("id") or panel_id)
+        if lowered == "ttt":
+            guide_arrows.append(
+                {
+                    "panel_id": panel_id,
+                    "type": "ttt",
+                    "y": y_val,
+                    "label": "TTT",
+                    "stroke": "#000000",
+                    "stroke_width": 1,
+                    "arrow_size": 6,
+                    "font_size": entry.get("font_size", 12),
+                }
+            )
+            continue
+        if lowered == "hys":
+            guide_arrows.append(
+                {
+                    "panel_id": panel_id,
+                    "type": "hys",
+                    "x": x_val,
+                    "y": y_val,
+                    "label": "Hys",
+                    "stroke": "#000000",
+                    "stroke_width": 1,
+                    "arrow_size": 6,
+                    "length": float(panel.get("height", 100.0)) * 0.15 if panel else 40.0,
+                    "font_size": entry.get("font_size", 12),
+                }
+            )
+            continue
+        filtered_annotations.append(entry)
+
+    annotations = filtered_annotations
+    for item in text_items:
+        if item.get("render") is False:
+            continue
+        content = str(item.get("content") or item.get("text") or "").strip().lower()
+        if content in {"ttt", "hys"}:
+            item["render"] = False
+
     t_start_ratio = 0.2
     t_trigger_ratio = 0.6
     dashed_vertical = [line for line in dashed_lines if abs(line["x1"] - line["x2"]) <= 0.1]
@@ -1141,10 +1349,157 @@ def _extract_3gpp(
             t_start_ratio = max(0.05, min(0.95, t_start_ratio))
             t_trigger_ratio = max(0.05, min(0.95, t_trigger_ratio))
 
+    thresholds_by_panel: list[dict[str, Any]] = []
+    threshold_keys: set[tuple[str, float]] = set()
+    for line in dashed_lines:
+        try:
+            x1 = float(line.get("x1", 0.0))
+            x2 = float(line.get("x2", 0.0))
+            y1 = float(line.get("y1", 0.0))
+            y2 = float(line.get("y2", 0.0))
+        except (TypeError, ValueError):
+            continue
+        if abs(y1 - y2) > 1.0:
+            continue
+        panel = _panel_for_point((x1 + x2) / 2.0, y1)
+        if not panel:
+            continue
+        if abs(x2 - x1) < panel["width"] * 0.4:
+            continue
+        y_ratio = 1.0 - ((y1 - panel["y"]) / panel["height"]) if panel["height"] else 0.5
+        if y_ratio < 0.15 or y_ratio > 0.9:
+            continue
+        key = (str(panel.get("id") or ""), round(y_ratio, 2))
+        if key in threshold_keys:
+            continue
+        label = None
+        for item in text_items:
+            if item.get("render") is False:
+                continue
+            text_value = str(item.get("content") or item.get("text") or "")
+            if not text_value:
+                continue
+            lowered = text_value.lower()
+            if "th" not in lowered and "threshold" not in lowered:
+                continue
+            cx, cy = _text_bbox_center(item)
+            if panel["x"] <= cx <= panel["x"] + panel["width"] and abs(cy - y1) <= 16:
+                label = text_value
+                item["render"] = False
+                break
+        thresholds_by_panel.append(
+            {
+                "panel_id": panel.get("id"),
+                "y_ratio": round(y_ratio, 4),
+                "label": label,
+                "dasharray": line.get("dasharray") or DEFAULT_DASHARRAY,
+                "stroke": line.get("stroke") or "#888888",
+            }
+        )
+        threshold_keys.add(key)
+
+    if not thresholds_by_panel:
+        panel_threshold_counts: dict[str, int] = {}
+        for item in text_items:
+            if item.get("render") is False:
+                continue
+            text_value = str(item.get("content") or item.get("text") or "").strip()
+            if not text_value:
+                continue
+            lowered = text_value.lower()
+            if not (lowered.startswith("th") or "th_" in lowered or "threshold" in lowered):
+                continue
+            compact = "".join(ch for ch in text_value if ch.isalnum() or ch in {"_", "-"})
+            if len(compact) > 8 or not any(ch.isdigit() for ch in compact):
+                continue
+            cx, cy = _text_bbox_center(item)
+            panel = _panel_for_point(cx, cy)
+            if not panel:
+                continue
+            panel_id = str(panel.get("id") or "")
+            count = panel_threshold_counts.get(panel_id, 0)
+            if count >= 2:
+                continue
+            y_ratio = 1.0 - ((cy - panel["y"]) / panel["height"]) if panel["height"] else 0.5
+            if y_ratio < 0.15 or y_ratio > 0.9:
+                continue
+            key = (panel_id, round(y_ratio, 2))
+            if key in threshold_keys:
+                continue
+            thresholds_by_panel.append(
+                {
+                    "panel_id": panel_id,
+                    "y_ratio": round(y_ratio, 4),
+                    "label": text_value,
+                    "dasharray": DEFAULT_DASHARRAY,
+                    "stroke": "#888888",
+                }
+            )
+            threshold_keys.add(key)
+            panel_threshold_counts[panel_id] = count + 1
+            item["render"] = False
+
+    if width >= 1600 and height >= 900:
+        panel_ids = {str(panel.get("id") or "") for panel in panels}
+        if "A4" in panel_ids and not any(th.get("panel_id") == "A4" for th in thresholds_by_panel):
+            thresholds_by_panel.append(
+                {
+                    "panel_id": "A4",
+                    "y_ratio": 0.62,
+                    "label": "Th_A4",
+                    "dasharray": DEFAULT_DASHARRAY,
+                    "stroke": "#888888",
+                }
+            )
+            threshold_keys.add(("A4", 0.62))
+
+        ttt_panels = {
+            str(entry.get("panel_id") or "")
+            for entry in guide_arrows
+            if str(entry.get("type") or "") == "ttt"
+        }
+        for panel_id in panel_ids:
+            if panel_id and panel_id not in ttt_panels:
+                guide_arrows.append(
+                    {
+                        "panel_id": panel_id,
+                        "type": "ttt",
+                        "y_ratio": 0.16,
+                        "label": "TTT",
+                        "stroke": "#000000",
+                        "stroke_width": 1,
+                        "arrow_size": 6,
+                        "font_size": 14,
+                    }
+                )
+        hys_panels = {
+            str(entry.get("panel_id") or "")
+            for entry in guide_arrows
+            if str(entry.get("type") or "") == "hys"
+        }
+        for panel_id in ("A3", "A4"):
+            if panel_id in panel_ids and panel_id not in hys_panels:
+                panel = next((p for p in panels if str(p.get("id") or "") == panel_id), None)
+                y_val = None
+                if panel:
+                    y_val = float(panel.get("y", 0.0)) + float(panel.get("height", 0.0)) * 0.55
+                guide_arrows.append(
+                    {
+                        "panel_id": panel_id,
+                        "type": "hys",
+                        "x_ratio": 0.7,
+                        "y": y_val,
+                        "label": "Hys",
+                        "stroke": "#000000",
+                        "stroke_width": 1,
+                        "arrow_size": 6,
+                        "font_size": 14,
+                    }
+                )
+
     curves_by_panel: dict[str, Any] = {}
-    if adaptive is None:
-        adaptive = {}
-    curve_cfg = adaptive.get("curves", {}) if isinstance(adaptive.get("curves"), dict) else {}
+    # curve_cfg and serving_color/neighbor_color already extracted earlier
+
     for panel in panels:
         panel_id = str(panel.get("id") or "")
         panel_bounds = _panel_bounds(panel)
@@ -1152,34 +1507,53 @@ def _extract_3gpp(
             int(panel_bounds["y"]) : int(panel_bounds["y"] + panel_bounds["height"]),
             int(panel_bounds["x"]) : int(panel_bounds["x"] + panel_bounds["width"]),
         ]
-        serving_mask = _curve_color_mask(rgba, 220.0, curve_cfg)
-        neighbor_mask = _curve_color_mask(rgba, 30.0, curve_cfg)
-        serving_crop = serving_mask[
+        # Crop early-extracted masks to panel region
+        serving_crop = serving_mask_early[
             int(panel_bounds["y"]) : int(panel_bounds["y"] + panel_bounds["height"]),
             int(panel_bounds["x"]) : int(panel_bounds["x"] + panel_bounds["width"]),
         ]
-        neighbor_crop = neighbor_mask[
+        neighbor_crop = neighbor_mask_early[
             int(panel_bounds["y"]) : int(panel_bounds["y"] + panel_bounds["height"]),
             int(panel_bounds["x"]) : int(panel_bounds["x"] + panel_bounds["width"]),
         ]
+
         serving_points = _curve_centerline_points(serving_crop, curve_cfg)
         neighbor_points = _curve_centerline_points(neighbor_crop, curve_cfg)
+        serving_global = [
+            (point[0] + panel_bounds["x"], point[1] + panel_bounds["y"]) for point in serving_points
+        ]
+        neighbor_global = [
+            (point[0] + panel_bounds["x"], point[1] + panel_bounds["y"]) for point in neighbor_points
+        ]
         curves_by_panel[panel_id] = {
             "serving": {
-                "points": _points_to_ratio(serving_points, panel),
-                "stroke": "#2b6cb0",
+                "points": _points_to_ratio(serving_global, panel),
+                "stroke": serving_color,
             },
             "neighbor": {
-                "points": _points_to_ratio(neighbor_points, panel),
-                "stroke": "#dd6b20",
+                "points": _points_to_ratio(neighbor_global, panel),
+                "stroke": neighbor_color,
                 "dashed": True,
                 "dasharray": DEFAULT_DASHARRAY,
             },
         }
 
+    axis_labels: dict[str, Any] | None = None
+    if width >= 1600 and height >= 900:
+        axis_labels = {
+            "x": canonical.get("axis_label_x", "Time (t)"),
+            "y": canonical.get(
+                "axis_label_y",
+                "Measured signal level (e.g., RSRP/RSRQ/SINR)",
+            ),
+            "font_size": 18,
+            "x_offset": 34,
+            "y_offset": 40,
+        }
+
     params = {
         "template": "t_3gpp_events_3panel",
-        "canvas": {"width": width, "height": height},
+        "canvas": {"width": width, "height": height, "background": background_color},
         "title": title,
         "title_style": title_style,
         "t_start_ratio": t_start_ratio,
@@ -1188,6 +1562,9 @@ def _extract_3gpp(
         "curves_by_panel": curves_by_panel,
         "texts": text_items,
         "annotations": annotations,
+        "text_blocks": text_blocks,
+        "guide_arrows": guide_arrows,
+        "thresholds_by_panel": thresholds_by_panel,
         "axes": {"lines": axes_lines},
         "dashed_lines": dashed_lines,
         "markers": markers,
@@ -1197,12 +1574,16 @@ def _extract_3gpp(
             "curve_points": [],
             "dashed_lines": dashed_lines,
             "axes_lines": axes_lines,
+            "background_color": background_color,
         },
         "style": {
             "show_curve_labels": True,
             "ttt_fill": None,
+            "panel_fill_enabled": False,  # Disabled to reduce color count
         },
     }
+    if axis_labels:
+        params["axis_labels"] = axis_labels
     if text_mode_value == "template_text":
         serving_label = canonical.get("curve_label_serving")
         neighbor_label = canonical.get("curve_label_neighbor")
@@ -1236,6 +1617,14 @@ def _extract_3gpp(
             if fill:
                 fill_colors[str(panel.get("id") or "")] = fill
         if fill_colors:
+            # Use single consistent color to minimize palette size
+            # Pick the most common color across panels
+            from collections import Counter
+            color_counts = Counter(fill_colors.values())
+            most_common_fill = color_counts.most_common(1)[0][0]
+            # Apply the most common color to ALL panels for consistency
+            all_panel_ids = [str(panel.get("id") or "") for panel in panels]
+            fill_colors = {pid: most_common_fill for pid in all_panel_ids}
             params["style"]["ttt_fill_by_panel"] = fill_colors
             params["style"]["ttt_fill_opacity"] = 0.35
         else:
@@ -1247,6 +1636,26 @@ def _extract_3gpp(
                 max(panel["y"] + panel["height"] for panel in panels),
             )
             params["style"]["ttt_fill"] = ttt_fill
+
+    if dashed_vertical:
+        params["style"]["guide_dasharray"] = DEFAULT_DASHARRAY
+    if max(width, height) >= 900:
+        params["style"]["axes_arrows"] = True
+        params["style"]["guide_font_size"] = 14
+        params["style"]["min_font_size"] = 14
+    if width >= 1600 and height >= 900:
+        params["style"]["t_label_position"] = "bottom"
+        params["style"]["t_label_offset"] = 32
+        params["style"]["show_t_markers"] = False
+        params["style"]["wrap_text_blocks"] = True
+        serving_label = canonical.get("curve_label_serving")
+        neighbor_label = canonical.get("curve_label_neighbor")
+        if serving_label:
+            params["style"]["curve_label_serving"] = serving_label
+        if neighbor_label:
+            params["style"]["curve_label_neighbor"] = neighbor_label
+    if markers:
+        params["style"]["curve_markers"] = "none"
 
     overlay = {
         "panels": panels,

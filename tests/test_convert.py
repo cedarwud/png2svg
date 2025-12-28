@@ -161,3 +161,22 @@ def test_convert_project_architecture_auto(tmp_path: Path) -> None:
     assert result.get("selected_template") == "t_project_architecture_v1"
     report = validate_svg(output_svg, CONTRACT, THRESHOLDS)
     assert report.status == "pass"
+
+
+def test_convert_fig1_reference(tmp_path: Path) -> None:
+    case_dir = ROOT / "datasets" / "regression_v0" / "cases" / "case_013_fig1_reference"
+    input_png = _input_png(case_dir)
+    output_svg = tmp_path / "case_013_fig1_reference.svg"
+    result = convert_png(
+        input_png,
+        output_svg,
+        topk=1,
+        force_template="t_3gpp_events_3panel",
+        allow_failed_gate=True,
+        contract_path=CONTRACT,
+        thresholds_path=THRESHOLDS,
+    )
+    assert output_svg.exists()
+    assert result["selected_template"] == "t_3gpp_events_3panel"
+    report = validate_svg(output_svg, CONTRACT, THRESHOLDS)
+    assert report.status == "pass"
