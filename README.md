@@ -4,13 +4,17 @@ Template-based PNG-to-editable-SVG pipeline (MVP v0).
 
 ## Setup
 - Python 3.10+
-- Install deps: `pip install -r requirements.txt`
+- **System Dependencies**:
+  - **OCR**: `tesseract-ocr` (required for text recognition)
+  - **Cairo**: `libcairo2` or `cairo` (required for `cairosvg` validation)
+  - *Ubuntu/Debian*: `sudo apt-get install tesseract-ocr libcairo2`
+  - *macOS*: `brew install tesseract cairo`
+- **Python Deps**: `pip install -r requirements.txt`
 
 ## Quickstart
-Minimal path: render → validate → regress.
-1) Render: `python tools/png2svg.py render path/to/input.png path/to/params.json output/output.svg`
-2) Validate: `python tools/validate_svg.py output/output.svg --expected path/to/expected.png --report output/report.json`
-3) Regress: `python tools/regress.py datasets/regression_v0/manifest.yaml --report output/regress_report.json`
+Minimal path: convert (auto) → inspect.
+1) Convert: `python tools/png2svg.py convert samples/realistic/fig1.png -o output/output.svg`
+2) Convert (Unknown layout): `python tools/png2svg.py convert input.png -o output.svg --force-template t_auto_layout --quality-gate off`
 
 ## CLI
 Top-level commands:
@@ -66,15 +70,12 @@ Template examples (using `samples/`):
 - `pytest`
 
 ## CHANGELOG
-MVP v0:
-- Template-based SVG renderers for 3GPP events, procedure flow, performance line plots, project architecture, RL agent loops, and performance grids.
-- Contract validator with visual diff and regression runner with per-case artifacts.
-- Sample params for all templates and manifest-driven regression dataset.
-
-Phase 9 (Template expansion):
-Added `t_rl_agent_loop_v1` and `t_performance_grid_v1` with classifier scoring, extractors, renderers, and four new regression cases.
-Run: `python tools/regress.py datasets/regression_v0 --report output/regress_report.json`.
+Phase 18 (Generalized Extraction):
+- Integrated **Generalized Layout Analysis** (V1).
+- Added `t_auto_layout` pipeline: automatically detects panels and curves without predefined templates.
+- Enhanced curve quality using Bezier fitting and morphological cleanup.
+- Improved text extraction with font-weight detection and vocabulary filtering.
 
 Known limitations:
-- No automatic params extraction from PNGs (manual params.json required).
-- Output quality is guaranteed only within the supported templates.
+- Automatic extraction is highly effective for charts/diagrams; complex artistic illustrations may still require manual tuning.
+- Visual diff quality gate may require `--quality-gate off` for highly creative layouts.
